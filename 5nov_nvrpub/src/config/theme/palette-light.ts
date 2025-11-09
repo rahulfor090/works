@@ -5,7 +5,7 @@ const palette: PaletteOptions = {
   mode: 'light',
   background: {
     default: '#f2f5f5', //'#fdfdfd',
-    paper: common.white,
+    paper: '#f6f9fe',
   },
   text: {
     primary: grey[900],

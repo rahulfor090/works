@@ -49,7 +49,8 @@ import { Content } from '@/interfaces/content'
 interface SearchPageProps {
   query: string
   type: string
-  initialResults: Content[]
+  initialResults: any[]
+  total: number
 }
 
 interface FilterState {
@@ -63,8 +64,8 @@ interface FilterState {
   bookAuthors: string[]
 }
 
-const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults }) => {
-  const [results, setResults] = useState<Content[]>(initialResults)
+const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults, total }) => {
+  const [results, setResults] = useState<any[]>(initialResults)
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
@@ -113,7 +114,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults }) 
     { label: 'Examples', count: 11379, icon: null },
   ]
 
-  // Sample search results data
+  // Fallback sample search results data
   const sampleResults = [
     {
       id: 1,
@@ -320,7 +321,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults }) 
 
               {/* Search Results */}
               <Box>
-                {sampleResults.map((result, index) => (
+                {(results && results.length > 0 ? results : sampleResults).map((result, index) => (
                   <Paper key={result.id} sx={{ p: 3, mb: 2 }}>
                     <Box sx={{ display: 'flex', gap: 3 }}>
                       <Typography variant="h6" color="text.secondary" sx={{ minWidth: 20 }}>
@@ -332,8 +333,8 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults }) 
                           <CardMedia
                             component="img"
                             height="100"
-                            image={result.image}
-                            alt={result.title}
+                            image={result.coverImage || result.image || '/images/home-feature.jpg'}
+                            alt={result.title || result.chapterTitle}
                             sx={{ objectFit: 'cover' }}
                           />
                         </Card>
@@ -342,16 +343,18 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults }) 
                       <Box sx={{ flex: 1 }}>
                         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 1 }}>
                           <Typography variant="h6" component="h3" sx={{ color: 'primary.main', fontWeight: 600 }}>
-                            {result.title}
+                            {result.title || result.chapterTitle}
                           </Typography>
                         </Box>
                         
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                          {result.author} | {result.year}
-                        </Typography>
+                        {(result.author || result.bookTitle) && (
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                            {(result.author || result.bookTitle)}
+                          </Typography>
+                        )}
                         
                         <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                          {result.tags.map((tag, tagIndex) => (
+                          {(result.type ? [result.type] : result.tags || []).map((tag, tagIndex) => (
                             <Chip
                               key={tagIndex}
                               label={tag}
@@ -363,7 +366,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults }) 
                         </Box>
                         
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                          {result.description}
+                          {result.description || ''}
                         </Typography>
                         
                         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -393,7 +396,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults }) 
               {/* Pagination */}
               <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                 <Pagination
-                  count={Math.ceil(405149 / itemsPerPage)}
+                  count={Math.ceil((results && results.length ? total : 405149) / itemsPerPage)}
                   page={currentPage}
                   onChange={(event, page) => setCurrentPage(page)}
                   color="primary"
@@ -409,16 +412,28 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults }) 
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { query, type = 'all' } = context.query
-
-  // In a real application, you would fetch data from your API here
-  const initialResults: Content[] = []
+  const { query: q, type = 'all' } = context.query as Record<string, string>
+  const proto = (context.req.headers['x-forwarded-proto'] as string) || 'http'
+  const host = context.req.headers.host || 'localhost:3000'
+  const base = `${proto}://${host}`
+  let initialResults: any[] = []
+  let total = 0
+  try {
+    const url = `${base}/api/search?q=${encodeURIComponent(String(q || ''))}&type=${encodeURIComponent(String(type || 'all'))}`
+    const res = await fetch(url)
+    if (res.ok) {
+      const data = await res.json()
+      initialResults = data.items || []
+      total = data.total || 0
+    }
+  } catch {}
 
   return {
     props: {
-      query: query || '',
-      type,
+      query: String(q || ''),
+      type: String(type || 'all'),
       initialResults,
+      total,
     },
   }
 }

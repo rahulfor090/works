@@ -8,7 +8,7 @@ interface Props {
   href?: string
 }
 
-const DEFAULT_LOGO = 'https://d45jl3w9libvn.cloudfront.net/jaypee/static/img/pub/header-jaypee.png'
+const DEFAULT_LOGO = ''
 
 const Logo: FC<Props> = ({ onClick, variant, href }) => {
   const [logoUrl, setLogoUrl] = useState<string>(DEFAULT_LOGO)
@@ -31,13 +31,15 @@ const Logo: FC<Props> = ({ onClick, variant, href }) => {
 
   const logoContent = (
     <Box onClick={onClick} sx={{ cursor: href ? 'pointer' : 'default' }}>
-      <Typography
-        variant="h4"
-        component="h1"
-        sx={{ fontWeight: 700, '& span': { color: variant === 'primary' ? 'primary.main' : 'unset' } }}
-      >
-        <img src={logoUrl} alt="jaypeedigi" />
-      </Typography>
+      {logoUrl ? (
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{ fontWeight: 700, '& span': { color: variant === 'primary' ? 'primary.main' : 'unset' } }}
+        >
+          <img src={logoUrl} alt="jaypeedigi" />
+        </Typography>
+      ) : null}
     </Box>
   )
 

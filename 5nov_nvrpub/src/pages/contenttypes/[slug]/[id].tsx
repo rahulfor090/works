@@ -1,5 +1,5 @@
-import React, { FC } from 'react'
-import { GetStaticPaths, GetStaticProps } from 'next'
+import React from 'react'
+import { GetServerSideProps } from 'next'
 import { NextPageWithLayout } from '@/interfaces/layout'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -15,22 +15,22 @@ import { useTheme } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton'
 import ArrowBack from '@mui/icons-material/ArrowBack'
 import { MainLayout } from '@/components/layout'
-import { data } from '@/components/home/popular-course.data'
-import { Course } from '@/interfaces/course'
-
-interface Props {
-  course: Course
+interface BookPageProps {
+  slug: string
+  book?: any
+  chapters?: any[]
 }
 
-const CourseDetailPage: NextPageWithLayout<Props> = ({ course }) => {
+const CourseDetailPage: NextPageWithLayout<BookPageProps> = ({ slug, book, chapters }) => {
   const theme = useTheme()
-  const contenttypeName = course.contenttype.charAt(0).toUpperCase() + course.contenttype.slice(1)
+  const isBook = slug === 'books'
+  const contenttypeName = isBook ? 'Books' : slug.charAt(0).toUpperCase() + slug.slice(1)
 
   return (
     <>
       <Head>
-        <title>{course.title} - {contenttypeName}</title>
-        <meta name="description" content={`Details for ${course.title}`} />
+        <title>{isBook ? book?.title : 'Content'} - {contenttypeName}</title>
+        <meta name="description" content={isBook ? `Details for ${book?.title}` : `Details for ${contenttypeName}`} />
       </Head>
 
       <Box
@@ -53,16 +53,16 @@ const CourseDetailPage: NextPageWithLayout<Props> = ({ course }) => {
                 Content Types
               </Typography>
             </Link>
-            <Link href={`/contenttypes/${course.contenttype}`} style={{ textDecoration: 'none' }}>
+            <Link href={`/contenttypes/${slug}`} style={{ textDecoration: 'none' }}>
               <Typography color="text.secondary" sx={{ '&:hover': { textDecoration: 'underline' } }}>
                 {contenttypeName}
               </Typography>
             </Link>
-            <Typography color="text.primary">{course.title}</Typography>
+            <Typography color="text.primary">{isBook ? book?.title : contenttypeName}</Typography>
           </Breadcrumbs>
 
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <Link href={`/contenttypes/${course.contenttype}`}>
+            <Link href={`/contenttypes/${slug}`}>
               <IconButton sx={{ mr: 2 }}>
                 <ArrowBack />
               </IconButton>
@@ -74,7 +74,7 @@ const CourseDetailPage: NextPageWithLayout<Props> = ({ course }) => {
                 fontWeight: 700,
               }}
             >
-              {course.title}
+              {isBook ? book?.title : contenttypeName}
             </Typography>
           </Box>
 
@@ -87,7 +87,7 @@ const CourseDetailPage: NextPageWithLayout<Props> = ({ course }) => {
                 border: `1px solid ${theme.palette.divider}`,
                 textAlign: 'center',
               }}>
-                <Image src={course.cover} width={300} height={420} alt={course.title} />
+                <Image src={(isBook ? (book?.coverImage || '/images/courses/JMEDS_Cover.jpeg') : '/images/home-feature.jpg')} width={300} height={420} alt={isBook ? (book?.title || 'Book') : contenttypeName} />
               </Box>
             </Grid>
             <Grid item xs={12} md={8}>
@@ -97,24 +97,55 @@ const CourseDetailPage: NextPageWithLayout<Props> = ({ course }) => {
                 borderRadius: 2,
                 border: `1px solid ${theme.palette.divider}`,
               }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Rating name="rating-course" value={course.rating} max={5} sx={{ color: '#ffce31', mr: 1 }} readOnly />
-                  <Typography component="span" variant="h6">
-                    ({course.ratingCount})
-                  </Typography>
-                </Box>
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                  Content Type: <strong>{contenttypeName}</strong>
-                </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                  Subject Category: <strong>{course.subjectcategory.charAt(0).toUpperCase() + course.subjectcategory.slice(1)}</strong>
-                </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                  This is a demo details page. You can extend this section with more metadata, description, authors, publication info, pricing, and actions.
-                </Typography>
-                <Link href={`/contenttypes/${course.contenttype}`}>
-                  <Button variant="outlined">Back to {contenttypeName}</Button>
-                </Link>
+                {isBook ? (
+                  <>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <Rating name="rating-book" value={book?.rating || 0} max={5} sx={{ color: '#ffce31', mr: 1 }} readOnly />
+                      <Typography component="span" variant="h6">
+                        ({book?.ratingCount || 0})
+                      </Typography>
+                    </Box>
+                    {book?.author && (
+                      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                        Author: <strong>{book.author}</strong>
+                      </Typography>
+                    )}
+                    {book?.description && (
+                      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                        {book.description}
+                      </Typography>
+                    )}
+
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                      Chapters
+                    </Typography>
+                    {chapters && chapters.length > 0 ? (
+                      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 1 }}>
+                        {chapters.map((ch: any) => (
+                          <Box key={ch.id} sx={{ p: 1.5, borderRadius: 1, border: `1px solid ${theme.palette.divider}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Typography variant="body2" color="text.secondary">{typeof ch.number === 'number' ? `Chapter ${ch.number}` : 'Chapter'}</Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 500 }}>{ch.title}</Typography>
+                          </Box>
+                        ))}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">No chapters available</Typography>
+                    )}
+
+                    <Link href={`/contenttypes/${slug}`}>
+                      <Button variant="outlined" sx={{ mt: 3 }}>Back to {contenttypeName}</Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                      This content type detail page is currently focused on Books.
+                    </Typography>
+                    <Link href={`/contenttypes/${slug}`}>
+                      <Button variant="outlined">Back to {contenttypeName}</Button>
+                    </Link>
+                  </>
+                )}
               </Box>
             </Grid>
           </Grid>
@@ -126,30 +157,34 @@ const CourseDetailPage: NextPageWithLayout<Props> = ({ course }) => {
 
 CourseDetailPage.getLayout = (page: React.ReactElement) => <MainLayout>{page}</MainLayout>
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = data.map((course) => ({
-    params: { slug: course.contenttype, id: String(course.id) },
-  }))
-
-  return {
-    paths,
-    fallback: false,
-  }
-}
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const slug = params?.slug as string
   const idParam = params?.id as string
+  const id = Number(idParam)
 
-  const course = data.find((c) => c.contenttype === slug && String(c.id) === idParam)
-
-  if (!course) {
-    return { notFound: true }
+  if (slug === 'books') {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/books/${id}`)
+      if (!res.ok) {
+        return { notFound: true }
+      }
+      const data = await res.json()
+      return {
+        props: {
+          slug,
+          book: data.book,
+          chapters: data.chapters || [],
+        },
+      }
+    } catch (e) {
+      return { notFound: true }
+    }
   }
 
+  // Fallback for non-books: keep minimal props
   return {
     props: {
-      course,
+      slug,
     },
   }
 }

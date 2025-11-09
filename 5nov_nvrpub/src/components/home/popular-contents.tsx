@@ -70,23 +70,22 @@ const SliderArrow: FC<SliderArrowArrow> = ({ onClick, type, className }) => {
   return (
     <IconButton
       sx={{
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        color: 'primary.main',
-        border: '2px solid',
-        borderColor: 'primary.main',
-        width: 48,
-        height: 48,
-        '&:hover': { 
-          backgroundColor: 'primary.main', 
-          color: 'white',
-          transform: 'scale(1.1)',
-          boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+        background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
+        color: 'common.white',
+        border: 'none',
+        width: 44,
+        height: 44,
+        borderRadius: '50%',
+        boxShadow: (theme) => `0 8px 24px ${theme.palette.primary.main}40`,
+        '&:hover': {
+          transform: 'scale(1.08)',
+          boxShadow: (theme) => `0 12px 32px ${theme.palette.primary.main}50`,
+          filter: 'brightness(1.05)',
         },
         bottom: { xs: '-70px !important', md: '-35px !important' },
         left: 'unset !important',
         right: type === 'prev' ? '70px !important' : '10px !important',
         zIndex: 10,
-        boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
       disableRipple
@@ -94,7 +93,7 @@ const SliderArrow: FC<SliderArrowArrow> = ({ onClick, type, className }) => {
       onClick={onClick}
       className={className}
     >
-      {type === 'next' ? <IconArrowForward sx={{ fontSize: 24 }} /> : <IconArrowBack sx={{ fontSize: 24 }} />}
+      {type === 'next' ? <IconArrowForward sx={{ fontSize: 22 }} /> : <IconArrowBack sx={{ fontSize: 22 }} />}
     </IconButton>
   )
 }
@@ -267,11 +266,12 @@ const HomePopularContent: FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Fetch all data in parallel
-        const [contenttypesRes, subjectcategoriesRes, contentsRes] = await Promise.all([
+        // Fetch all data in parallel (include books to resolve ISBNs for book items)
+        const [contenttypesRes, subjectcategoriesRes, contentsRes, booksRes] = await Promise.all([
           fetch('/api/contenttypes'),
           fetch('/api/subjectcategories'),
-          fetch('/api/contents')
+          fetch('/api/contents'),
+          fetch('/api/books')
         ])
 
         if (contenttypesRes.ok && subjectcategoriesRes.ok && contentsRes.ok) {
@@ -280,6 +280,9 @@ const HomePopularContent: FC = () => {
             subjectcategoriesRes.json(),
             contentsRes.json()
           ])
+
+          // Books data may fail independently; treat as optional
+          const booksData = booksRes.ok ? await booksRes.json() : []
 
           // Transform contenttypes data to match expected format
           const transformedContenttypes = [
@@ -296,19 +299,74 @@ const HomePopularContent: FC = () => {
           setContenttypes(transformedContenttypes)
           setSubjectcategories(subjectcategoriesData)
           
-          // Transform contents data to include contenttype property for linking
-          const transformedContents = contentsData
+          // Build a quick lookup map of book titles -> canonical ISBN
+          const normalizeTitle = (t: string) => String(t || '')
+            .toLowerCase()
+            .replace(/\s+/g, ' ')
+            .trim()
+            .replace(/[^a-z0-9\s]/g, '')
+
+          const bookTitleToIsbn = new Map<string, string>()
+          ;(booksData || []).forEach((b: any) => {
+            const key = normalizeTitle(b?.title)
+            if (!key) return
+            const canonicalIsbn = (b?.print_isbn && String(b.print_isbn).trim()) || (b?.isbn && String(b.isbn).trim())
+            if (canonicalIsbn) {
+              bookTitleToIsbn.set(key, canonicalIsbn)
+            }
+          })
+
+          // Transform contents data to include contenttype property and enrich books with ISBN
+          let transformedContents = contentsData
             .filter((content: any) => content.ishomepage)
             .map((content: any) => {
               // Find the contenttype for this content
               const contenttype = contenttypesData.find((ct: any) => ct.id === content.contentTypeId)
-              return {
+              const ctSlug = contenttype ? contenttype.title.toLowerCase() : 'unknown'
+              const base = {
                 ...content,
-                contenttype: contenttype ? contenttype.title.toLowerCase() : 'unknown',
+                contenttype: ctSlug,
                 ratingCount: content.ratingCount || 0
               }
+
+              // If this is a book, attempt to enrich with ISBN for correct linking
+              if (ctSlug === 'books') {
+                const titleKey = normalizeTitle(content.title)
+                const isbn = bookTitleToIsbn.get(titleKey)
+                // Explicit override: ensure homepage ID 26 links to the known ISBN
+                if (content.id === 26) {
+                  return { ...base, isbn: '9788184484175' }
+                }
+                if (isbn) {
+                  return { ...base, isbn }
+                }
+              }
+
+              return base
             })
-          
+
+          // Fallback: if no homepage contents, build book cards from books list
+          if (!transformedContents || transformedContents.length === 0) {
+            const booksCt = (contenttypesData || []).find((ct: any) => String(ct.title).toLowerCase() === 'books')
+            const booksCtId = booksCt?.id ?? 1
+            transformedContents = (booksData || []).map((b: any, idx: number) => ({
+              id: b.id ?? idx + 1,
+              isbn: (b.print_isbn && String(b.print_isbn).trim()) || (b.isbn && String(b.isbn).trim()),
+              title: b.title,
+              coverImage: b.coverImage || '/images/courses/JMEDS_Cover.jpeg',
+              description: b.description || '',
+              author: b.author || '',
+              detailsHtml: '',
+              rating: b.rating || 0,
+              displayOrder: idx,
+              contentTypeId: booksCtId,
+              subjectcategoryId: 0, // ensure it passes "All" filter
+              ishomepage: 1,
+              ratingCount: b.ratingCount || 0,
+              contenttype: 'books',
+            }))
+          }
+
           setContents(transformedContents)
           setLoading(false)
         } else {
@@ -430,16 +488,35 @@ const HomePopularContent: FC = () => {
   const sliderConfig: Settings = {
     infinite: filteredData.length > 1,
     autoplay: filteredData.length > 1,
-    speed: 300,
+    autoplaySpeed: 3500,
+    cssEase: 'ease-in-out',
+    pauseOnHover: true,
+    speed: 500,
     slidesToShow: matchMobileView ? 1 : Math.min(3, filteredData.length),
     slidesToScroll: 1,
+    centerMode: !matchMobileView && filteredData.length > 2,
+    centerPadding: matchMobileView ? '0px' : '40px',
     prevArrow: filteredData.length > 1 ? <SliderArrow type="prev" /> : undefined,
     nextArrow: filteredData.length > 1 ? <SliderArrow type="next" /> : undefined,
     dots: filteredData.length > 1,
     appendDots: (dots) => <StyledDots>{dots}</StyledDots>,
     customPaging: () => (
-      <Box sx={{ height: 10, width: 35, backgroundColor: 'divider', display: 'inline-block', borderRadius: 6 }} />
+      <Box sx={{ height: 8, width: 28, backgroundColor: 'divider', display: 'inline-block', borderRadius: 6 }} />
     ),
+    responsive: [
+      {
+        breakpoint: 1200,
+        settings: { slidesToShow: Math.min(3, filteredData.length) },
+      },
+      {
+        breakpoint: 900,
+        settings: { slidesToShow: Math.min(2, filteredData.length), centerMode: false, centerPadding: '0px' },
+      },
+      {
+        breakpoint: 600,
+        settings: { slidesToShow: 1, centerMode: false, centerPadding: '0px' },
+      },
+    ],
   }
 
   const subjectcategoriesList = getSubjectcategories()
@@ -612,12 +689,13 @@ const HomePopularContent: FC = () => {
                   <Slider {...sliderConfig} key={`${activeContenttype}-${activeSubjectcategory}`}>
                     {filteredData.map((item, index) => (
                       <Box key={index} sx={{ px: 1.5 }}>
-                        <Link href={`/contenttypes/${item.contenttype}/${item.id}`}>
+                        <Link href={item.contenttype === 'books' ? `/content/book/${item.isbn || item.id}` : `/contenttypes/${item.contenttype}/${item.id}`}>
                           <Box
                             sx={{
                               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                               '&:hover': {
-                                transform: 'translateY(-8px)',
+                                transform: 'translateY(-8px) scale(1.02)',
+                                filter: 'drop-shadow(0 10px 16px rgba(0,0,0,0.12))',
                               },
                             }}
                           >

@@ -1,5 +1,6 @@
 export interface Content {
   id?: number
+  isbn?: string
   title: string
   coverImage: string
   description: string

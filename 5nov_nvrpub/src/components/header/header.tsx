@@ -15,7 +15,7 @@ const Header: FC = () => {
 
   return (
     <Box sx={{ backgroundColor: 'background.paper' }}>
-      <Container sx={{ py: { xs: 2, md: 3 } }}>
+      <Container sx={{ py: { xs: 1, md: 2 } }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Logo href="/" />
           

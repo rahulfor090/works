@@ -426,12 +426,17 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       }
     }
 
-    // Fetch contents data
-    const contentsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/contents`)
-    const allContents = await contentsRes.json()
-    
-    // Filter contents by content type
-    const contents = allContents.filter((content: any) => content.contentTypeId === contenttypeData.id)
+    // Fetch data depending on content type (books use dedicated table)
+    let contents: any[] = []
+    if (slug === 'books') {
+      const booksRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/books`)
+      const allBooks = await booksRes.json()
+      contents = allBooks
+    } else {
+      const contentsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/contents`)
+      const allContents = await contentsRes.json()
+      contents = allContents.filter((content: any) => content.contentTypeId === contenttypeData.id)
+    }
 
     // Fetch subject categories data
     const subjectcategoriesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/subjectcategories`)

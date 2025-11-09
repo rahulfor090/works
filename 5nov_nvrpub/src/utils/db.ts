@@ -24,16 +24,6 @@ function getPool(): Pool {
   }
 
   pool = mysql.createPool(config)
-  
-  // Handle pool errors - commenting out as mysql2 Pool doesn't support error events in the same way
-  // pool.on('error', (err) => {
-  //   console.error('Database pool error:', err)
-  //   if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-  //     console.log('Database connection lost, recreating pool...')
-  //     pool = null
-  //   }
-  // })
-  
   return pool
 }
 

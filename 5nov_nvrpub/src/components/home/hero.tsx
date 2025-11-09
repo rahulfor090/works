@@ -402,7 +402,6 @@ const HomeHero: FC = () => {
                             </g>
                           </svg>
                         </Typography>{' '}
-                        <br />
                         <Typography
                           component="span"
                           sx={{
@@ -454,7 +453,7 @@ const HomeHero: FC = () => {
         // Render multiple slides with slider
         <Slider {...sliderConfig}>
           {heroSlides.map((slide) => (
-            <Box key={slide.id} sx={{ pt: 4, pb: { xs: 8, md: 10 } }}>
+            <Box key={slide.id} sx={{ pt: 2, pb: { xs: 4, md: 6 } }}>
               <Container maxWidth="lg">
                 <Grid container spacing={0} alignItems="center">
                   <Grid item xs={12} md={7}>
@@ -527,7 +526,6 @@ const HomeHero: FC = () => {
                               </g>
                             </svg>
                           </Typography>{' '}
-                          <br />
                           <Typography
                             component="span"
                             sx={{
@@ -542,7 +540,7 @@ const HomeHero: FC = () => {
 
                       
                       {/* Advanced Search Slider */}
-                      <Box sx={{ mt: 4 }}>
+                      <Box sx={{ mt: 2 }}>
                         <AdvancedSearchSlider />
                       </Box>
                     </Box>
