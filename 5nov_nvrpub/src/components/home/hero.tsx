@@ -235,11 +235,30 @@ const HomeHero: FC = () => {
   useEffect(() => {
     const fetchHeroData = async () => {
       try {
-        const response = await fetch('/api/hero')
-        if (response.ok) {
-          const data = await response.json()
-          setHeroSlides(data.slides || [])
-          setExps(data.stats || [])
+        // Fetch slides from the same API as admin panel
+        const slidesResponse = await fetch('/api/slides')
+        if (slidesResponse.ok) {
+          const slidesData = await slidesResponse.json()
+          
+          // Filter only active slides and format image paths
+          const activeSlides = slidesData
+            .filter((slide: any) => slide.isActive)
+            .map((slide: any) => ({
+              ...slide,
+              // Format image path: add /images/sliders/ prefix if it's just a filename
+              image: slide.image.startsWith('/') || slide.image.startsWith('http')
+                ? slide.image
+                : `/images/sliders/${slide.image}`
+            }))
+          
+          setHeroSlides(activeSlides)
+        }
+
+        // Fetch stats from hero API
+        const statsResponse = await fetch('/api/hero')
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json()
+          setExps(statsData.stats || [])
         }
       } catch (error) {
         console.error('Error fetching hero data:', error)
@@ -263,7 +282,7 @@ const HomeHero: FC = () => {
 
   // Collect all unique buttons from all slides
   const allButtons = heroSlides.reduce((acc, slide) => {
-    slide.buttons.forEach(button => {
+    slide.buttons?.forEach(button => {
       // Check if button with same label and scrollTo already exists
       const exists = acc.some(existingButton => 
         existingButton.label === button.label && existingButton.scrollTo === button.scrollTo
@@ -389,11 +408,11 @@ const HomeHero: FC = () => {
                             <g id="Layer_x0020_1">
                               <path
                                 fill="#268bbb"
-                                d="M2600 224c0,0 0,0 0,0 236,198 259,562 52,809 -254,303 -1849,2089 -2221,1776 -301,-190 917,-1964 1363,-2496 207,-247 570,-287 806,-89z"
+                                d="M2600 224c0,0 0,0 0,0 236,198 259,562 52,809 -254,303 -1849,2089 -2221,1776 -301,-190 917,-1964 1363-2496 207,-247 570,-287 806-89z"
                               />
                               <path
                                 fill="#268bbb"
-                                d="M3166 2190c0,0 0,0 0,0 64,210 -58,443 -270,516 -260,90 -1848,585 -1948,252 -104,-230 1262,-860 1718,-1018 212,-73 437,39 500,250z"
+                                d="M3166 2190c0,0 0,0 0,0 64,210 -58,443 -270,516 -260,90 -1848,585 -1948,252 -104,-230 1262,-860 1718-1018 212,-73 437,39 500,250z"
                               />
                               <path
                                 fill="#268bbb"
@@ -401,17 +420,20 @@ const HomeHero: FC = () => {
                               />
                             </g>
                           </svg>
-                        </Typography>{' '}
-                        <Typography
-                          component="span"
-                          sx={{
-                            color: 'text.secondary',
-                            fontSize: { xs: '1rem', md: '1.25rem' },
-                            animation: `${fadeInUp} 0.8s ease-out 0.2s both`,
-                          }}
-                        >
-                          {heroSlides[0].subtitle}
                         </Typography>
+                      </Typography>
+                      
+                      {/* Subtitle on separate line */}
+                      <Typography
+                        sx={{
+                          color: 'text.secondary',
+                          fontSize: { xs: '1rem', md: '1.25rem' },
+                          animation: `${fadeInUp} 0.8s ease-out 0.2s both`,
+                          mt: 2,
+                          display: 'block',
+                        }}
+                      >
+                        {heroSlides[0].subtitle}
                       </Typography>
                     </Box>
 
@@ -513,11 +535,11 @@ const HomeHero: FC = () => {
                               <g id="Layer_x0020_1">
                                 <path
                                   fill="#268bbb"
-                                  d="M2600 224c0,0 0,0 0,0 236,198 259,562 52,809 -254,303 -1849,2089 -2221,1776 -301,-190 917,-1964 1363,-2496 207,-247 570,-287 806,-89z"
+                                  d="M2600 224c0,0 0,0 0,0 236,198 259,562 52,809 -254,303 -1849,2089 -2221,1776 -301,-190 917,-1964 1363,-2496 207,-247 570,-287 806-89z"
                                 />
                                 <path
                                   fill="#268bbb"
-                                  d="M3166 2190c0,0 0,0 0,0 64,210 -58,443 -270,516 -260,90 -1848,585 -1948,252 -104,-230 1262,-860 1718,-1018 212,-73 437,39 500,250z"
+                                  d="M3166 2190c0,0 0,0 0,0 64,210 -58,443 -270,516 -260,90 -1848,585 -1948,252 -104,-230 1262,-860 1718-1018 212,-73 437,39 500,250z"
                                 />
                                 <path
                                   fill="#268bbb"
@@ -525,16 +547,19 @@ const HomeHero: FC = () => {
                                 />
                               </g>
                             </svg>
-                          </Typography>{' '}
-                          <Typography
-                            component="span"
-                            sx={{
-                              color: 'text.secondary',
-                              fontSize: { xs: '1rem', md: '1.25rem' },
-                            }}
-                          >
-                            {slide.subtitle}
                           </Typography>
+                        </Typography>
+                        
+                        {/* Subtitle on separate line */}
+                        <Typography
+                          sx={{
+                            color: 'text.secondary',
+                            fontSize: { xs: '1rem', md: '1.25rem' },
+                            mt: 2,
+                            display: 'block',
+                          }}
+                        >
+                          {slide.subtitle}
                         </Typography>
                       </Box>
 

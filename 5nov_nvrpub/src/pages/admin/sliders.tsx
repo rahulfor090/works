@@ -22,7 +22,6 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-import ImageUploader from '@/components/common/ImageUploader';
 
 // Define slider interface
 interface Slider {
@@ -59,6 +58,8 @@ const AdminSliders = () => {
     isActive: true
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
 
   // Fetch slides from API
   useEffect(() => {
@@ -100,6 +101,8 @@ const AdminSliders = () => {
       isActive: true
     });
     setIsEditing(false);
+    setSelectedFile(null);
+    setImagePreview('');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,8 +113,48 @@ const AdminSliders = () => {
     }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
+      let imagePath = currentSlider.image;
+
+      // Upload image if a new file is selected
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        const uploadResponse = await fetch('/api/upload/slider-image', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (uploadResponse.ok) {
+          const uploadResult = await uploadResponse.json();
+          imagePath = uploadResult.filename; // Just store the filename
+        } else {
+          console.error('Failed to upload image');
+          return;
+        }
+      }
+
+      const sliderData = {
+        ...currentSlider,
+        image: imagePath
+      };
+
       if (isEditing && currentSlider.id) {
         // Update existing slider
         const response = await fetch(`/api/slides/${currentSlider.id}`, {
@@ -119,13 +162,13 @@ const AdminSliders = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(currentSlider),
+          body: JSON.stringify(sliderData),
         });
 
         if (response.ok) {
           setSliders(prev => 
             prev.map(slider => 
-              slider.id === currentSlider.id ? currentSlider : slider
+              slider.id === currentSlider.id ? { ...sliderData, id: currentSlider.id } : slider
             )
           );
         } else {
@@ -138,12 +181,12 @@ const AdminSliders = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(currentSlider),
+          body: JSON.stringify(sliderData),
         });
 
         if (response.ok) {
           const result = await response.json();
-          setSliders(prev => [...prev, { ...currentSlider, id: result.id }]);
+          setSliders(prev => [...prev, { ...sliderData, id: result.id }]);
         } else {
           console.error('Failed to create slider');
         }
@@ -157,6 +200,7 @@ const AdminSliders = () => {
   const handleEdit = (slider: Slider) => {
     setCurrentSlider(slider);
     setIsEditing(true);
+    setImagePreview(slider.image ? `/images/sliders/${slider.image}` : '');
     setOpen(true);
   };
 
@@ -214,7 +258,7 @@ const AdminSliders = () => {
                       {slider.image && (
                         <Box
                           component="img"
-                          src={slider.image}
+                          src={`/images/sliders/${slider.image}`}
                           alt="Slider preview"
                           sx={{
                             width: 60,
@@ -281,13 +325,54 @@ const AdminSliders = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="subtitle1" gutterBottom>Image</Typography>
-              <ImageUploader
-                value={currentSlider.image}
-                onChange={(value) => setCurrentSlider({...currentSlider, image: value})}
-                label="Slider Image"
-                allowUrl={true}
-              />
+              <Typography variant="subtitle1" gutterBottom>
+                Slider Image
+              </Typography>
+              <Button
+                variant="outlined"
+                component="label"
+                fullWidth
+                sx={{ mb: 2 }}
+              >
+                Upload an Image
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+              </Button>
+              
+              {imagePreview && (
+                <Box
+                  sx={{
+                    mt: 2,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    border: '1px solid #ddd',
+                    borderRadius: 1,
+                    p: 2,
+                    backgroundColor: '#f5f5f5'
+                  }}
+                >
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '300px',
+                      objectFit: 'contain'
+                    }}
+                  />
+                </Box>
+              )}
+              
+              {selectedFile && (
+                <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                  Selected file: {selectedFile.name}
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={12}>
               <TextField
