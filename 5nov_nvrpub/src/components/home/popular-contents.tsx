@@ -689,19 +689,17 @@ const HomePopularContent: FC = () => {
                   <Slider {...sliderConfig} key={`${activeContenttype}-${activeSubjectcategory}`}>
                     {filteredData.map((item, index) => (
                       <Box key={index} sx={{ px: 1.5 }}>
-                        <Link href={item.contenttype === 'books' ? `/content/book/${item.isbn || item.id}` : `/contenttypes/${item.contenttype}/${item.id}`}>
-                          <Box
-                            sx={{
-                              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                              '&:hover': {
-                                transform: 'translateY(-8px) scale(1.02)',
-                                filter: 'drop-shadow(0 10px 16px rgba(0,0,0,0.12))',
-                              },
-                            }}
-                          >
-                            <ContentCardItem item={item} />
-                          </Box>
-                        </Link>
+                        <Box
+                          sx={{
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            '&:hover': {
+                              transform: 'translateY(-8px) scale(1.02)',
+                              filter: 'drop-shadow(0 10px 16px rgba(0,0,0,0.12))',
+                            },
+                          }}
+                        >
+                          <ContentCardItem item={item} />
+                        </Box>
                       </Box>
                     ))}
                   </Slider>

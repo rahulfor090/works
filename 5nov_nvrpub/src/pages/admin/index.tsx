@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import AdminLayout from '@/components/layout/AdminLayout'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
@@ -9,6 +10,7 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
+import Button from '@mui/material/Button'
 import { Content } from '@/interfaces/content'
 
 const AdminHome = () => {
@@ -68,7 +70,27 @@ const AdminHome = () => {
     <AdminLayout title="Admin Dashboard">
       <Box sx={{ py: 4 }}>
         <Container maxWidth="lg">
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>Dashboard Analytics</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
+              Dashboard Analytics
+            </Typography>
+            <Link href="/admin/menu-management" style={{ textDecoration: 'none' }}>
+              <Button
+                variant="contained"
+                sx={{
+                  background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)',
+                  },
+                  color: 'white',
+                  fontWeight: 600,
+                }}
+              >
+                📋 Menu Management
+              </Button>
+            </Link>
+          </Box>
+
           {loading ? (
             <Typography>Loading analytics…</Typography>
           ) : (
