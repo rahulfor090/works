@@ -47,6 +47,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
+import LockIcon from '@mui/icons-material/Lock'
 
 type Chapter = { number?: number | null; title: string; slug: string }
 
@@ -59,6 +60,7 @@ type Props = {
   pdfUrl: string | null
   chapters: Chapter[]
   book?: Book | null
+  isLocked: boolean
 }
 
 type Book = {
@@ -72,9 +74,24 @@ type Book = {
 
 const DEFAULT_BOOK_COVER = '/images/courses/JMEDS_Cover.jpeg'
 
-const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, htmlUrl, pdfUrl, chapters, book }: Props) => {
+const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, htmlUrl, pdfUrl, chapters, book, isLocked }: Props) => {
   const [scale, setScale] = React.useState(1)
   const [bookmarked, setBookmarked] = React.useState<boolean>(false)
+  const [isPremium, setIsPremium] = React.useState(false)
+  
+  // Check if user is premium
+  React.useEffect(() => {
+    const userStr = localStorage.getItem('user')
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr)
+        setIsPremium(user.isPremium || false)
+      } catch {}
+    }
+  }, [])
+
+  // Override lock status if user is premium
+  const actuallyLocked = isPremium ? false : isLocked
   
   const [imageModalOpen, setImageModalOpen] = React.useState(false)
   const [imageModalSrc, setImageModalSrc] = React.useState<string>('')
@@ -338,14 +355,17 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
 
         
 
-        <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden', height: '80vh' }}>
+        <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden', height: '80vh', position: 'relative' }}>
           <Box ref={scrollRef} sx={{ overflow: 'auto', height: '80vh' }}>
           <Box sx={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: `${100/scale}%`, height: `${100/scale}%` }}>
             <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center',
               '& .chapter-html p': { fontSize: '1.05rem', lineHeight: 1.8 },
               '& .chapter-html h1, & .chapter-html h2, & .chapter-html h3': { marginTop: 2, marginBottom: 1 },
               '& .chapter-html img': { display: 'block', maxWidth: '100%', height: 'auto', borderRadius: 1, boxShadow: 1, my: 2 },
-              '& .chapter-html a': { textDecoration: 'underline' }
+              '& .chapter-html a': { textDecoration: 'underline' },
+              opacity: actuallyLocked ? 0.3 : 1,
+              filter: actuallyLocked ? 'blur(4px)' : 'none',
+              pointerEvents: actuallyLocked ? 'none' : 'auto',
             }}>
               <Box sx={{ width: '100%', maxWidth: 880 }}>
                 <div
@@ -357,6 +377,44 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
             </Box>
           </Box>
           </Box>
+          
+          {/* Lock Overlay */}
+          {actuallyLocked && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                zIndex: 10,
+                pointerEvents: 'all',
+              }}
+            >
+              <LockIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+                Content Locked
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center', maxWidth: 400 }}>
+                This chapter is available for premium users only. Upgrade your account to access all chapters.
+              </Typography>
+              <Button 
+                variant="contained" 
+                size="large"
+                sx={{ 
+                  backgroundColor: '#7e3794',
+                  '&:hover': { backgroundColor: '#6a2d7d' }
+                }}
+              >
+                Upgrade Now
+              </Button>
+            </Box>
+          )}
         </Paper>
 
         <Fab color="primary" size="small" onClick={() => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })} sx={{ position: 'fixed', bottom: 24, right: 24 }}>
@@ -388,7 +446,14 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
             <Typography variant="body1" sx={{ mb: 2 }}>{citationText}</Typography>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 3 }}>
-            <Button variant="contained" color="primary" href={risHref || undefined} download={`citation-${isbn}.ris`}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              component="a"
+              href={risHref || '#'} 
+              download={`citation-${isbn}.ris`}
+              disabled={!risHref}
+            >
               Download RIS
             </Button>
           </DialogActions>
@@ -456,7 +521,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   // Resolve HTML URL for chapter/preliminary/index and verify existence
   let htmlPathPublic = ''
   let htmlFsPath = ''
-  if (chStr === 'preliminary') {
+  if (chStr === 'preliminary' || chStr === 'front') {
     htmlPathPublic = `/books/${isbnStr}/preliminary/prelims.html`
     htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'preliminary', 'prelims.html')
   } else if (chStr === 'index') {
@@ -557,13 +622,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     if (fs.existsSync(tocPath)) {
       const html = fs.readFileSync(tocPath, 'utf-8')
       const prelimMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary\"[^>]*>([^<]+)<\/a>`, 'i'))
-      if (prelimMatch) chapters.push({ number: null, title: prelimMatch[1].trim(), slug: `/content/book/${isbnStr}/chapter/preliminary` })
+      if (prelimMatch) chapters.push({ number: null, title: prelimMatch[1].trim(), slug: `/content/book/${isbnStr}/chapter/front` })
       const chapterRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch(\\d+)\"[^>]*>([^<]+)<\/a>`, 'gi')
       let m: RegExpExecArray | null
       while ((m = chapterRegex.exec(html)) !== null) {
         const num = Number(m[1])
         const titleCh = (m[2] || `Chapter ${num}`).replace(/\s+/g, ' ').trim()
-        chapters.push({ number: Number.isNaN(num) ? null : num, title: titleCh, slug: `/content/book/${isbnStr}/chapter/${m[1]}` })
+        chapters.push({ number: Number.isNaN(num) ? null : num, title: titleCh, slug: `/content/book/${isbnStr}/chapter/ch${m[1]}` })
       }
       const indexMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index\"[^>]*>([^<]+)<\/a>`, 'i'))
       if (indexMatch) chapters.push({ number: null, title: indexMatch[1].trim(), slug: `/content/book/${isbnStr}/chapter/index` })
@@ -571,7 +636,22 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   } catch {}
   const sorted = chapters.sort((a, b) => (a.number ?? 0) - (b.number ?? 0))
 
-  return { props: { isbn: isbnStr, ch: chStr, title, html, htmlUrl: htmlPathPublic, pdfUrl, chapters: sorted, book } }
+  // Determine if chapter is locked (for free users)
+  // Unlock: prelims, index, and chapter 1
+  let isLocked = true
+  if (chStr === 'preliminary' || chStr === 'index' || chStr === 'front') {
+    isLocked = false
+  } else {
+    const m = /^ch(\d+)$/i.exec(chStr)
+    if (m) {
+      const chNum = Number(m[1])
+      if (chNum === 1) {
+        isLocked = false
+      }
+    }
+  }
+
+  return { props: { isbn: isbnStr, ch: chStr, title, html, htmlUrl: htmlPathPublic, pdfUrl, chapters: sorted, book, isLocked } }
 }
 
 ChapterViewerPage.getLayout = (page) => <MainLayout>{page}</MainLayout>
