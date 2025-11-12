@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "mentorId": 1,
+    "mentorName": "Dr. Rajesh Kumar",
+    "rating": 4.8,
+    "reviewCount": 145,
+    "filledStars": 5,
+    "isActive": true
+  },
+  {
+    "id": 2,
+    "mentorId": 2,
+    "mentorName": "Dr. Priya Sharma",
+    "rating": 4.9,
+    "reviewCount": 180,
+    "filledStars": 5,
+    "isActive": true
+  },
+  {
+    "id": 3,
+    "mentorId": 3,
+    "mentorName": "Dr. Amit Patel",
+    "rating": 4.7,
+    "reviewCount": 120,
+    "filledStars": 5,
+    "isActive": true
+  },
+  {
+    "id": 4,
+    "mentorId": 4,
+    "mentorName": "Dr. Sunita Gupta",
+    "rating": 4.8,
+    "reviewCount": 165,
+    "filledStars": 5,
+    "isActive": true
+  }
+]
