@@ -128,22 +128,45 @@ const HomeOurMentors: FC = () => {
   const [sliderReady, setSliderReady] = useState(false)
 
   useEffect(() => {
-    // Import sample data and transform it to match the Mentor interface
-    import('@/data/sampleData').then(({ mentorsData }) => {
-      const transformedMentors = mentorsData.map((mentor: any) => ({
-        ...mentor,
-        contenttype: mentor.specialty || mentor.contenttype,
-        company: mentor.companyLogo ? {
-          name: mentor.hospital || 'Hospital',
-          logo: mentor.companyLogo
-        } : undefined
-      }))
-      setMentors(transformedMentors || [])
-      setLoading(false)
-    }).catch((error) => {
-      console.error('Error loading mentors data:', error)
-      setLoading(false)
-    })
+    // Fetch mentors from API
+    const fetchMentors = async () => {
+      try {
+        const response = await fetch('/api/admin/mentors')
+        if (response.ok) {
+          const data = await response.json()
+          const transformedMentors = data
+            .filter((mentor: any) => mentor.isActive)
+            .sort((a: any, b: any) => a.displayOrder - b.displayOrder)
+            .map((mentor: any) => ({
+              ...mentor,
+              contenttype: mentor.specialty || mentor.category,
+              company: mentor.companyLogo ? {
+                name: mentor.hospital || mentor.companyName || 'Hospital',
+                logo: mentor.companyLogo,
+              } : undefined,
+            }))
+          setMentors(transformedMentors || [])
+        }
+      } catch (error) {
+        console.error('Error loading mentors data:', error)
+        // Fallback to sample data
+        import('@/data/sampleData').then(({ mentorsData }) => {
+          const transformedMentors = mentorsData.map((mentor: any) => ({
+            ...mentor,
+            contenttype: mentor.specialty || mentor.contenttype,
+            company: mentor.companyLogo ? {
+              name: mentor.hospital || 'Hospital',
+              logo: mentor.companyLogo
+            } : undefined
+          }))
+          setMentors(transformedMentors || [])
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchMentors()
   }, [])
 
   // Add a delay to ensure DOM is ready for slider

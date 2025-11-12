@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Avatar from '@mui/material/Avatar'
@@ -8,6 +8,16 @@ import StarIcon from '@mui/icons-material/Star'
 import WorkIcon from '@mui/icons-material/Work'
 import SchoolIcon from '@mui/icons-material/School'
 import { Fade, Chip } from '@mui/material'
+
+interface MentorRating {
+  id: number | string
+  mentorId: number
+  mentorName: string
+  rating: number
+  reviewCount: number
+  filledStars: number
+  isActive: boolean
+}
 
 // Keyframe animations
 const fadeInUp = keyframes`
@@ -93,6 +103,27 @@ interface Props {
 }
 
 const MentorCardItem: FC<Props> = ({ item }) => {
+  const [mentorRating, setMentorRating] = useState<MentorRating | null>(null)
+
+  useEffect(() => {
+    const fetchRating = async () => {
+      try {
+        const response = await fetch('/api/admin/ratings')
+        if (response.ok) {
+          const ratings: MentorRating[] = await response.json()
+          const foundRating = ratings.find(r => r.mentorId === item.id)
+          if (foundRating && foundRating.isActive) {
+            setMentorRating(foundRating)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch rating:', error)
+      }
+    }
+
+    fetchRating()
+  }, [item.id])
+
   return (
     <Fade in={true} timeout={600}>
       <StyledMentorCard>
@@ -185,7 +216,7 @@ const MentorCardItem: FC<Props> = ({ item }) => {
                 key={i}
                 sx={{
                   fontSize: 16,
-                  color: i < 4 ? '#FFD700' : '#E0E0E0',
+                  color: i < (mentorRating?.filledStars || 4) ? '#FFD700' : '#E0E0E0',
                   transition: 'color 0.3s ease',
                 }}
               />
@@ -199,7 +230,7 @@ const MentorCardItem: FC<Props> = ({ item }) => {
               fontSize: '0.85rem',
             }}
           >
-            4.8 (120+ reviews)
+            {mentorRating ? `${mentorRating.rating.toFixed(1)} (${mentorRating.reviewCount}+ reviews)` : '4.8 (120+ reviews)'}
           </Typography>
         </Box>
 

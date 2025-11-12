@@ -86,6 +86,8 @@ const AdminLayout = ({
     { label: 'Content Types', href: '/admin/contenttypes' },
     { label: 'Subject Categories', href: '/admin/subjectcategories' },
     { label: 'Testimonials', href: '/admin/testimonials' },
+    { label: '⭐ Mentor Ratings', href: '/admin/ratings' },
+    { label: '👨‍⚕️ Mentors', href: '/admin/mentors' },
   ];
 
   return (
