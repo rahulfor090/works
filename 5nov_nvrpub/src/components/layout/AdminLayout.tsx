@@ -97,6 +97,7 @@ const AdminLayout = ({
     { label: 'Testimonials', href: '/admin/testimonials' },
     { label: '⭐ Mentor Ratings', href: '/admin/ratings' },
     { label: '👨‍⚕️ Mentors', href: '/admin/mentors' },
+    { label: '🎯 Offers', href: '/admin/offers' },
   ];
 
   return (
