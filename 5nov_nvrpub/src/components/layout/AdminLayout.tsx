@@ -62,6 +62,7 @@ const AdminLayout = ({
 }: AdminLayoutProps) => {
   const router = useRouter();
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
+  const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
 
   const handleProfileOpen = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchor(event.currentTarget);
@@ -69,6 +70,14 @@ const AdminLayout = ({
 
   const handleProfileClose = () => {
     setProfileAnchor(null);
+  };
+
+  const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setUserMenuAnchor(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setUserMenuAnchor(null);
   };
 
   const handleLogout = async () => {
@@ -127,6 +136,50 @@ const AdminLayout = ({
                   {link.label}
                 </Box>
               ))}
+              <Button
+                onClick={handleUserMenuOpen}
+                sx={{ 
+                  color: 'white', 
+                  fontWeight: 'bold',
+                  px: 2,
+                  py: 1,
+                  borderRadius: 1,
+                  '&:hover': {
+                    backgroundColor: 'rgba(255,255,255,0.1)'
+                  }
+                }}
+              >
+                User
+              </Button>
+              <Menu
+                anchorEl={userMenuAnchor}
+                open={Boolean(userMenuAnchor)}
+                onClose={handleUserMenuClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+              >
+                <MenuItem 
+                  component={NextLink} 
+                  href="/admin/users"
+                  onClick={handleUserMenuClose}
+                >
+                  Users
+                </MenuItem>
+                <MenuItem 
+                  component={NextLink} 
+                  href="/admin/roles"
+                  onClick={handleUserMenuClose}
+                >
+                  Roles
+                </MenuItem>
+                <MenuItem 
+                  component={NextLink} 
+                  href="/admin/role-privileges"
+                  onClick={handleUserMenuClose}
+                >
+                  Role Privileges
+                </MenuItem>
+              </Menu>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Button onClick={handleLogout} color="inherit" sx={{ mr: 1 }}>
