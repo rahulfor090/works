@@ -10,32 +10,36 @@ import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
 import { headingFontFamily } from '@/config/theme/typography'
 
-const FeaturedCard = styled(motion.div)(({ theme }) => ({
+const CollectionCard = styled(motion.div)({
   position: 'relative',
-  height: '500px',
+  height: '400px',
   overflow: 'hidden',
   cursor: 'pointer',
   borderRadius: 0,
   backgroundColor: '#F8F6F3',
-  border: '1px solid rgba(28, 28, 28, 0.1)',
+  border: '1px solid rgba(28, 28, 28, 0.08)',
   transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
   '&:hover': {
-    transform: 'translateY(-8px)',
+    transform: 'translateY(-12px)',
     borderColor: '#EEC1B7',
-    boxShadow: '0 20px 60px rgba(238, 193, 183, 0.2)',
+    boxShadow: '0 24px 80px rgba(238, 193, 183, 0.25)',
     '& .card-image': {
-      transform: 'scale(1.1)',
+      transform: 'scale(1.15)',
+      opacity: 0.9,
     },
     '& .card-overlay': {
-      opacity: 0.95,
-      backgroundColor: 'rgba(28, 28, 28, 0.85)',
+      opacity: 1,
+      backgroundColor: 'rgba(28, 28, 28, 0.7)',
     },
     '& .card-content': {
       transform: 'translateY(0)',
       opacity: 1,
     },
+    '& .card-number': {
+      opacity: 0.3,
+    },
   },
-}))
+})
 
 const CardImage = styled(Box)({
   position: 'absolute',
@@ -43,12 +47,15 @@ const CardImage = styled(Box)({
   left: 0,
   width: '100%',
   height: '100%',
-  transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+  transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease',
+  opacity: 0.4,
   background: 'linear-gradient(135deg, #EEC1B7 0%, #D8B179 50%, #F5D9D2 100%)',
   '& img': {
     objectFit: 'cover',
     width: '100%',
     height: '100%',
+    filter: 'grayscale(100%)',
+    transition: 'filter 0.6s ease',
   },
 })
 
@@ -58,8 +65,9 @@ const CardOverlay = styled(Box)({
   left: 0,
   width: '100%',
   height: '100%',
-  backgroundColor: 'rgba(28, 28, 28, 0.4)',
+  backgroundColor: 'rgba(28, 28, 28, 0.3)',
   transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+  opacity: 0.6,
   zIndex: 1,
 })
 
@@ -70,56 +78,64 @@ const CardContent = styled(Box)({
   right: 0,
   padding: '40px',
   zIndex: 2,
-  transform: 'translateY(20px)',
-  opacity: 0.9,
+  transform: 'translateY(30px)',
+  opacity: 0.8,
   transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
 })
 
-const HomePopularContent: FC = () => {
-  const [contentTypes, setContentTypes] = useState<any[]>([])
+const CardNumber = styled(Typography)({
+  position: 'absolute',
+  top: '30px',
+  right: '30px',
+  fontFamily: headingFontFamily,
+  fontSize: '120px',
+  fontWeight: 700,
+  color: '#EEC1B7',
+  opacity: 0.15,
+  lineHeight: 1,
+  zIndex: 1,
+  transition: 'opacity 0.4s ease',
+})
+
+const HomeCollections: FC = () => {
+  const [collections, setCollections] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
   useEffect(() => {
-    const fetchContentTypes = async () => {
+    const fetchCollections = async () => {
       try {
         const response = await fetch('/api/contenttypes')
         if (response.ok) {
           const data = await response.json()
-          // Filter for homepage content types and take first 3
-          const homepageTypes = data.filter((item: any) => item.ishomepage).slice(0, 3)
-          setContentTypes(homepageTypes)
+          // Filter for homepage collections and sort by displayOrder
+          const homepageCollections = data
+            .filter((item: any) => item.ishomepage && item.isActive)
+            .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0))
+          setCollections(homepageCollections)
         }
       } catch (error) {
-        console.error('Error loading content types:', error)
+        console.error('Error loading collections:', error)
       } finally {
         setLoading(false)
       }
     }
-    fetchContentTypes()
+    fetchCollections()
   }, [])
-
-  const featuredItems = contentTypes.length >= 3 
-    ? contentTypes 
-    : [
-        { id: 1, title: 'Medical Research', description: 'Comprehensive medical research and studies', slug: 'medical-research' },
-        { id: 2, title: 'Journals', description: 'Academic journals and publications', slug: 'journals' },
-        { id: 3, title: 'Case Studies', description: 'In-depth clinical case studies', slug: 'case-studies' },
-      ]
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
+        staggerChildren: 0.15,
       },
     },
   }
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, y: 60 },
     visible: {
       opacity: 1,
       y: 0,
@@ -134,13 +150,17 @@ const HomePopularContent: FC = () => {
     return null
   }
 
+  if (collections.length === 0) {
+    return null
+  }
+
   return (
     <Box
-      id="popular-course"
+      id="collections"
       ref={ref}
       sx={{
         py: { xs: 12, md: 16 },
-        backgroundColor: '#F8F6F3',
+        backgroundColor: '#FFFFFF',
       }}
     >
       <Container>
@@ -161,7 +181,7 @@ const HomePopularContent: FC = () => {
                 textTransform: 'uppercase',
               }}
             >
-              Featured Collections
+              Our Collections
             </Typography>
             <Typography
               component="h2"
@@ -176,7 +196,7 @@ const HomePopularContent: FC = () => {
                 mb: 3,
               }}
             >
-              Explore Our Library
+              Explore by Category
             </Typography>
             <Typography
               variant="body1"
@@ -187,8 +207,8 @@ const HomePopularContent: FC = () => {
                 lineHeight: 1.7,
               }}
             >
-              Discover curated collections of medical research, journals, and case studies
-              designed to inspire and educate.
+              Discover our carefully curated collections, each designed to inspire
+              and enhance your learning journey.
             </Typography>
           </Box>
         </motion.div>
@@ -198,24 +218,19 @@ const HomePopularContent: FC = () => {
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
         >
-          <Grid container spacing={{ xs: 4, md: 6 }}>
-            {featuredItems.map((item, index) => (
-              <Grid key={item.id || index} item xs={12} md={4}>
-                <Link href={`/contenttypes/${item.slug || item.id}`} style={{ textDecoration: 'none' }}>
-                  <FeaturedCard variants={itemVariants}>
+          <Grid container spacing={{ xs: 3, md: 4 }}>
+            {collections.map((collection, index) => (
+              <Grid key={collection.id || index} item xs={12} sm={6} md={4} lg={3}>
+                <Link
+                  href={`/contenttypes/${collection.slug || collection.id}`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <CollectionCard variants={itemVariants}>
                     <CardImage className="card-image">
-                      {item.coverImage && item.coverImage.startsWith('http') ? (
+                      {collection.icon && collection.icon.startsWith('http') ? (
                         <Image
-                          src={item.coverImage}
-                          alt={item.title}
-                          fill
-                          style={{ objectFit: 'cover' }}
-                          loading="lazy"
-                        />
-                      ) : item.icon && item.icon.startsWith('http') ? (
-                        <Image
-                          src={item.icon}
-                          alt={item.title}
+                          src={collection.icon}
+                          alt={collection.title}
                           fill
                           style={{ objectFit: 'cover' }}
                           loading="lazy"
@@ -233,6 +248,9 @@ const HomePopularContent: FC = () => {
                       )}
                     </CardImage>
                     <CardOverlay className="card-overlay" />
+                    <CardNumber className="card-number">
+                      {String(index + 1).padStart(2, '0')}
+                    </CardNumber>
                     <CardContent className="card-content">
                       <Typography
                         variant="subtitle2"
@@ -241,37 +259,42 @@ const HomePopularContent: FC = () => {
                           fontSize: '0.875rem',
                           letterSpacing: '0.15em',
                           color: '#EEC1B7',
-                          mb: 1,
+                          mb: 1.5,
                           textTransform: 'uppercase',
                         }}
                       >
                         Collection
                       </Typography>
                       <Typography
-                        variant="h3"
+                        variant="h4"
                         sx={{
                           fontFamily: headingFontFamily,
-                          fontSize: { xs: '28px', md: '36px' },
+                          fontSize: { xs: '24px', md: '28px' },
                           fontWeight: 700,
                           color: '#F8F6F3',
-                          mb: 2,
+                          mb: 1.5,
                           lineHeight: 1.2,
                         }}
                       >
-                        {item.title}
+                        {collection.title}
                       </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: 'rgba(248, 246, 243, 0.9)',
-                          lineHeight: 1.6,
-                          fontSize: '1rem',
-                        }}
-                      >
-                        {item.description || 'Explore our curated collection of resources'}
-                      </Typography>
+                      {collection.description && (
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'rgba(248, 246, 243, 0.85)',
+                            lineHeight: 1.6,
+                            fontSize: '0.95rem',
+                            display: { xs: 'none', md: 'block' },
+                          }}
+                        >
+                          {collection.description.length > 80
+                            ? `${collection.description.substring(0, 80)}...`
+                            : collection.description}
+                        </Typography>
+                      )}
                     </CardContent>
-                  </FeaturedCard>
+                  </CollectionCard>
                 </Link>
               </Grid>
             ))}
@@ -282,5 +305,6 @@ const HomePopularContent: FC = () => {
   )
 }
 
-export default HomePopularContent
-export { HomePopularContent }
+export default HomeCollections
+export { HomeCollections }
+
