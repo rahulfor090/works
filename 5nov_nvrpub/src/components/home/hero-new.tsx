@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ChevronDown, Play, Search } from 'lucide-react'
+import { ChevronDown, Play, Search, X, Filter } from 'lucide-react'
 import { heroData } from '@/data/home-mock'
+import { useRouter } from 'next/router'
 
 const HERO_SLIDES = [
   {
@@ -36,8 +37,22 @@ const HERO_SLIDES = [
   }
 ]
 
+const CONTENT_TYPES = [
+  { label: 'All', value: 'all' },
+  { label: 'Books', value: 'books' },
+  { label: 'Videos', value: 'videos' },
+  { label: 'Journals', value: 'journals' },
+  { label: 'Cases', value: 'cases' },
+  { label: 'MCQs', value: 'mcqs' },
+  { label: 'Reviews', value: 'reviews' },
+]
+
 const HeroNew: React.FC = () => {
+  const router = useRouter()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedType, setSelectedType] = useState('all')
+  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -45,6 +60,32 @@ const HeroNew: React.FC = () => {
     }, 5000)
     return () => clearInterval(interval)
   }, [])
+
+  // Close filters when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (showFilters && !target.closest('.filter-container')) {
+        setShowFilters(false)
+      }
+    }
+    if (showFilters) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showFilters])
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!searchQuery.trim()) return
+    
+    const params = new URLSearchParams()
+    params.set('q', searchQuery.trim())
+    if (selectedType !== 'all') {
+      params.set('type', selectedType)
+    }
+    router.push(`/search?${params.toString()}`)
+  }
 
   return (
     <section
@@ -94,28 +135,112 @@ const HeroNew: React.FC = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-3xl mx-auto mb-10 sm:mb-12"
+          className="max-w-4xl mx-auto mb-10 sm:mb-12"
         >
-          <form className="relative flex flex-col sm:flex-row items-center gap-3 sm:gap-4 rounded-3xl sm:rounded-full border border-white/30 bg-white/15 backdrop-blur-2xl px-6 py-5 shadow-[0_20px_45px_rgba(15,23,42,0.18)]">
-            <div className="flex items-center w-full gap-3">
-              <Search size={24} className="shrink-0 text-white/80" />
-              <input
-                type="search"
-                placeholder="Search medical resources, journals, or mentors"
-                className="flex-1 bg-transparent text-base sm:text-lg font-medium text-white placeholder-white/70 focus:outline-none"
-                aria-label="Search medical resources"
-              />
+          <form 
+            onSubmit={handleSearch}
+            className="relative filter-container"
+          >
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 rounded-3xl sm:rounded-full border border-white/30 bg-white/15 backdrop-blur-2xl px-6 py-5 shadow-[0_20px_45px_rgba(15,23,42,0.18)]">
+              <div className="flex items-center w-full gap-3">
+                <Search size={24} className="shrink-0 text-white/80" />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search medical resources, journals, or mentors"
+                  className="flex-1 bg-transparent text-base sm:text-lg font-medium text-white placeholder-white/70 focus:outline-none"
+                  aria-label="Search medical resources"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`shrink-0 p-2 rounded-full transition-colors relative ${
+                    selectedType !== 'all' ? 'bg-white/30' : 'hover:bg-white/20'
+                  }`}
+                  style={{ color: 'white' }}
+                  aria-label="Toggle filters"
+                >
+                  <Filter size={20} />
+                  {selectedType !== 'all' && (
+                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-white" />
+                  )}
+                </button>
+              </div>
+              <button
+                type="submit"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl sm:rounded-full font-semibold text-sm sm:text-base transition-colors duration-300"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.9)',
+                  color: 'var(--gradient-hero-start)'
+                }}
+              >
+                Search
+              </button>
             </div>
-            <button
-              type="submit"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl sm:rounded-full font-semibold text-sm sm:text-base transition-colors duration-300"
-              style={{
-                background: 'rgba(255, 255, 255, 0.9)',
-                color: 'var(--gradient-hero-start)'
-              }}
-            >
-              Search
-            </button>
+
+            {/* Filter Dropdown */}
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, height: 0 }}
+                  animate={{ opacity: 1, y: 0, height: 'auto' }}
+                  exit={{ opacity: 0, y: -10, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute top-full left-0 right-0 mt-2 rounded-2xl border border-white/30 bg-white/95 backdrop-blur-2xl p-4 shadow-[0_20px_45px_rgba(15,23,42,0.18)] z-50"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                      Filter by Content Type
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowFilters(false)}
+                      className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {CONTENT_TYPES.map((type) => (
+                      <button
+                        key={type.value}
+                        type="button"
+                        onClick={() => {
+                          setSelectedType(type.value)
+                          setShowFilters(false)
+                        }}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                          selectedType === type.value
+                            ? 'bg-black text-white'
+                            : 'bg-white text-black hover:bg-gray-100'
+                        }`}
+                        style={{
+                          border: '1px solid rgba(0, 0, 0, 0.1)'
+                        }}
+                      >
+                        {type.label}
+                      </button>
+                    ))}
+                  </div>
+                  {selectedType !== 'all' && (
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedType('all')
+                          setShowFilters(false)
+                        }}
+                        className="text-sm text-gray-600 hover:text-gray-900"
+                      >
+                        Clear filter
+                      </button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </form>
         </motion.div>
 
