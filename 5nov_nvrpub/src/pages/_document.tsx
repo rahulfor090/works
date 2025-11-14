@@ -30,8 +30,14 @@ class MyDocument extends Document<DocumentProps> {
 
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+          {/* Serif fonts for headings - NYC Ballet inspired */}
           <link
-            href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400;0,500;0,700;1,500;1,700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
+            rel="stylesheet"
+          />
+          {/* Sans-serif fonts for body */}
+          <link
+            href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap"
             rel="stylesheet"
           />
           {/* Inject MUI styles first to match with the prepend: true configuration. */}

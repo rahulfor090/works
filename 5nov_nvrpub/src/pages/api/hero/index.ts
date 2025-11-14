@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { query } from '@/utils/db'
+import fs from 'fs'
+import path from 'path'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -12,11 +14,48 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ORDER BY displayOrder ASC
       `)
 
-      // Parse buttons JSON for each slide
-        const parsedSlides = slides.map((slide: any) => ({
-          ...slide,
-          buttons: slide.buttons ? JSON.parse(slide.buttons) : []
-        }))
+      const parsedSlides = slides.map((slide: any) => ({
+        ...slide,
+        buttons: slide.buttons ? JSON.parse(slide.buttons) : []
+      }))
+
+      let slidesData = parsedSlides
+
+      if (!slidesData || slidesData.length === 0) {
+        const cwd = process.cwd()
+        const backgroundDirCandidates = [
+          path.join(cwd, 'public', 'images', 'background'),
+          path.join(cwd, 'public', 'images', 'sliders'),
+          path.join(cwd, 'public', 'images')
+        ]
+
+        let backgroundDir = ''
+        for (const dir of backgroundDirCandidates) {
+          if (fs.existsSync(dir)) {
+            backgroundDir = dir
+            break
+          }
+        }
+
+        if (backgroundDir) {
+          const validExt = new Set(['.jpg', '.jpeg', '.png', '.webp'])
+          const files = fs.readdirSync(backgroundDir)
+            .filter(f => validExt.has(path.extname(f).toLowerCase()))
+          slidesData = files.map((file, idx) => {
+            const base = path.parse(file).name.replace(/[-_]+/g, ' ')
+            const dirName = path.basename(backgroundDir)
+            const imagePath = `/images/${dirName}/${file}`
+            return {
+              id: idx + 1,
+              title: 'Discover',
+              highlightedWord: base.charAt(0).toUpperCase() + base.slice(1),
+              subtitle: `Explore ${base}`,
+              image: imagePath,
+              buttons: []
+            }
+          })
+        }
+      }
 
         // Create contenttypes table if it doesn't exist and provide fallback stats
         try {
@@ -61,7 +100,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }))
 
           return res.status(200).json({
-            slides: parsedSlides,
+            slides: slidesData,
             stats: stats
           })
 
@@ -78,13 +117,53 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           ]
 
           return res.status(200).json({
-            slides: parsedSlides,
+            slides: slidesData,
             stats: fallbackStats
           })
         }
     } catch (error: any) {
-      console.error('Hero API error:', error)
-      return res.status(500).json({ message: error?.message || 'Server error' })
+      const cwd = process.cwd()
+      const backgroundDirCandidates = [
+        path.join(cwd, 'public', 'images', 'background'),
+        path.join(cwd, 'public', 'images', 'sliders'),
+        path.join(cwd, 'public', 'images')
+      ]
+      let backgroundDir = ''
+      for (const dir of backgroundDirCandidates) {
+        if (fs.existsSync(dir)) {
+          backgroundDir = dir
+          break
+        }
+      }
+      let slidesData: any[] = []
+      if (backgroundDir) {
+        const validExt = new Set(['.jpg', '.jpeg', '.png', '.webp'])
+        const files = fs.readdirSync(backgroundDir)
+          .filter(f => validExt.has(path.extname(f).toLowerCase()))
+        slidesData = files.map((file, idx) => {
+          const base = path.parse(file).name.replace(/[-_]+/g, ' ')
+          const dirName = path.basename(backgroundDir)
+          const imagePath = `/images/${dirName}/${file}`
+          return {
+            id: idx + 1,
+            title: 'Discover',
+            highlightedWord: base.charAt(0).toUpperCase() + base.slice(1),
+            subtitle: `Explore ${base}`,
+            image: imagePath,
+          }
+        })
+      }
+      const fallbackStats = [
+        { id: 1, label: 'Books', value: '4170+', displayOrder: 1 },
+        { id: 2, label: 'Videos', value: '12576+', displayOrder: 2 },
+        { id: 3, label: 'Journals', value: '4170+', displayOrder: 3 },
+        { id: 4, label: 'MCQs', value: '14567+', displayOrder: 4 },
+        { id: 5, label: 'Clinical Cases', value: '3420+', displayOrder: 5 }
+      ]
+      return res.status(200).json({
+        slides: slidesData,
+        stats: fallbackStats
+      })
     }
   }
 

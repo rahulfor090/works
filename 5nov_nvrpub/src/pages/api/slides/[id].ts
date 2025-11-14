@@ -6,7 +6,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'GET') {
     try {
-      const [slides] = await query('SELECT * FROM hero_slides WHERE id = ?', [id])
+      const result = await query('SELECT * FROM hero_slides WHERE id = ?', [id]) as any[]
+      
+      // Extract only the data rows (first element if it's a nested array)
+      const slides = Array.isArray(result[0]) ? result[0] : result
       
       if (slides.length === 0) {
         return res.status(404).json({ error: 'Slide not found' })
@@ -25,14 +28,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } else if (req.method === 'PUT') {
     try {
-      const { title, highlightedWord, subtitle, image, buttons, displayOrder } = req.body
+      const { title, highlightedWord, subtitle, image, buttons, displayOrder, isActive } = req.body
       
-      const [result] = await query(
-        'UPDATE hero_slides SET title = ?, highlightedWord = ?, subtitle = ?, image = ?, buttons = ?, displayOrder = ? WHERE id = ?',
-        [title, highlightedWord, subtitle, image, JSON.stringify(buttons), displayOrder, id]
-      ) as [any, any]
+      const result = await query(
+        'UPDATE hero_slides SET title = ?, highlightedWord = ?, subtitle = ?, image = ?, buttons = ?, displayOrder = ?, isActive = ? WHERE id = ?',
+        [title, highlightedWord, subtitle, image, JSON.stringify(buttons), displayOrder, isActive !== false ? 1 : 0, id]
+      ) as any
       
-      if ((result as any).affectedRows === 0) {
+      // Extract affectedRows properly from the result
+      const affectedRows = (Array.isArray(result) && result[0]?.affectedRows) 
+        ? result[0].affectedRows 
+        : result.affectedRows
+      
+      if (affectedRows === 0) {
         return res.status(404).json({ error: 'Slide not found' })
       }
       
@@ -43,9 +51,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } else if (req.method === 'DELETE') {
     try {
-      const [result] = await query('DELETE FROM hero_slides WHERE id = ?', [id]) as [any, any]
+      const result = await query('DELETE FROM hero_slides WHERE id = ?', [id]) as any
       
-      if ((result as any).affectedRows === 0) {
+      // Extract affectedRows properly from the result
+      const affectedRows = (Array.isArray(result) && result[0]?.affectedRows) 
+        ? result[0].affectedRows 
+        : result.affectedRows
+      
+      if (affectedRows === 0) {
         return res.status(404).json({ error: 'Slide not found' })
       }
       
@@ -59,4 +72,3 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(405).end(`Method ${req.method} Not Allowed`)
   }
 }
-

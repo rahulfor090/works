@@ -25,6 +25,10 @@ import {
   Stack,
   IconButton,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
@@ -32,6 +36,7 @@ import SchoolIcon from '@mui/icons-material/School'
 import ShareIcon from '@mui/icons-material/Share'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
+import CloseIcon from '@mui/icons-material/Close'
 
 type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null }
 type Section = { title: string; chapters: Chapter[] }
@@ -61,14 +66,36 @@ const DEFAULT_BOOK_COVER = '/images/courses/JMEDS_Cover.jpeg'
 
 const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookPdfUrl, videosCount = 0, casesCount = 0, reviewsCount = 0 }: Props) => {
   const cover = book?.coverImage || DEFAULT_BOOK_COVER
-  const title = book?.title || "Perry's Chemical Engineers' Handbook, 9th Edition"
-  const author = book?.author || 'McGraw Hill Education'
+  const title = book?.title || "Book Title"
+  const author = book?.author || 'Unknown Author'
 
   const [tab, setTab] = React.useState(0)
   const [query, setQuery] = React.useState('')
   const [expandAll, setExpandAll] = React.useState(false)
   const [expanded, setExpanded] = React.useState<Record<number, boolean>>({})
   const [favorite, setFavorite] = React.useState<boolean>(false)
+  const [referDialogOpen, setReferDialogOpen] = React.useState(false)
+  const [librarianDialogOpen, setLibrarianDialogOpen] = React.useState(false)
+  
+  // Form states for Refer to Friend
+  const [senderName, setSenderName] = React.useState('')
+  const [senderEmail, setSenderEmail] = React.useState('')
+  const [recipientName, setRecipientName] = React.useState('')
+  const [recipientEmail, setRecipientEmail] = React.useState('')
+  const [referSubject, setReferSubject] = React.useState('')
+  const [referMessage, setReferMessage] = React.useState('')
+
+  // Form states for Recommend to Librarian
+  const [libTitle, setLibTitle] = React.useState('')
+  const [libIsbn, setLibIsbn] = React.useState('')
+  const [libReason, setLibReason] = React.useState('')
+  const [librarianName, setLibrarianName] = React.useState('')
+  const [librarianEmail, setLibrarianEmail] = React.useState('')
+  const [yourName, setYourName] = React.useState('')
+  const [yourEmail, setYourEmail] = React.useState('')
+  const [company, setCompany] = React.useState('')
+  const [department, setDepartment] = React.useState('')
+  const [country, setCountry] = React.useState('')
 
   const favStorageKey = `book:favourite:${isbn}`
 
@@ -89,21 +116,72 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   }
 
   const handleReferFriend = () => {
-    if (typeof window === 'undefined') return
-    const url = window.location.href
-    const subject = encodeURIComponent(`Check out this book: ${title}`)
-    const body = encodeURIComponent(`I thought you might find this useful:\n\n${url}`)
-    const mailto = `mailto:?subject=${subject}&body=${body}`
-    window.open(mailto, '_blank')
+    setReferDialogOpen(true)
+  }
+
+  const handleCloseReferDialog = () => {
+    setReferDialogOpen(false)
+    // Reset form
+    setSenderName('')
+    setSenderEmail('')
+    setRecipientName('')
+    setRecipientEmail('')
+    setReferSubject('')
+    setReferMessage('')
+  }
+
+  const handleSubmitRefer = () => {
+    // Form validation can be added here
+    // Backend functionality will be added later
+    console.log('Refer form submitted:', {
+      senderName,
+      senderEmail,
+      recipientName,
+      recipientEmail,
+      referSubject,
+      referMessage,
+    })
+    handleCloseReferDialog()
   }
 
   const handleRecommendLibrarian = () => {
-    if (typeof window === 'undefined') return
-    const url = window.location.href
-    const subject = encodeURIComponent(`Recommendation for library: ${title}`)
-    const body = encodeURIComponent(`Dear Librarian,\n\nI recommend adding this book to our library.\n\nTitle: ${title}\nISBN: ${isbn}\nLink: ${url}`)
-    const mailto = `mailto:?subject=${subject}&body=${body}`
-    window.open(mailto, '_blank')
+    // Pre-fill book data
+    setLibTitle(title)
+    setLibIsbn(isbn)
+    setLibrarianDialogOpen(true)
+  }
+
+  const handleCloseLibrarianDialog = () => {
+    setLibrarianDialogOpen(false)
+    // Reset form
+    setLibTitle('')
+    setLibIsbn('')
+    setLibReason('')
+    setLibrarianName('')
+    setLibrarianEmail('')
+    setYourName('')
+    setYourEmail('')
+    setCompany('')
+    setDepartment('')
+    setCountry('')
+  }
+
+  const handleSubmitLibrarian = () => {
+    // Form validation can be added here
+    // Backend functionality will be added later
+    console.log('Librarian recommendation submitted:', {
+      libTitle,
+      libIsbn,
+      libReason,
+      librarianName,
+      librarianEmail,
+      yourName,
+      yourEmail,
+      company,
+      department,
+      country,
+    })
+    handleCloseLibrarianDialog()
   }
 
   const handleSharePage = async () => {
@@ -278,6 +356,286 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           <Typography variant="body2" color="text.secondary">Reviews coming soon</Typography>
         )}
       </Container>
+
+      {/* Refer to Friend Dialog */}
+      <Dialog 
+        open={referDialogOpen} 
+        onClose={handleCloseReferDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            Refer to Friend
+            <IconButton onClick={handleCloseReferDialog} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Sender's Name <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={senderName}
+                onChange={(e) => setSenderName(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Sender's Email Address <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                type="email"
+                value={senderEmail}
+                onChange={(e) => setSenderEmail(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Recipient's Name <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={recipientName}
+                onChange={(e) => setRecipientName(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Recipient's Email Address <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                type="email"
+                value={recipientEmail}
+                onChange={(e) => setRecipientEmail(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Subject <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={referSubject}
+                onChange={(e) => setReferSubject(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Message to Recipient <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                multiline
+                rows={4}
+                value={referMessage}
+                onChange={(e) => setReferMessage(e.target.value)}
+                required
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button 
+            variant="contained" 
+            onClick={handleSubmitRefer}
+            sx={{ 
+              backgroundColor: '#7e3794',
+              '&:hover': { backgroundColor: '#6a2d7d' }
+            }}
+          >
+            SUBMIT
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Recommend to Librarian Dialog */}
+      <Dialog 
+        open={librarianDialogOpen} 
+        onClose={handleCloseLibrarianDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            Recommend To Librarian
+            <IconButton onClick={handleCloseLibrarianDialog} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            {/* Title and ISBN */}
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Title <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={libTitle}
+                onChange={(e) => setLibTitle(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                ISBN <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={libIsbn}
+                onChange={(e) => setLibIsbn(e.target.value)}
+                required
+              />
+            </Grid>
+
+            {/* Reason */}
+            <Grid item xs={12}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Your reason to recommend this publication: <span style={{ color: 'red' }}>*</span> (max. 1000 characters)
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                value={libReason}
+                onChange={(e) => setLibReason(e.target.value)}
+                inputProps={{ maxLength: 1000 }}
+                required
+              />
+            </Grid>
+
+            {/* Librarian's details */}
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
+                Librarian's details:
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Name <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={librarianName}
+                onChange={(e) => setLibrarianName(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Email ID <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                type="email"
+                value={librarianEmail}
+                onChange={(e) => setLibrarianEmail(e.target.value)}
+                required
+              />
+            </Grid>
+
+            {/* Your personal details */}
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
+                Your personal details:
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Name <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={yourName}
+                onChange={(e) => setYourName(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Company/Organisation
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                E-mail ID <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                type="email"
+                value={yourEmail}
+                onChange={(e) => setYourEmail(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Department
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Country
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button 
+            variant="contained" 
+            onClick={handleSubmitLibrarian}
+            sx={{ 
+              backgroundColor: '#7e3794',
+              '&:hover': { backgroundColor: '#6a2d7d' }
+            }}
+          >
+            SUBMIT
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
@@ -285,61 +643,106 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const { isbn } = ctx.query
   const isbnStr = String(isbn || '')
-  const proto = ctx.req.headers['x-forwarded-proto'] || 'http'
-  const host = ctx.req.headers.host || 'localhost:3000'
-  const base = `${proto}://${host}`
 
   try {
-    // Fetch book meta (supports numeric id or ISBN)
-    const isNumericId = /^\d+$/.test(isbnStr)
-    const metaUrl = isNumericId
-      ? `${base}/api/books/${encodeURIComponent(isbnStr)}`
-      : `${base}/api/books/print_isbn/${encodeURIComponent(isbnStr)}`
-    const metaRes = await fetch(metaUrl)
-    const metaJson = metaRes.ok ? await metaRes.json() : null
-    const book = metaJson?.book || null
-    const canonicalIsbn = (book?.print_isbn && String(book.print_isbn).trim())
-      ? String(book.print_isbn).trim()
-      : (String(isbnStr).trim() || (book?.isbn && String(book.isbn).trim()) || '')
+    // Build path to metadata.json in public folder
+    const bookDir = path.join(process.cwd(), 'public', 'books', isbnStr)
+    const metadataPath = path.join(bookDir, 'metadata.json')
 
-    // Build chapters from public folder if available
-    const chapters: Chapter[] = []
-    const bookDir = path.join(process.cwd(), 'public', 'books', canonicalIsbn)
-    const tocPath = path.join(bookDir, 'toc.html')
+    // Check if metadata.json exists
+    if (!fs.existsSync(metadataPath)) {
+      return { props: { isbn: isbnStr, book: null, sections: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
+    }
 
-    if (fs.existsSync(tocPath)) {
-      const html = fs.readFileSync(tocPath, 'utf-8')
-      // Prelims
-      const prelimMatch = html.match(new RegExp(`<a[^>]+href=\"\/${canonicalIsbn}\/preliminary\"[^>]*>([^<]+)<\/a>`, 'i'))
-      if (prelimMatch) {
-        chapters.push({ number: null, title: prelimMatch[1].trim(), slug: `/books/${canonicalIsbn}/preliminary/prelims.html` })
-      }
-      // Chapters
-      const chapterRegex = new RegExp(`<a[^>]+href=\"\/${canonicalIsbn}\/ch(\\d+)\"[^>]*>([^<]+)<\/a>`, 'gi')
-      let m: RegExpExecArray | null
-      while ((m = chapterRegex.exec(html)) !== null) {
-        const num = Number(m[1])
-        const title = (m[2] || `Chapter ${num}`).replace(/\s+/g, ' ').trim()
-        chapters.push({ number: Number.isNaN(num) ? null : num, title, slug: `/books/${canonicalIsbn}/chapter/ch${m[1]}.html` })
-      }
-      // Index
-      const indexMatch = html.match(new RegExp(`<a[^>]+href=\"\/${canonicalIsbn}\/index\"[^>]*>([^<]+)<\/a>`, 'i'))
-      if (indexMatch) {
-        chapters.push({ number: null, title: indexMatch[1].trim(), slug: `/books/${canonicalIsbn}/index/index.html` })
+    // Read and parse metadata.json
+    const metadataContent = fs.readFileSync(metadataPath, 'utf-8')
+    const metadata = JSON.parse(metadataContent)
+
+    // Extract book information from metadata
+    const bookInfo = metadata.Book
+    const chaptersData = metadata.Chapters || []
+
+    // Format author name: convert "LastName FirstName" to "FirstName LastName"
+    let authorName = bookInfo['Book-Author-(Last-Name,-First-Name,-Middle-Name)'] || null
+    if (authorName) {
+      const firstName = bookInfo['Author-1-First-Name'] || ''
+      const lastName = bookInfo['Author-1-Last-Name'] || ''
+      if (firstName && lastName) {
+        authorName = `${firstName} ${lastName}`
       }
     }
 
-    const sorted = chapters.sort((a, b) => {
-      const na = a.number ?? 0
-      const nb = b.number ?? 0
-      return na - nb
+    // Build book object
+    const book: Book = {
+      isbn: bookInfo['Print-ISBN'] || isbnStr,
+      print_isbn: bookInfo['Print-ISBN'] || null,
+      title: bookInfo['Book-Title'] || 'Untitled',
+      author: authorName,
+      coverImage: `/books/${isbnStr}/3D_Cover/${isbnStr}.png`,
+      description: bookInfo['Book-Abstract'] || null,
+      keywords: bookInfo['Book-Keywords'] || null,
+    }
+
+    // Build chapters from metadata
+    const chapters: Chapter[] = []
+    
+    // Sort chapters by sequence
+    const sortedChapters = [...chaptersData].sort((a, b) => {
+      const seqA = parseInt(a['Chapter-Sequence']) || 0
+      const seqB = parseInt(b['Chapter-Sequence']) || 0
+      return seqA - seqB
     })
 
-    // Group into sections: Prelims, Chapters, Appendices, Index
-    const prelims = sorted.filter(ch => (ch.slug || '').endsWith('/preliminary/prelims.html'))
-    const index = sorted.filter(ch => (ch.slug || '').endsWith('/index/index.html'))
-    const appendices = sorted.filter(ch => /^Appendix\s/i.test(ch.title))
-    const mainChapters = sorted.filter(ch => /^CHAPTER\s/i.test(ch.title) || (ch.number != null && !appendices.includes(ch)))
+    // Process each chapter
+    sortedChapters.forEach((chapterData) => {
+      const chapterNo = chapterData['Chapter-No'] || ''
+      const chapterTitle = chapterData['Chapter-Title'] || 'Untitled'
+      const chapterFileName = chapterData['Chapter-File-Name'] || ''
+      const chapterSequence = parseInt(chapterData['Chapter-Sequence']) || 0
+      
+      if (!chapterFileName) return // Skip if no filename
+      
+      let slug: string | null = null
+      let chapterType = 'chapter' // default type
+      
+      // Determine the slug and type based on chapter number
+      if (chapterNo === 'Prelims') {
+        slug = `/books/${isbnStr}/preliminary/${chapterFileName}.html`
+        chapterType = 'prelims'
+      } else if (chapterNo === 'Index') {
+        slug = `/books/${isbnStr}/index/${chapterFileName}.html`
+        chapterType = 'index'
+      } else if (chapterNo.startsWith('Appendix')) {
+        slug = `/books/${isbnStr}/chapter/${chapterFileName}.html`
+        chapterType = 'appendix'
+      } else if (chapterNo.startsWith('Chapter')) {
+        slug = `/books/${isbnStr}/chapter/${chapterFileName}.html`
+        chapterType = 'chapter'
+      }
+
+      // Extract chapter number if it's a regular chapter
+      let chapterNumber: number | null = null
+      if (chapterNo.startsWith('Chapter-')) {
+        const numMatch = chapterNo.match(/Chapter-(\d+)/)
+        if (numMatch) {
+          chapterNumber = parseInt(numMatch[1])
+        }
+      }
+
+      chapters.push({
+        number: chapterNumber,
+        title: chapterTitle,
+        slug: slug,
+        id: chapterSequence, // Add chapter data for filtering
+        chapterType: chapterType, // Store the type
+      } as any)
+    })
+
+    // Group into sections based on chapterType
+    const prelims = chapters.filter((ch: any) => ch.chapterType === 'prelims')
+    const index = chapters.filter((ch: any) => ch.chapterType === 'index')
+    const appendices = chapters.filter((ch: any) => ch.chapterType === 'appendix')
+    const mainChapters = chapters.filter((ch: any) => ch.chapterType === 'chapter' && ch.number != null)
 
     const sections: Section[] = []
     if (prelims.length) sections.push({ title: 'Prelims', chapters: prelims })
@@ -350,17 +753,18 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     // Detect book PDF (<isbn>.pdf or book.pdf) if present
     let bookPdfUrl: string | null = null
     try {
-      const isbnPdfFs = path.join(bookDir, `${canonicalIsbn}.pdf`)
+      const isbnPdfFs = path.join(bookDir, `${isbnStr}.pdf`)
       const bookPdfFs = path.join(bookDir, 'book.pdf')
       if (fs.existsSync(isbnPdfFs)) {
-        bookPdfUrl = `/books/${canonicalIsbn}/${canonicalIsbn}.pdf`
+        bookPdfUrl = `/books/${isbnStr}/${isbnStr}.pdf`
       } else if (fs.existsSync(bookPdfFs)) {
-        bookPdfUrl = `/books/${canonicalIsbn}/book.pdf`
+        bookPdfUrl = `/books/${isbnStr}/book.pdf`
       }
     } catch {}
 
-    return { props: { isbn: canonicalIsbn, book, sections, bookPdfUrl, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
+    return { props: { isbn: isbnStr, book, sections, bookPdfUrl, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
   } catch (e) {
+    console.error('Error loading book metadata:', e)
     return { props: { isbn: isbnStr, book: null, sections: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
   }
 }
