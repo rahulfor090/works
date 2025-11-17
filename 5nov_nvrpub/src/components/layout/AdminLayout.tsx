@@ -1,44 +1,51 @@
 import React, { ReactNode, useState } from 'react';
 import Head from 'next/head';
+import { 
+  Box, 
+  AppBar, 
+  Toolbar, 
+  Typography, 
+  Container, 
+  CssBaseline, 
+  Button, 
+  IconButton, 
+  Avatar, 
+  Tooltip, 
+  Menu, 
+  MenuItem,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Collapse
+} from '@mui/material';
+import AdminBreadcrumbs from '@/components/navigation/AdminBreadcrumbs';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import {
-  Avatar,
-  Box,
-  Button,
-  Container,
-  CssBaseline,
-  Divider,
-  IconButton,
-  Menu,
-  MenuItem,
-  ThemeProvider,
-  Tooltip,
-  Typography,
-  createTheme,
-} from '@mui/material';
-import {
-  DashboardRounded as DashboardIcon,
-  PhotoLibraryRounded as SlidersIcon,
-  ArticleRounded as ArticleIcon,
-  CategoryRounded as CategoryIcon,
-  FolderRounded as FolderIcon,
-  ChatRounded as ChatIcon,
-  NotificationsNoneRounded as NotificationsIcon,
-  LightModeRounded as LightModeIcon,
-  DarkModeRounded as DarkModeIcon,
-  AddRounded as AddIcon,
-} from '@mui/icons-material';
-import AdminBreadcrumbs from '@/components/navigation/AdminBreadcrumbs';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
+import ArticleIcon from '@mui/icons-material/Article';
+import CategoryIcon from '@mui/icons-material/Category';
+import SubjectIcon from '@mui/icons-material/Subject';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import PersonIcon from '@mui/icons-material/Person';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import PeopleIcon from '@mui/icons-material/People';
+import SecurityIcon from '@mui/icons-material/Security';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import BookIcon from '@mui/icons-material/Book';
+import UploadIcon from '@mui/icons-material/Upload';
+import ReviewsIcon from '@mui/icons-material/Reviews';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 
-const linkIcons: Record<string, React.ReactNode> = {
-  '/admin': <DashboardIcon fontSize="small" />,
-  '/admin/sliders': <SlidersIcon fontSize="small" />,
-  '/admin/contents': <ArticleIcon fontSize="small" />,
-  '/admin/contenttypes': <CategoryIcon fontSize="small" />,
-  '/admin/subjectcategories': <FolderIcon fontSize="small" />,
-  '/admin/testimonials': <ChatIcon fontSize="small" />,
-};
+const DRAWER_WIDTH = 260;
 
 const adminTheme = createTheme({
   palette: {
@@ -79,6 +86,17 @@ const AdminLayout = ({
 }: AdminLayoutProps) => {
   const router = useRouter();
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
+  const [usersOpen, setUsersOpen] = useState(false);
+  const [booksOpen, setBooksOpen] = useState(false);
+
+
+  const handleUsersClick = () => {
+    setUsersOpen(!usersOpen);
+  };
+
+  const handleBooksClick = () => {
+    setBooksOpen(!booksOpen);
+  };
 
   const handleProfileOpen = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchor(event.currentTarget);
@@ -97,13 +115,35 @@ const AdminLayout = ({
     }
   };
 
-  const links = [
-    { label: 'Dashboard', href: '/admin' },
-    { label: 'Sliders', href: '/admin/sliders' },
-    { label: 'Contents', href: '/admin/contents' },
-    { label: 'Content Types', href: '/admin/contenttypes' },
-    { label: 'Subject Categories', href: '/admin/subjectcategories' },
-    { label: 'Testimonials', href: '/admin/testimonials' },
+  const sidebarItems = [
+    { label: 'Dashboard', href: '/admin', icon: <DashboardIcon /> },
+    { label: 'Sliders', href: '/admin/sliders', icon: <ViewCarouselIcon /> },
+    { label: 'Homepage Slides', href: '/admin/homepage-slides', icon: <ViewCarouselIcon /> },
+    { label: 'Contents', href: '/admin/contents', icon: <ArticleIcon /> },
+    { label: 'Content Types', href: '/admin/contenttypes', icon: <CategoryIcon /> },
+    { label: 'Subject Categories', href: '/admin/subjectcategories', icon: <SubjectIcon /> },
+    { label: 'Sub Categories', href: '/admin/subcategories', icon: <SubjectIcon /> },
+    { label: 'Specialties', href: '/admin/specialties', icon: <MenuBookIcon /> },
+    { label: 'Annual Prices', href: '/admin/annual-prices', icon: <AttachMoneyIcon /> },
+    { label: 'Testimonials', href: '/admin/testimonials', icon: <RateReviewIcon /> },
+    { label: 'Mentor Ratings', href: '/admin/ratings', icon: <RateReviewIcon /> },
+    { label: 'Mentors', href: '/admin/mentors', icon: <PersonIcon /> },
+    { label: 'Offers', href: '/admin/offers', icon: <LocalOfferIcon /> },
+    { label: 'Menu Management', href: '/admin/menu-management', icon: <MenuBookIcon /> },
+    { divider: true },
+  ];
+
+  const userSubmenuItems = [
+    { label: 'Users', href: '/admin/users', icon: <PeopleIcon /> },
+    { label: 'Roles', href: '/admin/roles', icon: <SecurityIcon /> },
+    { label: 'Role Privileges', href: '/admin/role-privileges', icon: <SecurityIcon /> },
+  ];
+
+  const bookSubmenuItems = [
+    { label: 'Book', href: '/admin/books', icon: <BookIcon /> },
+    { label: 'Book Import', href: '/admin/books/import', icon: <UploadIcon /> },
+    { label: 'Book Review', href: '/admin/books/review', icon: <ReviewsIcon /> },
+    { label: 'Chapter', href: '/admin/books/chapter', icon: <MenuBookOutlinedIcon /> },
   ];
 
   return (
@@ -117,164 +157,291 @@ const AdminLayout = ({
           rel="stylesheet"
         />
       </Head>
-
-      <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
-        {/* Side Navigation (desktop) */}
-        <Box
-          component="aside"
-          sx={{
-            width: 260,
-            flexShrink: 0,
-            display: { xs: 'none', lg: 'flex' },
-            flexDirection: 'column',
-            borderRight: '1px solid',
-            borderColor: 'divider',
-            bgcolor: 'background.paper',
-            position: 'sticky',
-            top: 0,
-            height: '100vh',
+      
+      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+        {/* Top Header */}
+        <AppBar 
+          position="fixed" 
+          sx={{ 
+            bgcolor: 'primary.main',
+            zIndex: (theme) => theme.zIndex.drawer + 1
           }}
         >
-          <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box
-              component="span"
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: 2,
-                backgroundImage: 'url(/images/nvr-logo.jpg)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            />
-            <Box>
-              <Typography variant="subtitle1" fontWeight={700}>
-                Admin Panel
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Content Management
-              </Typography>
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', flexGrow: 1 }}>
+              <a href="/admin" style={{ display: 'flex', alignItems: 'center' }}>
+                <img 
+                  src="/images/nvr-logo.jpg" 
+                  alt="Logo" 
+                  style={{ height: '40px', objectFit: 'contain' }}
+                />
+              </a>
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Tooltip title="Account settings">
+                <IconButton onClick={handleProfileOpen} size="small">
+                  <Avatar sx={{ width: 32, height: 32, bgcolor: 'white', color: 'primary.main' }}>A</Avatar>
+                </IconButton>
+              </Tooltip>
+              <Button 
+                onClick={handleLogout} 
+                color="inherit" 
+                variant="outlined"
+                sx={{ 
+                  borderColor: 'rgba(255,255,255,0.5)',
+                  '&:hover': {
+                    borderColor: 'white',
+                    bgcolor: 'rgba(255,255,255,0.1)'
+                  }
+                }}
+              >
+                Logout
+              </Button>
             </Box>
-          </Box>
-          <Divider />
-          <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            {links.map((link) => {
-              const isActive = router.pathname === link.href;
-              return (
-                <Box
-                  key={link.href}
-                  component={NextLink}
-                  href={link.href}
+            <Menu
+              anchorEl={profileAnchor}
+              open={Boolean(profileAnchor)}
+              onClose={handleProfileClose}
+              onClick={handleProfileClose}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+              <MenuItem component={NextLink} href="/admin/profile">Profile</MenuItem>
+              <MenuItem component={NextLink} href="/admin/settings">Settings</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+          </Toolbar>
+        </AppBar>
+
+        {/* Left Sidebar */}
+        <Drawer
+          variant="permanent"
+          sx={{
+            width: DRAWER_WIDTH,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: DRAWER_WIDTH,
+              boxSizing: 'border-box',
+              bgcolor: '#ffffff',
+              borderRight: '1px solid #e0e0e0',
+            },
+          }}
+        >
+          <Toolbar />
+          <Box sx={{ overflow: 'auto', mt: 1 }}>
+            <List>
+              {sidebarItems.map((item, index) => {
+                if (item.divider) {
+                  return <Divider key={`divider-${index}`} sx={{ my: 1 }} />;
+                }
+                
+                const isActive = router.pathname === item.href;
+                
+                return (
+                  <ListItem key={item.href} disablePadding>
+                    <ListItemButton
+                      component={NextLink}
+                      href={item.href!}
+                      selected={isActive}
+                      sx={{
+                        py: 1.5,
+                        px: 2,
+                        '&.Mui-selected': {
+                          bgcolor: 'primary.light',
+                          color: 'primary.main',
+                          '&:hover': {
+                            bgcolor: 'primary.light',
+                          },
+                          '& .MuiListItemIcon-root': {
+                            color: 'primary.main',
+                          },
+                        },
+                        '&:hover': {
+                          bgcolor: 'action.hover',
+                        },
+                      }}
+                    >
+                      <ListItemIcon sx={{ minWidth: 40 }}>
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary={item.label}
+                        primaryTypographyProps={{
+                          fontSize: '0.875rem',
+                          fontWeight: isActive ? 600 : 400,
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+              
+              {/* Users Section with Submenu */}
+              <ListItem disablePadding>
+                <ListItemButton 
+                  onClick={handleUsersClick}
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
+                    py: 1.5,
                     px: 2,
-                    py: 1,
-                    borderRadius: 2,
-                    color: isActive ? 'primary.main' : 'text.secondary',
-                    fontWeight: isActive ? 700 : 500,
-                    textDecoration: 'none',
-                    bgcolor: isActive ? 'primary.main + "14"' : 'transparent',
-                    transition: 'background-color 0.2s ease, color 0.2s ease',
                     '&:hover': {
-                      bgcolor: 'primary.main',
-                      color: 'common.white',
-                      '& svg': { color: 'common.white' },
+                      bgcolor: 'action.hover',
                     },
                   }}
                 >
-                  <Box sx={{ color: isActive ? 'primary.main' : 'text.secondary' }}>
-                    {linkIcons[link.href] ?? <DashboardIcon fontSize="small" />}
-                  </Box>
-                  <Typography variant="body2">{link.label}</Typography>
-                </Box>
-              );
-            })}
-          </Box>
-          <Box sx={{ p: 3 }}>
-            <Button
-              fullWidth
-              variant="contained"
-              startIcon={<AddIcon />}
-              component={NextLink}
-              href="/admin/contents"
-            >
-              New Content
-            </Button>
-          </Box>
-        </Box>
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <PeopleIcon />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Users"
+                    primaryTypographyProps={{
+                      fontSize: '0.875rem',
+                      fontWeight: 400,
+                    }}
+                  />
+                  {usersOpen ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+              </ListItem>
+              <Collapse in={usersOpen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {userSubmenuItems.map((item) => {
+                    const isActive = router.pathname === item.href;
+                    
+                    return (
+                      <ListItem key={item.href} disablePadding>
+                        <ListItemButton
+                          component={NextLink}
+                          href={item.href!}
+                          selected={isActive}
+                          sx={{
+                            py: 1.5,
+                            pl: 6,
+                            pr: 2,
+                            '&.Mui-selected': {
+                              bgcolor: 'primary.light',
+                              color: 'primary.main',
+                              '&:hover': {
+                                bgcolor: 'primary.light',
+                              },
+                              '& .MuiListItemIcon-root': {
+                                color: 'primary.main',
+                              },
+                            },
+                            '&:hover': {
+                              bgcolor: 'action.hover',
+                            },
+                          }}
+                        >
+                          <ListItemIcon sx={{ minWidth: 40 }}>
+                            {item.icon}
+                          </ListItemIcon>
+                          <ListItemText 
+                            primary={item.label}
+                            primaryTypographyProps={{
+                              fontSize: '0.875rem',
+                              fontWeight: isActive ? 600 : 400,
+                            }}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </Collapse>
 
-        {/* Main Content Area */}
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-          {/* Header */}
-          <Box
-            component="header"
-            sx={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 10,
-              backdropFilter: 'blur(16px)',
-              backgroundColor: 'background.default',
-              borderBottom: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <Box
-              sx={{
-                height: 72,
-                px: { xs: 2, md: 4 },
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 2,
-              }}
-            >
-              <Typography variant="h5" fontWeight={700}>
-                {title}
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <IconButton>
-                  <NotificationsIcon />
-                </IconButton>
-                <IconButton sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
-                  <LightModeIcon fontSize="small" />
-                </IconButton>
-                <IconButton sx={{ display: { xs: 'inline-flex', sm: 'none' } }}>
-                  <DarkModeIcon fontSize="small" />
-                </IconButton>
-                <Tooltip title="Account settings">
-                  <IconButton onClick={handleProfileOpen} size="small">
-                    <Avatar sx={{ width: 36, height: 36 }}>A</Avatar>
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  anchorEl={profileAnchor}
-                  open={Boolean(profileAnchor)}
-                  onClose={handleProfileClose}
-                  onClick={handleProfileClose}
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              {/* Books Section with Submenu */}
+              <ListItem disablePadding>
+                <ListItemButton 
+                  onClick={handleBooksClick}
+                  sx={{
+                    py: 1.5,
+                    px: 2,
+                    '&:hover': {
+                      bgcolor: 'action.hover',
+                    },
+                  }}
                 >
-                  <MenuItem component={NextLink} href="/admin/profile">
-                    Profile
-                  </MenuItem>
-                  <MenuItem component={NextLink} href="/admin/settings">
-                    Settings
-                  </MenuItem>
-                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                </Menu>
-              </Box>
-            </Box>
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <BookIcon />
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary="Books"
+                    primaryTypographyProps={{
+                      fontSize: '0.875rem',
+                      fontWeight: 400,
+                    }}
+                  />
+                  {booksOpen ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+              </ListItem>
+              <Collapse in={booksOpen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {bookSubmenuItems.map((item) => {
+                    const isActive = router.pathname === item.href;
+                    
+                    return (
+                      <ListItem key={item.href} disablePadding>
+                        <ListItemButton
+                          component={NextLink}
+                          href={item.href!}
+                          selected={isActive}
+                          sx={{
+                            py: 1.5,
+                            pl: 6,
+                            pr: 2,
+                            '&.Mui-selected': {
+                              bgcolor: 'primary.light',
+                              color: 'primary.main',
+                              '&:hover': {
+                                bgcolor: 'primary.light',
+                              },
+                              '& .MuiListItemIcon-root': {
+                                color: 'primary.main',
+                              },
+                            },
+                            '&:hover': {
+                              bgcolor: 'action.hover',
+                            },
+                          }}
+                        >
+                          <ListItemIcon sx={{ minWidth: 40 }}>
+                            {item.icon}
+                          </ListItemIcon>
+                          <ListItemText 
+                            primary={item.label}
+                            primaryTypographyProps={{
+                              fontSize: '0.875rem',
+                              fontWeight: isActive ? 600 : 400,
+                            }}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </Collapse>
+            </List>
           </Box>
+        </Drawer>
 
-          {/* Main body */}
-          <Box component="main" sx={{ flexGrow: 1, py: 4, px: { xs: 2, md: 4 } }}>
-            <Container maxWidth="xl" disableGutters>
-              <AdminBreadcrumbs items={breadcrumbs} />
-              <Box sx={{ mt: 2 }}>{children}</Box>
-            </Container>
-          </Box>
+        {/* Main Content */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            backgroundColor: 'background.default',
+            minHeight: '100vh',
+            pt: 10,
+            px: 3,
+            pb: 4,
+          }}
+        >
+          <AdminBreadcrumbs items={breadcrumbs} />
+          {title && title !== 'Admin Panel' && (
+            <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3 }}>
+              {title}
+            </Typography>
+          )}
+          {children}
         </Box>
       </Box>
     </ThemeProvider>
