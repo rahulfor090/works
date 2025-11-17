@@ -1,26 +1,37 @@
 import React from 'react'
 import { NextPageWithLayout } from '@/interfaces/layout'
-import { MainLayout } from '@/components/layout'
-import { HomeHero } from '@/components/home/hero'
-import { HomeFeature } from '@/components/home/feature'
-import { HomePopularContent } from '@/components/home/popular-contents'
-import { HomeTestimonial } from '@/components/home/testimonial'
-import { HomeOurMentors } from '@/components/home/mentors'
-import { HomeNewsLetter } from '@/components/home/newsletter'
+import HeaderNew from '@/components/home/layout/header-new'
+import HeroNew from '@/components/home/sections/hero-new'
+import StackCardsNew from '@/components/home/sections/stack-cards-new'
+import IntroCardsNew from '@/components/home/sections/intro-cards-new'
+import StatsNew from '@/components/home/sections/stats-new'
+import FeaturedJournalsNew from '@/components/home/sections/featured-journals-new'
+import NewReleasesNew from '@/components/home/sections/new-releases-new'
+import SpecialtiesNew from '@/components/home/sections/specialties-new'
+import TestimonialsNew from '@/components/home/sections/testimonials-new'
+import MentorsNew from '@/components/home/sections/mentors-new'
+import NewsletterNew from '@/components/home/sections/newsletter-new'
+import FooterNew from '@/components/home/layout/footer-new'
 
 const Home: NextPageWithLayout = () => {
   return (
     <>
-      <HomeHero />
-      <HomePopularContent />
-      <HomeFeature />
-      <HomeTestimonial />
-      <HomeOurMentors />
-      <HomeNewsLetter />
+      <HeaderNew />
+      <HeroNew />
+      <StackCardsNew />
+      <IntroCardsNew />
+      <StatsNew />
+      <FeaturedJournalsNew />
+      <NewReleasesNew />
+      <SpecialtiesNew />
+      <TestimonialsNew />
+      <MentorsNew />
+      <NewsletterNew />
+      <FooterNew />
     </>
   )
 }
 
-Home.getLayout = (page) => <MainLayout>{page}</MainLayout>
+Home.getLayout = (page) => <>{page}</>
 
 export default Home

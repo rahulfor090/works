@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { query } from '@/utils/db'
-import { data as popular } from '@/components/home/popular-course.data'
+import { data as popular } from '@/components/home/data/popular-course.data'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method Not Allowed' })

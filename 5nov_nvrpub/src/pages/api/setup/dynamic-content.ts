@@ -88,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         {
           title: 'Explore',
           highlightedWord: 'Health Science',
-          subtitle: 'with Jaypee Digital',
+          subtitle: 'with NRV Publication',
           image: '/images/home-hero.jpg',
           buttons: JSON.stringify([
             { label: 'Medicine', variant: 'contained', scrollTo: 'popular-course' },

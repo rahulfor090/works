@@ -50,7 +50,7 @@ const AdminHomepageSlides = () => {
         {
           id: 1,
           title: 'Welcome to',
-          highlightedWord: 'JayPee Digital',
+          highlightedWord: 'NRV Publication',
           subtitle: 'Your gateway to digital learning and excellence',
           image: '/images/slide1.jpg',
           sortOrder: 1,
@@ -190,7 +190,7 @@ const AdminHomepageSlides = () => {
                 value={form.highlightedWord} 
                 onChange={(e) => setForm({ ...form, highlightedWord: e.target.value })} 
                 required
-                helperText="Word or phrase to highlight (e.g., 'JayPee Digital')"
+                                        helperText="Word or phrase to highlight (e.g., 'NRV Publication')"
               />
             </Grid>
             <Grid item xs={12}>

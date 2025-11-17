@@ -37,8 +37,6 @@ import ShareIcon from '@mui/icons-material/Share'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import CloseIcon from '@mui/icons-material/Close'
-import LockIcon from '@mui/icons-material/Lock'
-import LockOpenIcon from '@mui/icons-material/LockOpen'
 
 type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null }
 type Section = { title: string; chapters: Chapter[] }
@@ -98,19 +96,6 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const [company, setCompany] = React.useState('')
   const [department, setDepartment] = React.useState('')
   const [country, setCountry] = React.useState('')
-
-  // Check if user is premium
-  const [isPremium, setIsPremium] = React.useState(false)
-  
-  React.useEffect(() => {
-    const userStr = localStorage.getItem('user')
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr)
-        setIsPremium(user.isPremium || false)
-      } catch {}
-    }
-  }, [])
 
   const favStorageKey = `book:favourite:${isbn}`
 
@@ -218,23 +203,6 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const handleExpandAll = () => setExpandAll(true)
   const handleCollapseAll = () => setExpandAll(false)
   const toggleSection = (idx: number) => setExpanded(prev => ({ ...prev, [idx]: !prev[idx] }))
-
-  // Helper function to check if a chapter is unlocked for free users
-  const isChapterUnlocked = (chapter: Chapter, sectionTitle: string): boolean => {
-    // If user is premium, unlock everything
-    if (isPremium) {
-      return true
-    }
-    
-    // For free users, unlock: Prelims, Index, and Chapter 1
-    if (sectionTitle === 'Prelims' || sectionTitle === 'Index') {
-      return true
-    }
-    if (sectionTitle === 'Chapters' && chapter.number === 1) {
-      return true
-    }
-    return false
-  }
 
   const normalizedQuery = query.trim().toLowerCase()
   const filteredSections = sections.map(sec => ({
@@ -356,37 +324,21 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                 </AccordionSummary>
                 <AccordionDetails>
                   <List dense>
-                    {sec.chapters.map((ch, idx) => {
-                      const unlocked = isChapterUnlocked(ch, sec.title)
-                      return (
-                        <ListItem key={`${sec.title}-${idx}`}>
-                          <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
-                            {unlocked ? (
-                              <LockOpenIcon fontSize="small" sx={{ color: 'success.main' }} />
-                            ) : (
-                              <LockIcon fontSize="small" sx={{ color: 'text.disabled' }} />
-                            )}
-                            {ch.slug && unlocked ? (
-                              <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
-                                <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
-                                  {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
-                                </Typography>
-                              </NextLink>
-                            ) : (
-                              <Typography 
-                                sx={{ 
-                                  flex: 1,
-                                  color: unlocked ? 'inherit' : 'text.disabled',
-                                  cursor: unlocked ? 'default' : 'not-allowed'
-                                }}
-                              >
-                                {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
-                              </Typography>
-                            )}
-                          </Stack>
-                        </ListItem>
-                      )
-                    })}
+                    {sec.chapters.map((ch, idx) => (
+                      <ListItem key={`${sec.title}-${idx}`}>
+                        {ch.slug ? (
+                          <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
+                              {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                            </Typography>
+                          </NextLink>
+                        ) : (
+                          <Typography>
+                            {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                          </Typography>
+                        )}
+                      </ListItem>
+                    ))}
                   </List>
                 </AccordionDetails>
               </Accordion>
@@ -755,16 +707,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       
       // Determine the slug and type based on chapter number
       if (chapterNo === 'Prelims') {
-        slug = `/content/book/${isbnStr}/chapter/front`
+        slug = `/books/${isbnStr}/preliminary/${chapterFileName}.html`
         chapterType = 'prelims'
       } else if (chapterNo === 'Index') {
-        slug = `/content/book/${isbnStr}/chapter/index`
+        slug = `/books/${isbnStr}/index/${chapterFileName}.html`
         chapterType = 'index'
       } else if (chapterNo.startsWith('Appendix')) {
-        slug = `/content/book/${isbnStr}/chapter/${chapterFileName}`
+        slug = `/books/${isbnStr}/chapter/${chapterFileName}.html`
         chapterType = 'appendix'
       } else if (chapterNo.startsWith('Chapter')) {
-        slug = `/content/book/${isbnStr}/chapter/${chapterFileName}`
+        slug = `/books/${isbnStr}/chapter/${chapterFileName}.html`
         chapterType = 'chapter'
       }
 
@@ -794,9 +746,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
     const sections: Section[] = []
     if (prelims.length) sections.push({ title: 'Prelims', chapters: prelims })
-    if (index.length) sections.push({ title: 'Index', chapters: index })
     if (mainChapters.length) sections.push({ title: 'Chapters', chapters: mainChapters })
     if (appendices.length) sections.push({ title: 'Appendices', chapters: appendices })
+    if (index.length) sections.push({ title: 'Index', chapters: index })
 
     // Detect book PDF (<isbn>.pdf or book.pdf) if present
     let bookPdfUrl: string | null = null

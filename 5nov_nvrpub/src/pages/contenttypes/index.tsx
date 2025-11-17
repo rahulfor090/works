@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import { useTheme } from '@mui/material/styles'
 import { MainLayout } from '@/components/layout'
-import { data } from '@/components/home/popular-content.data'
+import { data } from '@/components/home/data/popular-content.data'
 
 interface Contenttype {
   name: string

@@ -8,7 +8,7 @@ async function updateContentTypeSlugs() {
     connection = await mysql.createConnection({
       host: 'localhost',
       user: 'root',
-      password: 'root', // Update with your MySQL password
+      password: 'anshpandey@18072006', // Update with your MySQL password
       database: 'jaypeedigi'
     });
 
