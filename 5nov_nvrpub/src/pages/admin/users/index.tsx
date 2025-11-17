@@ -26,6 +26,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { useAuth, usePermissions, hasPermission } from '@/utils/auth';
 
 interface User {
   user_id: number;
@@ -46,9 +47,18 @@ interface Role {
 }
 
 const UsersPage = () => {
+  useAuth(); // Protect this route
+  const { permissions, loading: permissionsLoading } = usePermissions();
+  
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Check permissions for User resource
+  const canView = hasPermission(permissions, 'ROLE_USER', 'view') || hasPermission(permissions, 'User', 'view');
+  const canAdd = hasPermission(permissions, 'ROLE_USER', 'add') || hasPermission(permissions, 'User', 'add');
+  const canEdit = hasPermission(permissions, 'ROLE_USER', 'edit') || hasPermission(permissions, 'User', 'edit');
+  const canDelete = hasPermission(permissions, 'ROLE_USER', 'delete') || hasPermission(permissions, 'User', 'delete');
   const [openDialog, setOpenDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -293,15 +303,27 @@ const UsersPage = () => {
             {success}
           </Alert>
         )}
-        
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleOpenDialog}
-          sx={{ mb: 2 }}
-        >
-          Create User
-        </Button>
+
+        {permissionsLoading || loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : !canView ? (
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            You do not have permission to view this page. Please contact your administrator.
+          </Alert>
+        ) : (
+          <>
+            {canAdd && (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleOpenDialog}
+                sx={{ mb: 2 }}
+              >
+                Create User
+              </Button>
+            )}
 
         <TableContainer component={Paper}>
           <Table>
@@ -347,21 +369,26 @@ const UsersPage = () => {
                       />
                     </TableCell>
                     <TableCell>
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => handleOpenEditDialog(user)}
-                        sx={{ mr: 1 }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleDelete(user.user_id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+                      {canEdit && (
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleOpenEditDialog(user)}
+                          sx={{ mr: 1 }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      )}
+                      {canDelete && (
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => handleDelete(user.user_id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                      {!canEdit && !canDelete && '-'}
                     </TableCell>
                   </TableRow>
                 ))
@@ -369,6 +396,8 @@ const UsersPage = () => {
             </TableBody>
           </Table>
         </TableContainer>
+          </>
+        )}
       </Box>
 
       {/* Create User Dialog */}

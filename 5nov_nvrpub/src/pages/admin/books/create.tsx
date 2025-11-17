@@ -1,0 +1,516 @@
+import React, { useEffect, useState } from 'react'
+import AdminLayout from '@/components/layout/AdminLayout'
+import {
+  Box,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Paper,
+  Grid,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  Alert,
+  CircularProgress
+} from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { useRouter } from 'next/router'
+import RichTextEditor from '@/components/common/RichTextEditor'
+import { useAuth } from '@/utils/auth'
+
+interface BookFormData {
+  isbn: string
+  book_title: string
+  book_subtitle: string
+  doi: string
+  subject: string
+  society: string
+  access_type: string
+  book_content_type: string
+  edition: string
+  book_type: string
+  book_bisac: string
+  publishing_year: number | string
+  publish_status: string
+  no_of_chapters: number | string
+  no_of_pages: number | string
+  no_of_volumes: number | string
+  featured: boolean
+  download_enable: boolean
+  rating: number | string
+  book_cover_image: string
+  book_overview: string
+  supplementary_information: string
+}
+
+const CreateEditBookPage = () => {
+  useAuth() // Protect this route
+  
+  const router = useRouter()
+  const { id } = router.query
+  const isEdit = Boolean(id)
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+
+  const [formData, setFormData] = useState<BookFormData>({
+    isbn: '',
+    book_title: '',
+    book_subtitle: '',
+    doi: '',
+    subject: '',
+    society: '',
+    access_type: 'Paid',
+    book_content_type: 'Book',
+    edition: '',
+    book_type: '',
+    book_bisac: '',
+    publishing_year: '',
+    publish_status: 'Staging',
+    no_of_chapters: '',
+    no_of_pages: '',
+    no_of_volumes: 1,
+    featured: false,
+    download_enable: false,
+    rating: '',
+    book_cover_image: '',
+    book_overview: '',
+    supplementary_information: ''
+  })
+
+  useEffect(() => {
+    if (isEdit && id) {
+      fetchBook(id as string)
+    }
+  }, [id, isEdit])
+
+  const fetchBook = async (bookId: string) => {
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/admin/books/${bookId}`)
+      const data = await response.json()
+
+      if (data.success) {
+        setFormData({
+          ...data.data,
+          publishing_year: data.data.publishing_year || '',
+          no_of_chapters: data.data.no_of_chapters || '',
+          no_of_pages: data.data.no_of_pages || '',
+          no_of_volumes: data.data.no_of_volumes || 1,
+          rating: data.data.rating || ''
+        })
+      } else {
+        setError(data.message || 'Failed to fetch book')
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleInputChange = (field: keyof BookFormData, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleSubmit = async (saveAndContinue = false) => {
+    // Save current scroll position
+    const scrollPosition = window.scrollY || window.pageYOffset
+    
+    try {
+      setLoading(true)
+      setError(null)
+      setSuccess(false)
+
+      const url = isEdit ? `/api/admin/books/${id}` : '/api/admin/books'
+      const method = isEdit ? 'PUT' : 'POST'
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setSuccess(true)
+        // Restore scroll position after state update
+        setTimeout(() => window.scrollTo(0, scrollPosition), 0)
+        
+        if (saveAndContinue) {
+          setTimeout(() => router.push('/admin/books'), 1500)
+        }
+      } else {
+        setError(data.message || 'Failed to save book')
+        // Restore scroll position after state update
+        setTimeout(() => window.scrollTo(0, scrollPosition), 0)
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred')
+      // Restore scroll position after state update
+      setTimeout(() => window.scrollTo(0, scrollPosition), 0)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading && isEdit) {
+    return (
+      <AdminLayout title={isEdit ? 'Edit Book' : 'Create Book'}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress />
+        </Box>
+      </AdminLayout>
+    )
+  }
+
+  return (
+    <AdminLayout title={isEdit ? 'Edit Book' : 'Create Book'}>
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+          {isEdit ? 'Edit Book' : 'Create Book'}
+        </Typography>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => router.push('/admin/books')}
+        >
+          Back
+        </Button>
+      </Box>
+
+      <Paper sx={{ p: 3 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel>Access Type *</InputLabel>
+              <Select
+                value={formData.access_type}
+                onChange={(e) => handleInputChange('access_type', e.target.value)}
+                label="Access Type *"
+              >
+                <MenuItem value="Paid">Paid</MenuItem>
+                <MenuItem value="Free">Free</MenuItem>
+                <MenuItem value="Open">Open</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel>Book Content Type *</InputLabel>
+              <Select
+                value={formData.book_content_type}
+                onChange={(e) => handleInputChange('book_content_type', e.target.value)}
+                label="Book Content Type *"
+              >
+                <MenuItem value="Book">Book</MenuItem>
+                <MenuItem value="Video Atlas">Video Atlas</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Subject"
+              value={formData.subject}
+              onChange={(e) => handleInputChange('subject', e.target.value)}
+              placeholder="Enter subject"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Society"
+              value={formData.society}
+              onChange={(e) => handleInputChange('society', e.target.value)}
+              placeholder="Enter society"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="ISBN *"
+              value={formData.isbn}
+              onChange={(e) => handleInputChange('isbn', e.target.value)}
+              required
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Book title *"
+              value={formData.book_title}
+              onChange={(e) => handleInputChange('book_title', e.target.value)}
+              required
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Book Subtitle"
+              value={formData.book_subtitle}
+              onChange={(e) => handleInputChange('book_subtitle', e.target.value)}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="DOI"
+              value={formData.doi}
+              onChange={(e) => handleInputChange('doi', e.target.value)}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              Book Cover Image
+            </Typography>
+            <Button variant="outlined">
+              Browse...
+            </Button>
+            <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+              (Allowed formats: .jpg, .jpeg or .png. Recommend pixel size:[370,50])
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Edition"
+              value={formData.edition}
+              onChange={(e) => handleInputChange('edition', e.target.value)}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={formData.featured}
+                  onChange={(e) => handleInputChange('featured', e.target.checked)}
+                />
+              }
+              label="Featured"
+            />
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="No Of Chapters"
+              type="number"
+              value={formData.no_of_chapters}
+              onChange={(e) => handleInputChange('no_of_chapters', e.target.value)}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="Publishing Year *"
+              type="number"
+              value={formData.publishing_year}
+              onChange={(e) => handleInputChange('publishing_year', e.target.value)}
+              required
+            />
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="No Of Pages"
+              type="number"
+              value={formData.no_of_pages}
+              onChange={(e) => handleInputChange('no_of_pages', e.target.value)}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="No Of Volumes"
+              type="number"
+              value={formData.no_of_volumes}
+              onChange={(e) => handleInputChange('no_of_volumes', e.target.value)}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel>Book Type</InputLabel>
+              <Select
+                value={formData.book_type}
+                onChange={(e) => handleInputChange('book_type', e.target.value)}
+                label="Book Type"
+              >
+                <MenuItem value="">Select book type</MenuItem>
+                <MenuItem value="Reference">Reference</MenuItem>
+                <MenuItem value="Professional">Professional</MenuItem>
+                <MenuItem value="Textbook">Textbook</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Book Bisac"
+              value={formData.book_bisac}
+              onChange={(e) => handleInputChange('book_bisac', e.target.value)}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel>Publish Status *</InputLabel>
+              <Select
+                value={formData.publish_status}
+                onChange={(e) => handleInputChange('publish_status', e.target.value)}
+                label="Publish Status *"
+              >
+                <MenuItem value="Staging">Staging</MenuItem>
+                <MenuItem value="Live">Live</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel>Rating</InputLabel>
+              <Select
+                value={formData.rating}
+                onChange={(e) => handleInputChange('rating', e.target.value)}
+                label="Rating"
+              >
+                <MenuItem value="">Select rating</MenuItem>
+                <MenuItem value="1">1</MenuItem>
+                <MenuItem value="2">2</MenuItem>
+                <MenuItem value="3">3</MenuItem>
+                <MenuItem value="4">4</MenuItem>
+                <MenuItem value="5">5</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={formData.download_enable}
+                  onChange={(e) => handleInputChange('download_enable', e.target.checked)}
+                />
+              }
+              label="Download Enable"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              Book Overview
+            </Typography>
+            <RichTextEditor
+              value={formData.book_overview}
+              onChange={(value) => handleInputChange('book_overview', value)}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              Supplementary Information
+            </Typography>
+            <RichTextEditor
+              value={formData.supplementary_information}
+              onChange={(value) => handleInputChange('supplementary_information', value)}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Created Date"
+              value={new Date().toLocaleDateString()}
+              disabled
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Updated Date"
+              value={new Date().toLocaleDateString()}
+              disabled
+            />
+          </Grid>
+        </Grid>
+
+        {/* Action Buttons */}
+        <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+          <Button
+            type="button"
+            variant="contained"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              handleSubmit(false)
+            }}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={24} /> : 'Save'}
+          </Button>
+          <Button
+            type="button"
+            variant="contained"
+            color="primary"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              handleSubmit(true)
+            }}
+            disabled={loading}
+          >
+            Save & Continue
+          </Button>
+          <Button
+            type="button"
+            variant="outlined"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              router.push('/admin/books')
+            }}
+            disabled={loading}
+          >
+            Cancel
+          </Button>
+        </Box>
+
+        {/* Success/Error Messages Below Buttons */}
+        {error && (
+          <Alert severity="error" sx={{ mt: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
+
+        {success && (
+          <Alert severity="success" sx={{ mt: 2 }} onClose={() => setSuccess(false)}>
+            Book {isEdit ? 'updated' : 'created'} successfully!
+          </Alert>
+        )}
+      </Paper>
+    </AdminLayout>
+  )
+}
+
+export default CreateEditBookPage

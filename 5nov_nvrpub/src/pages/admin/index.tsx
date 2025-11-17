@@ -23,6 +23,7 @@ import TodayIcon from '@mui/icons-material/Today'
 import CategoryIcon from '@mui/icons-material/Category'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Content } from '@/interfaces/content'
+import { useAuth } from '@/utils/auth'
 
 interface DailyPoint {
   label: string
@@ -41,6 +42,8 @@ const loadContents = async (): Promise<Content[]> => {
 }
 
 const AdminHome = () => {
+  useAuth() // Protect this route
+  
   const [contents, setContents] = useState<Content[]>([])
   const [loading, setLoading] = useState<boolean>(true)
 
