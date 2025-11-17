@@ -1,12 +1,21 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Play, Search, X, Filter } from 'lucide-react'
 import { heroData } from '@/data/home-mock'
 import { useRouter } from 'next/router'
 
-const HERO_SLIDES = [
+interface HeroSlide {
+  id?: number
+  title: string
+  highlightedWord?: string
+  subtitle: string
+  image: string
+  isActive?: number | boolean
+}
+
+const DEFAULT_HERO_SLIDES: HeroSlide[] = [
   {
     image:
       "https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHwxfHxtZWRpY2FsJTIwZXF1aXBtZW50fGVufDB8fHx8MTczMTQzNTA4M3ww&ixlib=rb-4.1.0&q=85",
@@ -53,13 +62,52 @@ const HeroNew: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedType, setSelectedType] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
+  const [slides, setSlides] = useState<HeroSlide[]>(DEFAULT_HERO_SLIDES)
+
+  const heroSlides = slides.filter((slide) => slide.isActive !== 0)
+  const normalizedSlides = heroSlides.length > 0 ? heroSlides : DEFAULT_HERO_SLIDES
 
   useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const response = await fetch('/api/slides')
+        if (response.ok) {
+          const data = await response.json()
+          const parsedSlides: HeroSlide[] = (data || []).map((slide: any) => ({
+            ...slide,
+            highlightedWord: slide.highlightedWord || slide.title,
+            image: slide.image
+              ? slide.image.startsWith('http')
+                ? slide.image
+                : `/images/sliders/${slide.image}`
+              : '',
+            isActive: slide.isActive,
+          }))
+          if (parsedSlides.length > 0) {
+            setSlides(parsedSlides)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load hero slides:', error)
+      }
+    }
+
+    fetchSlides()
+  }, [])
+
+  useEffect(() => {
+    if (normalizedSlides.length === 0) return undefined
     const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % HERO_SLIDES.length)
+      setCurrentImageIndex((prev) => (prev + 1) % normalizedSlides.length)
     }, 5000)
     return () => clearInterval(interval)
-  }, [])
+  }, [normalizedSlides.length])
+
+  useEffect(() => {
+    if (currentImageIndex >= normalizedSlides.length) {
+      setCurrentImageIndex(0)
+    }
+  }, [normalizedSlides.length, currentImageIndex])
 
   // Close filters when clicking outside
   useEffect(() => {
@@ -100,14 +148,14 @@ const HeroNew: React.FC = () => {
       <div className="absolute inset-0 opacity-20">
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentImageIndex}
+            key={normalizedSlides[currentImageIndex]?.image || currentImageIndex}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2 }}
             className="absolute inset-0"
             style={{
-              backgroundImage: `url(${HERO_SLIDES[currentImageIndex].image})`,
+              backgroundImage: `url(${normalizedSlides[currentImageIndex]?.image || ''})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               mixBlendMode: 'multiply'
@@ -266,7 +314,12 @@ const HeroNew: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="heading-hero mb-6 max-w-4xl mx-auto"
         >
-          {HERO_SLIDES[currentImageIndex].title}
+          <span>{normalizedSlides[currentImageIndex]?.title}</span>
+          {normalizedSlides[currentImageIndex]?.highlightedWord && (
+            <span className="block" style={{ color: 'var(--gradient-hero-start)' }}>
+              {normalizedSlides[currentImageIndex]?.highlightedWord}
+            </span>
+          )}
         </motion.h1>
 
         <motion.p
@@ -276,7 +329,7 @@ const HeroNew: React.FC = () => {
           className="body-large mb-8 max-w-2xl mx-auto"
           style={{ color: 'var(--text-secondary)' }}
         >
-          {HERO_SLIDES[currentImageIndex].subtitle}
+          {normalizedSlides[currentImageIndex]?.subtitle}
         </motion.p>
 
         {/* CTA Buttons */}
