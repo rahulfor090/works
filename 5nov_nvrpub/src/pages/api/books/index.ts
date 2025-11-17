@@ -23,9 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       )
     `)
 
-    // Add missing columns for existing deployments
-    try { await query('ALTER TABLE books ADD COLUMN print_isbn VARCHAR(32) NULL') } catch {}
-    try { await query('ALTER TABLE books ADD COLUMN keywords TEXT NULL') } catch {}
+  // Add missing columns for existing deployments (if not already present)
+  try { await query('ALTER TABLE books ADD COLUMN IF NOT EXISTS print_isbn VARCHAR(32) NULL') } catch {}
+  try { await query('ALTER TABLE books ADD COLUMN IF NOT EXISTS keywords TEXT NULL') } catch {}
 
     if (req.method === 'GET') {
       const [rows]: any = await query(

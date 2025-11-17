@@ -308,7 +308,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults, to
                     {includeOnlyOptions.map((option, index) => (
                       <Chip
                         key={index}
-                        {...(option.icon && { icon: option.icon })}
+                        icon={option.icon}
                         label={`${option.label} (${option.count.toLocaleString()})`}
                         variant="outlined"
                         size="small"
@@ -354,7 +354,7 @@ const SearchPage: React.FC<SearchPageProps> = ({ query, type, initialResults, to
                         )}
                         
                         <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                          {(result.type ? [result.type] : result.tags || []).map((tag: any, tagIndex: number) => (
+                          {(result.type ? [result.type] : result.tags || []).map((tag, tagIndex) => (
                             <Chip
                               key={tagIndex}
                               label={tag}

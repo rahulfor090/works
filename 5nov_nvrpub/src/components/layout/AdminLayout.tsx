@@ -47,43 +47,26 @@ import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 
 const DRAWER_WIDTH = 260;
 
-// Create a separate theme for admin panel
 const adminTheme = createTheme({
   palette: {
     primary: {
       main: '#268bbb',
     },
-    secondary: {
-      main: '#f50057',
-    },
     background: {
-      default: '#f5f5f5',
-      paper: '#ffffff',
+      default: '#F9FAFB',
+      paper: '#FFFFFF',
     },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    h4: {
-      fontWeight: 600,
-    },
+    fontFamily: '"Manrope", "Helvetica", "Arial", sans-serif',
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 4,
+          borderRadius: 12,
           textTransform: 'none',
           fontWeight: 600,
-        },
-        containedPrimary: {
-          boxShadow: '0 4px 6px rgba(26, 35, 126, 0.2)',
-        },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
         },
       },
     },
@@ -96,15 +79,16 @@ interface AdminLayoutProps {
   breadcrumbs?: Array<{ label: string; href?: string }>;
 }
 
-const AdminLayout = ({ 
-  children, 
-  title = 'Admin Panel',
-  breadcrumbs = []
+const AdminLayout = ({
+  children,
+  title = 'Admin Dashboard',
+  breadcrumbs = [],
 }: AdminLayoutProps) => {
   const router = useRouter();
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
   const [usersOpen, setUsersOpen] = useState(false);
   const [booksOpen, setBooksOpen] = useState(false);
+
 
   const handleUsersClick = () => {
     setUsersOpen(!usersOpen);
@@ -166,8 +150,12 @@ const AdminLayout = ({
     <ThemeProvider theme={adminTheme}>
       <CssBaseline />
       <Head>
-        <title>{title} - Jaypee Digital</title>
+        <title>{title}</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
       </Head>
       
       <Box sx={{ display: 'flex', minHeight: '100vh' }}>
