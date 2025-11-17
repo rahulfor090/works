@@ -26,6 +26,7 @@ import AdminBreadcrumbs from '@/components/navigation/AdminBreadcrumbs';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { logout as authLogout } from '@/utils/auth';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import ArticleIcon from '@mui/icons-material/Article';
@@ -124,7 +125,7 @@ const AdminLayout = ({
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      authLogout();
       router.push('/admin/login');
     } catch (err) {
       console.error('Logout failed:', err);
@@ -151,15 +152,13 @@ const AdminLayout = ({
 
   const userSubmenuItems = [
     { label: 'Users', href: '/admin/users', icon: <PeopleIcon /> },
-    { label: 'Roles', href: '/admin/roles', icon: <SecurityIcon /> },
-    { label: 'Role Privileges', href: '/admin/role-privileges', icon: <SecurityIcon /> },
+    { label: 'Roles', href: '/admin/users/roles', icon: <SecurityIcon /> },
+    { label: 'Role Privileges', href: '/admin/users/role-privileges', icon: <SecurityIcon /> },
   ];
 
   const bookSubmenuItems = [
     { label: 'Book', href: '/admin/books', icon: <BookIcon /> },
-    { label: 'Book Import', href: '/admin/books/import', icon: <UploadIcon /> },
-    { label: 'Book Review', href: '/admin/books/review', icon: <ReviewsIcon /> },
-    { label: 'Chapter', href: '/admin/books/chapter', icon: <MenuBookOutlinedIcon /> },
+    { label: 'Chapter', href: '/admin/chapters', icon: <MenuBookOutlinedIcon /> },
   ];
 
   return (

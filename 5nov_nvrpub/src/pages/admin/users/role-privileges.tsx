@@ -26,6 +26,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Save as SaveIcon, Add as AddIcon } from '@mui/icons-material';
+import { useAuth, usePermissions, hasPermission } from '@/utils/auth';
 
 interface Role {
   role_id: number;
@@ -45,10 +46,19 @@ interface Privilege {
 }
 
 const RolePrivilegesPage = () => {
+  useAuth(); // Protect this route
+  const { permissions, loading: permissionsLoading } = usePermissions();
+  
   const [roles, setRoles] = useState<Role[]>([]);
   const [selectedRoleId, setSelectedRoleId] = useState<string>('');
   const [privileges, setPrivileges] = useState<Privilege[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Check permissions for Role Privileges resource
+  const canView = hasPermission(permissions, 'ROLE_ROLE_PRIVILEGES', 'view') || hasPermission(permissions, 'RolePrivileges', 'view');
+  const canAdd = hasPermission(permissions, 'ROLE_ROLE_PRIVILEGES', 'add') || hasPermission(permissions, 'RolePrivileges', 'add');
+  const canEdit = hasPermission(permissions, 'ROLE_ROLE_PRIVILEGES', 'edit') || hasPermission(permissions, 'RolePrivileges', 'edit');
+  const canDelete = hasPermission(permissions, 'ROLE_ROLE_PRIVILEGES', 'delete') || hasPermission(permissions, 'RolePrivileges', 'delete');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [openResourceDialog, setOpenResourceDialog] = useState(false);
@@ -286,7 +296,16 @@ const RolePrivilegesPage = () => {
           </Alert>
         )}
 
-        <Paper sx={{ p: 3 }}>
+        {permissionsLoading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : !canView ? (
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            You do not have permission to view this page. Please contact your administrator.
+          </Alert>
+        ) : (
+          <Paper sx={{ p: 3 }}>
           <Typography variant="h5" sx={{ mb: 3 }}>
             Create Role Privileges
             <Typography component="span" sx={{ color: 'red', fontSize: '0.8rem', ml: 1 }}>
@@ -313,24 +332,28 @@ const RolePrivilegesPage = () => {
               </Select>
             </FormControl>
 
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={handleAddResource}
-              disabled={loading}
-            >
-              Add Resource
-            </Button>
+            {canAdd && (
+              <Button
+                variant="outlined"
+                startIcon={<AddIcon />}
+                onClick={handleAddResource}
+                disabled={loading}
+              >
+                Add Resource
+              </Button>
+            )}
 
-            <Button
-              variant="contained"
-              startIcon={<SaveIcon />}
-              onClick={handleSave}
-              disabled={!selectedRoleId || privileges.length === 0 || loading}
-              sx={{ ml: 'auto' }}
-            >
-              Save Privileges
-            </Button>
+            {canEdit && (
+              <Button
+                variant="contained"
+                startIcon={<SaveIcon />}
+                onClick={handleSave}
+                disabled={!selectedRoleId || privileges.length === 0 || loading}
+                sx={{ ml: 'auto' }}
+              >
+                Save Privileges
+              </Button>
+            )}
           </Box>
 
           <TableContainer>
@@ -451,6 +474,7 @@ const RolePrivilegesPage = () => {
             </Box>
           )}
         </Paper>
+        )}
       </Box>
 
       {/* Add Resource Dialog */}

@@ -12,8 +12,11 @@ import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
 import Button from '@mui/material/Button'
 import { Content } from '@/interfaces/content'
+import { useAuth } from '@/utils/auth'
 
 const AdminHome = () => {
+  useAuth() // Protect this route
+  
   const [contents, setContents] = useState<Content[]>([])
   const [loading, setLoading] = useState<boolean>(true)
 

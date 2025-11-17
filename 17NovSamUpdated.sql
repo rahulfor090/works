@@ -16,6 +16,47 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `annual_prices`
+--
+
+DROP TABLE IF EXISTS `annual_prices`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `annual_prices` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `code` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` longtext COLLATE utf8mb4_unicode_ci,
+  `category` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `journal` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `format` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `region` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `currency` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `discount_price` decimal(10,2) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`),
+  KEY `idx_code` (`code`),
+  KEY `idx_category` (`category`),
+  KEY `idx_region` (`region`),
+  KEY `idx_is_active` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `annual_prices`
+--
+
+LOCK TABLES `annual_prices` WRITE;
+/*!40000 ALTER TABLE `annual_prices` DISABLE KEYS */;
+/*!40000 ALTER TABLE `annual_prices` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `books`
 --
 
@@ -24,20 +65,43 @@ DROP TABLE IF EXISTS `books`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `books` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `isbn` varchar(32) DEFAULT NULL,
-  `print_isbn` varchar(32) DEFAULT NULL,
-  `title` varchar(256) NOT NULL,
-  `author` varchar(256) DEFAULT NULL,
-  `coverImage` varchar(512) DEFAULT NULL,
-  `description` text,
-  `keywords` text,
-  `subjectcategoryId` int DEFAULT NULL,
+  `isbn` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `book_title` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `book_subtitle` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `doi` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `subject` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `society` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `access_type` enum('Paid','Free','Subscription') COLLATE utf8mb4_unicode_ci DEFAULT 'Paid',
+  `book_content_type` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT 'Book',
+  `edition` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `book_type` enum('Reference','Professional','Textbook') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `book_bisac` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `publishing_year` int DEFAULT NULL,
+  `publish_status` enum('Staging','Live') COLLATE utf8mb4_unicode_ci DEFAULT 'Staging',
+  `no_of_chapters` int DEFAULT '0',
+  `no_of_pages` int DEFAULT '0',
+  `no_of_volumes` int DEFAULT '1',
+  `featured` tinyint(1) DEFAULT '0',
+  `download_enable` tinyint(1) DEFAULT '0',
   `rating` int DEFAULT '0',
-  `ratingCount` int DEFAULT '0',
-  `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `book_cover_image` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `book_overview` text COLLATE utf8mb4_unicode_ci,
+  `supplementary_information` text COLLATE utf8mb4_unicode_ci,
+  `status` enum('Active','Inactive','Deleted') COLLATE utf8mb4_unicode_ci DEFAULT 'Active',
+  `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `print_isbn` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `keywords` text COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `isbn` (`isbn`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `isbn` (`isbn`),
+  KEY `idx_isbn` (`isbn`),
+  KEY `idx_book_title` (`book_title`(255)),
+  KEY `idx_publish_status` (`publish_status`),
+  KEY `idx_featured` (`featured`),
+  KEY `idx_status` (`status`),
+  KEY `idx_created_date` (`created_date`),
+  CONSTRAINT `books_chk_1` CHECK (((`rating` >= 0) and (`rating` <= 5)))
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,6 +110,7 @@ CREATE TABLE `books` (
 
 LOCK TABLES `books` WRITE;
 /*!40000 ALTER TABLE `books` DISABLE KEYS */;
+INSERT INTO `books` VALUES (4,'4546162','Test','Test','151515','Test','Test','Paid','Book','Test','Reference','Test',2025,'Staging',55,156,1,1,1,5,'','Test','Test','Active','2025-11-17 15:16:32','2025-11-17 15:16:32',NULL,NULL);
 /*!40000 ALTER TABLE `books` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -58,14 +123,29 @@ DROP TABLE IF EXISTS `chapters`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `chapters` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `bookId` int NOT NULL,
-  `title` varchar(256) NOT NULL,
-  `number` int DEFAULT NULL,
-  `slug` varchar(256) DEFAULT NULL,
-  `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `book_id` int NOT NULL,
+  `book_isbn` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `chapter_number` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sequence_number` int DEFAULT NULL,
+  `chapter_title` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `doi` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `first_page` int DEFAULT NULL,
+  `last_page` int DEFAULT NULL,
+  `access_type` enum('Paid','Free','Open') COLLATE utf8mb4_unicode_ci DEFAULT 'Paid',
+  `keywords` text COLLATE utf8mb4_unicode_ci,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `status` enum('Active','Inactive','Deleted') COLLATE utf8mb4_unicode_ci DEFAULT 'Active',
+  `created_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `bookId` (`bookId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `idx_book_id` (`book_id`),
+  KEY `idx_book_isbn` (`book_isbn`),
+  KEY `idx_chapter_number` (`chapter_number`),
+  KEY `idx_chapter_title` (`chapter_title`(255)),
+  KEY `idx_status` (`status`),
+  KEY `idx_created_date` (`created_date`),
+  CONSTRAINT `chapters_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,6 +154,7 @@ CREATE TABLE `chapters` (
 
 LOCK TABLES `chapters` WRITE;
 /*!40000 ALTER TABLE `chapters` DISABLE KEYS */;
+INSERT INTO `chapters` VALUES (2,4,'4546162','Test',1515,'Test','5155',454,151,'Paid','Test','Test','Active','2025-11-17 15:17:03','2025-11-17 15:17:03');
 /*!40000 ALTER TABLE `chapters` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,7 +304,7 @@ CREATE TABLE `resources` (
   `updatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`resource_id`),
   UNIQUE KEY `resource_name` (`resource_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -232,7 +313,7 @@ CREATE TABLE `resources` (
 
 LOCK TABLES `resources` WRITE;
 /*!40000 ALTER TABLE `resources` DISABLE KEYS */;
-INSERT INTO `resources` VALUES (1,'Book','ROLE_BOOK',NULL,'Active','2025-11-13 21:29:34','2025-11-13 21:29:34');
+INSERT INTO `resources` VALUES (1,'Book','ROLE_BOOK',NULL,'Active','2025-11-13 21:29:34','2025-11-13 21:29:34'),(3,'Book Chapter','ROLE_BOOK_CHAPTER',NULL,'Active','2025-11-14 20:59:48','2025-11-14 20:59:48'),(4,'Book Import','ROLE_BOOK_IMPORT',NULL,'Active','2025-11-14 21:00:03','2025-11-14 21:00:03'),(5,'Book Review','ROLE_BOOK_REVIEW',NULL,'Active','2025-11-14 21:00:25','2025-11-14 21:00:25'),(6,'User','ROLE_USER',NULL,'Active','2025-11-17 20:49:51','2025-11-17 20:49:51'),(7,'Roles','ROLE_ROLE',NULL,'Active','2025-11-17 20:50:06','2025-11-17 20:50:06'),(8,'Role Privileges','ROLE_ROLE_PRIVILEGES',NULL,'Active','2025-11-17 20:50:36','2025-11-17 20:50:36');
 /*!40000 ALTER TABLE `resources` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -258,7 +339,7 @@ CREATE TABLE `role_privileges` (
   KEY `resource_id` (`resource_id`),
   CONSTRAINT `role_privileges_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`) ON DELETE CASCADE,
   CONSTRAINT `role_privileges_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resources` (`resource_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -267,7 +348,7 @@ CREATE TABLE `role_privileges` (
 
 LOCK TABLES `role_privileges` WRITE;
 /*!40000 ALTER TABLE `role_privileges` DISABLE KEYS */;
-INSERT INTO `role_privileges` VALUES (2,1,1,1,0,1,0,'2025-11-13 21:32:06','2025-11-13 21:32:06');
+INSERT INTO `role_privileges` VALUES (25,2,1,1,1,1,1,'2025-11-17 21:21:32','2025-11-17 21:21:32'),(26,2,3,1,1,1,1,'2025-11-17 21:21:32','2025-11-17 21:21:32'),(27,2,4,1,1,1,1,'2025-11-17 21:21:32','2025-11-17 21:21:32'),(28,2,5,1,1,1,1,'2025-11-17 21:21:32','2025-11-17 21:21:32'),(29,2,8,1,1,1,1,'2025-11-17 21:21:32','2025-11-17 21:21:32'),(30,2,7,1,1,1,1,'2025-11-17 21:21:32','2025-11-17 21:21:32'),(31,2,6,1,1,1,1,'2025-11-17 21:21:32','2025-11-17 21:21:32');
 /*!40000 ALTER TABLE `role_privileges` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -286,7 +367,7 @@ CREATE TABLE `roles` (
   `createdAt` datetime DEFAULT NULL,
   `updatedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -295,7 +376,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (1,'Books','ROLE_BOOKS','Active','2025-11-13 20:45:28','2025-11-13 20:45:28');
+INSERT INTO `roles` VALUES (1,'Books','ROLE_BOOKS','Active','2025-11-13 20:45:28','2025-11-13 20:45:28'),(2,'Super Admin','SUPER_ADMIN','Active','2025-11-17 20:48:05','2025-11-17 20:48:05');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -408,7 +489,7 @@ CREATE TABLE `users` (
   `createdAt` datetime DEFAULT NULL,
   `updatedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -417,7 +498,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'test','test','test','test@gmail.com','$2b$10$uePPORngy/s3ZFauuXaeuOnQPpSpDRF7JDu.EMvekMGIncsvq3eEq','Books','Trial','Active',NULL,'2025-11-13 20:45:00','2025-11-13 20:47:45');
+INSERT INTO `users` VALUES (1,'test','test','test','test@gmail.com','$2b$10$uePPORngy/s3ZFauuXaeuOnQPpSpDRF7JDu.EMvekMGIncsvq3eEq','Books','Trial','Active',NULL,'2025-11-13 20:45:00','2025-11-13 20:47:45'),(2,'Super Admin','Super','Admin','superadmin@gmail.com','$2b$10$i7.7iNjrFT3HC0lZOlLYU.jT1UajZ4VOltfLkDFcCXVzPpxD2CSUS','Super Admin','Subscription','Active',NULL,'2025-11-17 20:48:46','2025-11-17 20:48:46'),(3,'Test2','Test2','Test2','Test2@gmail.com','$2b$10$NJAC2LlW.JWXgnHo1ehRBOX0UPCosbMpS87EYprC42/mXQDuPjDC6','Books','Perpetual','Active',NULL,'2025-11-17 21:06:26','2025-11-17 21:06:26');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -430,4 +511,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-13 21:45:53
+-- Dump completed on 2025-11-17 21:25:42

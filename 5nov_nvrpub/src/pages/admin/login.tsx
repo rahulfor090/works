@@ -1,12 +1,23 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper'
 import Alert from '@mui/material/Alert'
-import AdminLayout from '../../components/layout/AdminLayout'
+import Container from '@mui/material/Container'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#268bbb',
+    },
+  },
+})
 
 const AdminLogin = () => {
   const router = useRouter()
@@ -26,10 +37,15 @@ const AdminLogin = () => {
         body: JSON.stringify(form)
       })
 
-      if (response.ok) {
+      const data = await response.json()
+
+      if (data.success) {
+        // Store token/session
+        if (data.token) {
+          localStorage.setItem('adminToken', data.token)
+        }
         router.push('/admin')
       } else {
-        const data = await response.json()
         setError(data.message || 'Login failed')
       }
     } catch (err) {
@@ -40,28 +56,40 @@ const AdminLogin = () => {
   }
 
   return (
-    <AdminLayout title="Admin Login">
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Head>
+        <title>Admin Login - Jaypee Digital</title>
+      </Head>
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          py: 4,
-          minHeight: '100vh'
+          minHeight: '100vh',
+          bgcolor: '#f5f5f5'
         }}
       >
-        <Paper sx={{ p: 4, width: '100%', maxWidth: '450px' }}>
-          <Typography variant="h4" sx={{ mb: 3, textAlign: 'center', fontWeight: 700 }}>
-            Admin Login
-          </Typography>
-          
-          {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {error}
-            </Alert>
-          )}
+        <Container maxWidth="sm">
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <img 
+              src="/images/nvr-logo.jpg" 
+              alt="Logo" 
+              style={{ height: '60px', objectFit: 'contain' }}
+            />
+          </Box>
+          <Paper sx={{ p: 4 }}>
+            <Typography variant="h4" sx={{ mb: 3, textAlign: 'center', fontWeight: 700 }}>
+              Admin Login
+            </Typography>
+            
+            {error && (
+              <Alert severity="error" sx={{ mb: 3 }}>
+                {error}
+              </Alert>
+            )}
 
-          <Box component="form" onSubmit={handleSubmit}>
+            <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
               label="Username"
@@ -94,8 +122,9 @@ const AdminLogin = () => {
             </Button>
           </Box>
         </Paper>
-      </Box>
-    </AdminLayout>
+      </Container>
+    </Box>
+  </ThemeProvider>
   )
 }
 
