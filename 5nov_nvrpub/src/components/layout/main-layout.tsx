@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react'
 import Box from '@mui/material/Box'
-import { Footer } from '@/components/footer'
-import { Header } from '@/components/header'
+import HeaderNew from '@/components/home/header-new'
+import FooterNew from '@/components/home/footer-new'
 
 interface Props {
   children: ReactNode
@@ -10,9 +10,11 @@ interface Props {
 const MainLayout: FC<Props> = ({ children }) => {
   return (
     <Box component="main">
-      <Header />
-      {children}
-      <Footer />
+      <HeaderNew />
+      <Box sx={{ paddingTop: '80px' }}>
+        {children}
+      </Box>
+      <FooterNew />
     </Box>
   )
 }
