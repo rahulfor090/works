@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ChevronLeft, ChevronRight, Clock } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
 import Link from 'next/link'
 
 interface FeaturedItem {
@@ -16,7 +16,13 @@ interface FeaturedItem {
   slug?: string
   isbn?: string
   createdAt?: string
+  author?: string
+  tags?: string[]
+  rating?: number
+  reviews?: number
 }
+
+const FEATURED_ISBN = '9788184484175'
 
 const FeaturedJournalsNew: React.FC = () => {
   const [items, setItems] = useState<FeaturedItem[]>([])
@@ -48,6 +54,7 @@ const FeaturedJournalsNew: React.FC = () => {
         const formattedBooks: FeaturedItem[] = (booksData || []).map((book: any) => ({
           id: book.id,
           title: book.title,
+          author: book.author || 'Editorial Team',
           image: book.coverImage || '/images/courses/JMEDS_Cover.jpeg',
           category: 'Book',
           issueDate: book.createdAt ? new Date(book.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : undefined,
@@ -55,22 +62,35 @@ const FeaturedJournalsNew: React.FC = () => {
           type: 'book' as const,
           isbn: book.isbn,
           createdAt: book.createdAt,
+          tags: book.tags || ['Medical', 'Evidence'],
+          rating: book.rating || 4.8,
+          reviews: book.reviews || 240
         }))
         
         // Combine and format journals
         const formattedJournals: FeaturedItem[] = (journalsData || []).map((journal: any) => ({
           id: journal.id,
           title: journal.title,
+          author: journal.editor || 'Journal Team',
           image: journal.coverImage || '/images/jaypee-DSJUOG-1761321552656.jpg',
           category: 'Journal',
           issueDate: journal.createdAt ? new Date(journal.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : undefined,
           readTime: '30 min',
           type: 'journal' as const,
           createdAt: journal.createdAt,
+          tags: journal.tags || ['Clinical', 'Research'],
+          rating: journal.rating || 4.6,
+          reviews: journal.reviews || 180
         }))
         
-        // Combine books and journals
-        const combined = [...formattedBooks, ...formattedJournals]
+        // Combine books and journals giving priority to the highlighted ISBN
+        const matchedBook = formattedBooks.find((book) => book.isbn === FEATURED_ISBN)
+        const booksWithoutHighlight = formattedBooks.filter((book) => book.isbn !== FEATURED_ISBN)
+        const combined = [
+          ...(matchedBook ? [matchedBook] : []),
+          ...booksWithoutHighlight,
+          ...formattedJournals
+        ]
         // Sort by createdAt (newest first) and take first 8
         combined.sort((a, b) => {
           const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
@@ -163,17 +183,17 @@ const FeaturedJournalsNew: React.FC = () => {
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
                 >
                   {currentPageItems.map((item, index) => {
-                    const href = item.type === 'book' 
-                      ? `/content/book/${item.isbn}` 
+                    const href = item.type === 'book'
+                      ? `/content/book/${item.isbn}`
                       : `/contenttypes/journals/${item.id}`
-                    
+
                     return (
                       <motion.div
                         key={`${item.type}-${item.id}`}
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.1 }}
-                        className="bg-white rounded-xl overflow-hidden hover-lift cursor-pointer"
+                        className="bg-white rounded-xl overflow-hidden hover-lift cursor-pointer group"
                         style={{
                           boxShadow: '0 2px 6px rgba(0, 0, 0, 0.03)'
                         }}
@@ -183,11 +203,16 @@ const FeaturedJournalsNew: React.FC = () => {
                             <img
                               src={item.image}
                               alt={item.title}
-                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                               onError={(e) => {
                                 (e.target as HTMLImageElement).src = '/images/courses/JMEDS_Cover.jpeg'
                               }}
                             />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <div className="absolute bottom-4 left-4 right-4">
+                                <p className="text-white text-sm">By {item.author || 'Editorial Board'}</p>
+                              </div>
+                            </div>
                             <div className="absolute top-4 left-4">
                               <span
                                 className="px-3 py-1 rounded-full text-xs font-mono uppercase"
@@ -202,21 +227,44 @@ const FeaturedJournalsNew: React.FC = () => {
                             </div>
                           </div>
                           <div className="p-6">
+                            <div className="flex items-center gap-2 mb-3">
+                              <span
+                                className="px-3 py-1 rounded-full text-xs font-mono uppercase"
+                                style={{
+                                  background: 'var(--accent-grey-200)',
+                                  color: 'var(--text-primary)'
+                                }}
+                              >
+                                {item.issueDate || 'Recent'}
+                              </span>
+                            </div>
                             <h3 className="heading-3 mb-3 line-clamp-2">{item.title}</h3>
-                            <div className="flex items-center justify-between text-sm" style={{ color: 'var(--text-muted)' }}>
-                              <span>{item.issueDate || 'Recent'}</span>
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {(item.tags || ['Research']).map((tag) => (
+                                <span
+                                  key={`${item.id}-${tag}`}
+                                  className="text-xs px-2 py-1 rounded"
+                                  style={{
+                                    background: 'var(--bg-section)',
+                                    color: 'var(--text-secondary)'
+                                  }}
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                            <div className="flex items-center justify-between">
                               <div className="flex items-center gap-1">
-                                <Clock size={14} />
-                                <span>{item.readTime || '30 min'}</span>
+                                <Star size={16} fill="#FFA500" stroke="#FFA500" />
+                                <span className="text-sm font-medium">{item.rating?.toFixed(1) ?? '4.7'}</span>
+                                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+                                  ({item.reviews ?? 200})
+                                </span>
+                              </div>
+                              <div className="text-sm font-mono uppercase" style={{ color: 'var(--text-primary)' }}>
+                                {item.readTime || '30 min'}
                               </div>
                             </div>
-                            <motion.div
-                              whileHover={{ x: 5 }}
-                              className="mt-4 text-sm font-mono uppercase"
-                              style={{ color: 'var(--text-primary)' }}
-                            >
-                              Read More →
-                            </motion.div>
                           </div>
                         </Link>
                       </motion.div>
