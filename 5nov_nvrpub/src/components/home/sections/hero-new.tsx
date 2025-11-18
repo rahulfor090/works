@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Play, Search, X, Filter } from 'lucide-react'
 import { heroData } from '@/data/home-mock'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 interface HeroSlide {
   id?: number
@@ -111,7 +112,7 @@ const HeroNew: React.FC = () => {
 
   // Close filters when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       const target = event.target as HTMLElement
       if (showFilters && !target.closest('.filter-container')) {
         setShowFilters(false)
@@ -123,7 +124,7 @@ const HeroNew: React.FC = () => {
     }
   }, [showFilters])
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
     if (!searchQuery.trim()) return
     
@@ -339,13 +340,13 @@ const HeroNew: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
-          <button className="btn-primary px-8 py-3 text-base flex items-center gap-2">
-            Explore Resources
-          </button>
-          <button className="btn-secondary px-8 py-3 text-base flex items-center gap-2">
+          <Link href="/signup" className="btn-primary px-8 py-3 text-base flex items-center gap-2" style={{ textDecoration: 'none' }}>
+            Start Free
+          </Link>
+          <Link href="/login" className="btn-secondary px-8 py-3 text-base flex items-center gap-2" style={{ textDecoration: 'none' }}>
             <Play size={18} />
-            Watch Video
-          </button>
+            Sign In & Explore
+          </Link>
         </motion.div>
 
         {/* Scroll Indicator */}
