@@ -26,7 +26,6 @@ import AdminBreadcrumbs from '@/components/navigation/AdminBreadcrumbs';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { logout as authLogout } from '@/utils/auth';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import ArticleIcon from '@mui/icons-material/Article';
@@ -39,12 +38,14 @@ import PeopleIcon from '@mui/icons-material/People';
 import SecurityIcon from '@mui/icons-material/Security';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import LinkIcon from '@mui/icons-material/Link';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import BookIcon from '@mui/icons-material/Book';
 import UploadIcon from '@mui/icons-material/Upload';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
+import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 
 const DRAWER_WIDTH = 260;
 
@@ -125,6 +126,9 @@ const AdminLayout = ({
 
   const handleLogout = async () => {
     try {
+
+      await fetch('/api/auth/logout', { method: 'POST' });
+=======
       authLogout();
       // Clear user information
       if (typeof window !== 'undefined') {
@@ -136,6 +140,10 @@ const AdminLayout = ({
     }
   };
 
+
+  const handleOpenCitationWindow = () => {
+    router.push('/admin/citation');
+=======
   const getUserInitials = () => {
     if (!currentUser) return 'A';
     const name = currentUser.username || currentUser.email;
@@ -144,6 +152,7 @@ const AdminLayout = ({
 
   const sidebarItems = [
     { label: 'Dashboard', href: '/admin', icon: <DashboardIcon /> },
+    { label: 'Web API', href: '/admin/webapi', icon: <LinkIcon /> },
     { label: 'Sliders', href: '/admin/sliders', icon: <ViewCarouselIcon /> },
     { label: 'Homepage Slides', href: '/admin/homepage-slides', icon: <ViewCarouselIcon /> },
     { label: 'Contents', href: '/admin/contents', icon: <ArticleIcon /> },
@@ -157,18 +166,21 @@ const AdminLayout = ({
     { label: 'Mentors', href: '/admin/mentors', icon: <PersonIcon /> },
     { label: 'Offers', href: '/admin/offers', icon: <LocalOfferIcon /> },
     { label: 'Menu Management', href: '/admin/menu-management', icon: <MenuBookIcon /> },
+  { label: 'Citation', href: '/admin/citation', icon: <FormatQuoteIcon /> },
     { divider: true },
   ];
 
   const userSubmenuItems = [
     { label: 'Users', href: '/admin/users', icon: <PeopleIcon /> },
-    { label: 'Roles', href: '/admin/users/roles', icon: <SecurityIcon /> },
-    { label: 'Role Privileges', href: '/admin/users/role-privileges', icon: <SecurityIcon /> },
+    { label: 'Roles', href: '/admin/roles', icon: <SecurityIcon /> },
+    { label: 'Role Privileges', href: '/admin/role-privileges', icon: <SecurityIcon /> },
   ];
 
   const bookSubmenuItems = [
     { label: 'Book', href: '/admin/books', icon: <BookIcon /> },
-    { label: 'Chapter', href: '/admin/chapters', icon: <MenuBookOutlinedIcon /> },
+    { label: 'Book Import', href: '/admin/books/import', icon: <UploadIcon /> },
+    { label: 'Book Review', href: '/admin/books/review', icon: <ReviewsIcon /> },
+    { label: 'Chapter', href: '/admin/books/chapter', icon: <MenuBookOutlinedIcon /> },
   ];
 
   return (
@@ -271,37 +283,69 @@ const AdminLayout = ({
                 if (item.divider) {
                   return <Divider key={`divider-${index}`} sx={{ my: 1 }} />;
                 }
-                
+
                 const isActive = router.pathname === item.href;
-                
+
+                const buttonSx = {
+                  py: 1.5,
+                  px: 2,
+                  '&.Mui-selected': {
+                    bgcolor: 'primary.light',
+                    color: 'primary.contrastText',
+                    '&:hover': {
+                      bgcolor: 'primary.main',
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: 'primary.contrastText',
+                    },
+                  },
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                  },
+                } as const;
+
+                // If item has an href and explicit target _blank, render a normal anchor to open new tab
+                if (item.href && (item as any).target === '_blank') {
+                  return (
+                    <ListItem key={item.href || `item-${index}`} disablePadding>
+                      <ListItemButton
+                        component="a"
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        selected={isActive}
+                        sx={buttonSx}
+                        onClick={item.onClick}
+                      >
+                        <ListItemIcon sx={{ minWidth: 40 }}>
+                          {item.icon}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={item.label}
+                          primaryTypographyProps={{
+                            fontSize: '0.875rem',
+                            fontWeight: isActive ? 600 : 400,
+                          }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  );
+                }
+
+                // Default behaviour: use NextLink for internal navigation
                 return (
-                  <ListItem key={item.href} disablePadding>
+                  <ListItem key={item.href || `item-${index}`} disablePadding>
                     <ListItemButton
-                      component={NextLink}
-                      href={item.href!}
+                      component={item.href ? NextLink : 'div'}
+                      href={item.href}
+                      onClick={item.onClick}
                       selected={isActive}
-                      sx={{
-                        py: 1.5,
-                        px: 2,
-                        '&.Mui-selected': {
-                          bgcolor: 'primary.light',
-                          color: 'primary.main',
-                          '&:hover': {
-                            bgcolor: 'primary.light',
-                          },
-                          '& .MuiListItemIcon-root': {
-                            color: 'primary.main',
-                          },
-                        },
-                        '&:hover': {
-                          bgcolor: 'action.hover',
-                        },
-                      }}
+                      sx={buttonSx}
                     >
                       <ListItemIcon sx={{ minWidth: 40 }}>
                         {item.icon}
                       </ListItemIcon>
-                      <ListItemText 
+                      <ListItemText
                         primary={item.label}
                         primaryTypographyProps={{
                           fontSize: '0.875rem',
@@ -355,12 +399,12 @@ const AdminLayout = ({
                             pr: 2,
                             '&.Mui-selected': {
                               bgcolor: 'primary.light',
-                              color: 'primary.main',
+                              color: 'primary.contrastText',
                               '&:hover': {
-                                bgcolor: 'primary.light',
+                                bgcolor: 'primary.main',
                               },
                               '& .MuiListItemIcon-root': {
-                                color: 'primary.main',
+                                color: 'primary.contrastText',
                               },
                             },
                             '&:hover': {
