@@ -15,7 +15,9 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Button,
 } from '@mui/material'
+import NextLink from 'next/link'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import InsightsIcon from '@mui/icons-material/Insights'
 import StarIcon from '@mui/icons-material/Star'
@@ -197,6 +199,9 @@ const AdminHome = () => {
   return (
     <AdminLayout title="Admin Dashboard">
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button component={NextLink} href="/admin/webapi" variant="contained" color="primary">WebAPI</Button>
+        </Box>
         <Grid container spacing={3}>
           {stats.map((stat) => (
             <Grid key={stat.label} item xs={12} sm={6} lg={3}>
