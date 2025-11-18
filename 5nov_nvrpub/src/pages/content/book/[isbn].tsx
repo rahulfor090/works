@@ -39,8 +39,9 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import CloseIcon from '@mui/icons-material/Close'
 import DownloadIcon from '@mui/icons-material/Download'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
+import LockIcon from '@mui/icons-material/Lock'
 
-type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null }
+type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null; chapterType?: string }
 type Section = { title: string; chapters: Chapter[] }
 type Book = {
   id?: number
@@ -99,6 +100,29 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const [company, setCompany] = React.useState('')
   const [department, setDepartment] = React.useState('')
   const [country, setCountry] = React.useState('')
+
+  // User authentication state
+  const [user, setUser] = React.useState<{ email?: string; isPremium?: boolean } | null>(null)
+  const [isLocked, setIsLocked] = React.useState(true)
+
+  // Check user authentication and premium status
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      const userStr = window.localStorage.getItem('user')
+      if (userStr) {
+        const userData = JSON.parse(userStr)
+        setUser(userData)
+        // Only superuser@gmail.com gets full access
+        const isSuperUser = userData.email === 'superuser@gmail.com'
+        setIsLocked(!isSuperUser)
+      } else {
+        setIsLocked(true)
+      }
+    } catch {
+      setIsLocked(true)
+    }
+  }, [])
 
   const favStorageKey = `book:favourite:${isbn}`
 
@@ -358,21 +382,45 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                 </AccordionSummary>
                 <AccordionDetails>
                   <List dense>
-                    {sec.chapters.map((ch, idx) => (
-                      <ListItem key={`${sec.title}-${idx}`}>
-                        {ch.slug ? (
-                          <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
-                              {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
-                            </Typography>
-                          </NextLink>
-                        ) : (
-                          <Typography>
-                            {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
-                          </Typography>
-                        )}
-                      </ListItem>
-                    ))}
+                    {sec.chapters.map((ch, idx) => {
+                      // Determine if this chapter should be locked
+                      // Unlock: Prelims, Index, and Chapter 1
+                      // Lock: Chapter 2 and above, and all appendices (unless superuser)
+                      const shouldShowLock = isLocked && (
+                        (ch.number != null && ch.number >= 2) || 
+                        ch.chapterType === 'appendix'
+                      )
+                      
+                      return (
+                        <ListItem key={`${sec.title}-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {ch.slug ? (
+                            <>
+                              <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                                <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
+                                  {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                                </Typography>
+                              </NextLink>
+                              {shouldShowLock && (
+                                <Tooltip title="Premium content - Login required">
+                                  <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                                </Tooltip>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <Typography sx={{ flex: 1 }}>
+                                {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                              </Typography>
+                              {shouldShowLock && (
+                                <Tooltip title="Premium content - Login required">
+                                  <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                                </Tooltip>
+                              )}
+                            </>
+                          )}
+                        </ListItem>
+                      )
+                    })}
                   </List>
                 </AccordionDetails>
               </Accordion>
