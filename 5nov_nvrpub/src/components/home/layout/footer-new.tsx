@@ -13,7 +13,7 @@ const FooterNew: React.FC = () => {
     {
       title: 'About',
       links: ['Our Story', 'Team', 'Careers', 'Press']
-    },
+    },  
     {
       title: 'Resources',
       links: ['Books', 'Journals', 'Videos', 'Cases']
