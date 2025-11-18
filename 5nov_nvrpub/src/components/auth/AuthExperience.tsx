@@ -48,13 +48,12 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
     setLoginError('')
 
     if (loginEmail === 'superuser@gmail.com' && loginPassword === 'superuser') {
-      localStorage.setItem(
-        'user',
-        JSON.stringify({
-          email: 'superuser@gmail.com',
-          isPremium: true,
-        })
-      )
+      const payload = {
+        email: 'superuser@gmail.com',
+        isPremium: true,
+      }
+      localStorage.setItem('user', JSON.stringify(payload))
+      window.dispatchEvent(new Event('auth-changed'))
       window.location.href = '/'
     } else {
       setLoginError('Invalid email or password')
