@@ -11,65 +11,66 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { username, password } = req.body || {}
+    const { email, password } = req.body || {}
     
-    if (!username || !password) {
-      return res.status(400).json({ success: false, message: 'Username and password are required' })
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Email and password are required' })
     }
 
-    // Query admin_users table - check both username and email
+    // Query users table
     const result = await query(
-      `SELECT user_id, username, password, email, role, status 
-       FROM admin_users 
-       WHERE (username = ? OR email = ?) AND status = 'Active' 
+      `SELECT id, full_name, email, password, plan 
+       FROM users 
+       WHERE email = ? 
        LIMIT 1`,
-      [username, username]
+      [email]
     )
 
     // Handle nested array structure
     const users = Array.isArray(result) ? (Array.isArray(result[0]) ? result[0] : result) : []
 
     if (!users || users.length === 0) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' })
+      return res.status(401).json({ success: false, message: 'Invalid email or password' })
     }
 
     const user = users[0]
 
-    // Check password (assuming passwords are hashed with bcrypt)
-    // If passwords are plain text in DB, use: if (password !== user.password)
+    // Check password (hashed with bcrypt)
     const isPasswordValid = await bcrypt.compare(password, user.password)
 
     if (!isPasswordValid) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' })
+      return res.status(401).json({ success: false, message: 'Invalid email or password' })
     }
 
     // Create JWT token
     const token = jwt.sign(
       { 
-        id: user.user_id,
-        username: user.username,
+        id: user.id,
+        full_name: user.full_name,
         email: user.email,
-        role: user.role || 'admin'
+        plan: user.plan,
+        isPremium: user.plan && user.plan !== 'Free'
       },
       JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '7d' }
     )
 
     // Set HTTP-only cookie
-    res.setHeader('Set-Cookie', `admin-token=${token}; HttpOnly; Path=/; Max-Age=86400; SameSite=Strict`)
+    res.setHeader('Set-Cookie', `user-token=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=Strict`)
     
     return res.status(200).json({ 
       success: true, 
       token,
       user: {
-        id: user.user_id,
-        username: user.username,
+        id: user.id,
+        full_name: user.full_name,
         email: user.email,
-        role: user.role
+        plan: user.plan,
+        isPremium: user.plan && user.plan !== 'Free'
       }
     })
   } catch (err: any) {
-    console.error('Login error:', err)
+    console.error('User login error:', err)
     return res.status(500).json({ success: false, message: err?.message || 'Server error' })
   }
 }
