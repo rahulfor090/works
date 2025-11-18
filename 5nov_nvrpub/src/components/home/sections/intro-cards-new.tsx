@@ -8,7 +8,7 @@ import { introCards } from '@/data/home-mock'
 const iconMap: Record<string, React.ComponentType<any>> = {
   Dna: Dna,
   Network: Network,
-  Stethoscope: Stethoscope
+  Stethoscope: Stethoscope,
 }
 
 const IntroCardsNew: React.FC = () => {
@@ -28,24 +28,20 @@ const IntroCardsNew: React.FC = () => {
                 className="bg-white rounded-xl p-8 hover-lift"
                 style={{
                   boxShadow: '0 2px 6px rgba(0, 0, 0, 0.03)',
-                  border: '1px solid var(--border-light)'
+                  border: '1px solid var(--border-light)',
                 }}
               >
-                <motion.div
-                  whileHover={{ rotate: 8, scale: 1.1 }}
-                  transition={{ duration: 0.3 }}
-                  className="mb-6"
-                >
+                <div className="mb-6">
                   <div
                     className="w-16 h-16 rounded-2xl flex items-center justify-center"
                     style={{
                       background: `${card.color}15`,
-                      color: card.color
+                      color: card.color,
                     }}
                   >
                     {Icon && <Icon size={32} />}
                   </div>
-                </motion.div>
+                </div>
                 <h3 className="heading-3 mb-4">{card.title}</h3>
                 <p className="body-small" style={{ color: 'var(--text-secondary)' }}>
                   {card.description}
@@ -60,6 +56,3 @@ const IntroCardsNew: React.FC = () => {
 }
 
 export default IntroCardsNew
-
-
-
