@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import { motion, useScroll, useTransform, useMotionValueEvent } from 'motion/react'
+import { motion, useScroll, useMotionValueEvent } from 'motion/react'
 import { BookOpen, Users, Award, TrendingUp, ArrowRight } from 'lucide-react'
 
 const cards = [
@@ -50,30 +50,21 @@ const cards = [
 interface CardProps {
   card: typeof cards[0]
   index: number
-  progress: any
   activeIndex: number
 }
 
-const Card: React.FC<CardProps> = ({ card, index, progress, activeIndex }) => {
-  const cardProgress = useTransform(
-    progress,
-    [index / cards.length, (index + 1) / cards.length],
-    [0, 1]
-  )
-  const y = useTransform(cardProgress, [0, 1], [0, -100])
-  
+const Card: React.FC<CardProps> = ({ card, index, activeIndex }) => {
   const Icon = card.icon
   const zIndex = index <= activeIndex ? index + 1 : cards.length - index + activeIndex
 
   return (
     <motion.div
       style={{
-        y,
         position: 'sticky',
-        top: `${100 + index * 20}px`,
+        top: '120px',
         zIndex,
       }}
-      className="w-full"
+      className="w-full flex justify-center"
     >
       <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -84,7 +75,7 @@ const Card: React.FC<CardProps> = ({ card, index, progress, activeIndex }) => {
           scale: 1.02,
           transition: { duration: 0.3 }
         }}
-        className="relative rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500"
+        className="relative w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500"
         style={{
           background: 'white',
           border: `2px solid ${card.color}15`,
@@ -133,11 +124,6 @@ const Card: React.FC<CardProps> = ({ card, index, progress, activeIndex }) => {
               whileInView={{ scale: 1, rotate: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              whileHover={{ 
-                scale: 1.1, 
-                rotate: 5,
-                transition: { duration: 0.3 }
-              }}
               className="absolute top-6 left-6 cursor-pointer"
             >
               <div
@@ -277,10 +263,10 @@ const StackCardsNew: React.FC = () => {
   return (
     <section
       ref={containerRef}
-      className="relative py-20"
+      className="relative mt-10 md:mt-16 pt-16 md:pt-20 pb-20 md:pb-24"
       style={{ 
         background: 'var(--bg-page)',
-        minHeight: '200vh'
+        minHeight: '170vh'
       }}
     >
       <div className="container mx-auto px-4">
@@ -304,7 +290,6 @@ const StackCardsNew: React.FC = () => {
               key={card.id}
               card={card}
               index={index}
-              progress={scrollYProgress}
               activeIndex={activeIndex}
             />
           ))}

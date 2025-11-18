@@ -37,8 +37,11 @@ import ShareIcon from '@mui/icons-material/Share'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import CloseIcon from '@mui/icons-material/Close'
+import DownloadIcon from '@mui/icons-material/Download'
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
+import LockIcon from '@mui/icons-material/Lock'
 
-type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null }
+type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null; chapterType?: string }
 type Section = { title: string; chapters: Chapter[] }
 type Book = {
   id?: number
@@ -76,6 +79,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const [favorite, setFavorite] = React.useState<boolean>(false)
   const [referDialogOpen, setReferDialogOpen] = React.useState(false)
   const [librarianDialogOpen, setLibrarianDialogOpen] = React.useState(false)
+  const [keywordsExpanded, setKeywordsExpanded] = React.useState(false)
   
   // Form states for Refer to Friend
   const [senderName, setSenderName] = React.useState('')
@@ -96,6 +100,29 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const [company, setCompany] = React.useState('')
   const [department, setDepartment] = React.useState('')
   const [country, setCountry] = React.useState('')
+
+  // User authentication state
+  const [user, setUser] = React.useState<{ email?: string; isPremium?: boolean } | null>(null)
+  const [isLocked, setIsLocked] = React.useState(true)
+
+  // Check user authentication and premium status
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      const userStr = window.localStorage.getItem('user')
+      if (userStr) {
+        const userData = JSON.parse(userStr)
+        setUser(userData)
+        // Only superuser@gmail.com gets full access
+        const isSuperUser = userData.email === 'superuser@gmail.com'
+        setIsLocked(!isSuperUser)
+      } else {
+        setIsLocked(true)
+      }
+    } catch {
+      setIsLocked(true)
+    }
+  }, [])
 
   const favStorageKey = `book:favourite:${isbn}`
 
@@ -202,6 +229,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
 
   const handleExpandAll = () => setExpandAll(true)
   const handleCollapseAll = () => setExpandAll(false)
+  const toggleExpandCollapse = () => setExpandAll(prev => !prev)
   const toggleSection = (idx: number) => setExpanded(prev => ({ ...prev, [idx]: !prev[idx] }))
 
   const normalizedQuery = query.trim().toLowerCase()
@@ -251,13 +279,20 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
       <Head>
         <title>{title} | Book</title>
       </Head>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+        <Box sx={{ 
+          width: '80%', 
+          height: '2px', 
+          background: (theme) => `linear-gradient(to right, transparent, ${theme.palette.primary.main} 20%, ${theme.palette.primary.main} 80%, transparent)`,
+        }} />
+      </Box>
       <Container sx={{ py: 4 }}>
         <Grid container spacing={3} alignItems="center" sx={{ mb: 2 }}>
-          <Grid item xs={12} md={2}>
-            <Box component="img" src={cover} alt={title} sx={{ width: '100%', borderRadius: 1, boxShadow: 1 }} />
+          <Grid item xs={12} md={3.2} sx={{ pr: 3 }}>
+            <Box component="img" src={cover} alt={title} sx={{ width: '100%', borderRadius: 1 }} />
           </Grid>
-          <Grid item xs={12} md={10}>
-            <Typography variant="h6" sx={{ mb: 0.5 }}>{title}</Typography>
+          <Grid item xs={12} md={8.8}>
+            <Typography variant="h4" sx={{ mb: 0.5, fontWeight: 600 }}>{title}</Typography>
             {author && <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{author}</Typography>}
             <Stack direction="row" spacing={1} alignItems="center">
               <Chip label="Book" size="small" />
@@ -285,15 +320,29 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             )}
             {book?.keywords && (
               <Box sx={{ mt: 1 }}>
-                <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                  {(book.keywords || '')
-                    .split(',')
-                    .map(k => k.trim())
-                    .filter(Boolean)
-                    .map((kw, idx) => (
-                      <Chip key={`kw-${idx}`} label={kw} size="small" color="primary" variant="outlined" />
-                    ))}
-                </Stack>
+                <Accordion disableGutters expanded={keywordsExpanded} onChange={() => setKeywordsExpanded(!keywordsExpanded)} sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '1.1rem' }}>Keywords</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                      {(book.keywords || '')
+                        .split(',')
+                        .map(k => k.trim())
+                        .filter(Boolean)
+                        .map((kw, idx) => (
+                          <Chip 
+                            key={`kw-${idx}`} 
+                            label={kw} 
+                            size="small" 
+                            color="primary" 
+                            variant="outlined"
+                            sx={{ color: 'black', borderWidth: '2px' }}
+                          />
+                        ))}
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
               </Box>
             )}
             <Box sx={{ mt: 2 }}>
@@ -303,18 +352,27 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         </Grid>
 
         <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
-          <Tab label="Table of Contents" />
-          <Tab label={`Videos (${videosCount})`} />
-          <Tab label={`Cases (${casesCount})`} />
-          <Tab label={`Reviews (${reviewsCount})`} />
+          <Tab label="Table of Contents" sx={{ fontWeight: 600 }} />
+          <Tab label={`Videos (${videosCount})`} sx={{ fontWeight: 600 }} />
+          <Tab label={`Cases (${casesCount})`} sx={{ fontWeight: 600 }} />
+          <Tab label={`Reviews (${reviewsCount})`} sx={{ fontWeight: 600 }} />
         </Tabs>
 
         {tab === 0 && (
           <Box>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-              <Button variant="outlined" onClick={handleExpandAll}>Expand All</Button>
-              <Button variant="outlined" onClick={handleCollapseAll}>Collapse All</Button>
-              <Button variant="contained" disabled={!bookPdfUrl} href={bookPdfUrl || undefined}>Download PDF</Button>
+              <Button variant="contained" onClick={toggleExpandCollapse} sx={{ textTransform: 'none' }}>
+                {expandAll ? 'Collapse All' : 'Expand All'}
+              </Button>
+              <Button 
+                variant="contained" 
+                disabled={!bookPdfUrl} 
+                href={bookPdfUrl || undefined}
+                endIcon={<PictureAsPdfIcon />}
+                sx={{ textTransform: 'none' }}
+              >
+                Download
+              </Button>
             </Stack>
 
             {filteredSections.map((sec, sIdx) => (
@@ -324,21 +382,45 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                 </AccordionSummary>
                 <AccordionDetails>
                   <List dense>
-                    {sec.chapters.map((ch, idx) => (
-                      <ListItem key={`${sec.title}-${idx}`}>
-                        {ch.slug ? (
-                          <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
-                              {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
-                            </Typography>
-                          </NextLink>
-                        ) : (
-                          <Typography>
-                            {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
-                          </Typography>
-                        )}
-                      </ListItem>
-                    ))}
+                    {sec.chapters.map((ch, idx) => {
+                      // Determine if this chapter should be locked
+                      // Unlock: Prelims, Index, and Chapter 1
+                      // Lock: Chapter 2 and above, and all appendices (unless superuser)
+                      const shouldShowLock = isLocked && (
+                        (ch.number != null && ch.number >= 2) || 
+                        ch.chapterType === 'appendix'
+                      )
+                      
+                      return (
+                        <ListItem key={`${sec.title}-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {ch.slug ? (
+                            <>
+                              <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                                <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
+                                  {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                                </Typography>
+                              </NextLink>
+                              {shouldShowLock && (
+                                <Tooltip title="Premium content - Login required">
+                                  <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                                </Tooltip>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <Typography sx={{ flex: 1 }}>
+                                {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                              </Typography>
+                              {shouldShowLock && (
+                                <Tooltip title="Premium content - Login required">
+                                  <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                                </Tooltip>
+                              )}
+                            </>
+                          )}
+                        </ListItem>
+                      )
+                    })}
                   </List>
                 </AccordionDetails>
               </Accordion>
@@ -457,11 +539,10 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             variant="contained" 
             onClick={handleSubmitRefer}
             sx={{ 
-              backgroundColor: '#7e3794',
-              '&:hover': { backgroundColor: '#6a2d7d' }
+              textTransform: 'none'
             }}
           >
-            SUBMIT
+            Submit
           </Button>
         </DialogActions>
       </Dialog>
@@ -628,11 +709,10 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             variant="contained" 
             onClick={handleSubmitLibrarian}
             sx={{ 
-              backgroundColor: '#7e3794',
-              '&:hover': { backgroundColor: '#6a2d7d' }
+              textTransform: 'none'
             }}
           >
-            SUBMIT
+            Submit
           </Button>
         </DialogActions>
       </Dialog>
@@ -707,7 +787,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       
       // Determine the slug and type based on chapter number
       if (chapterNo === 'Prelims') {
-        slug = `/books/${isbnStr}/preliminary/${chapterFileName}.html`
+        slug = `/books/${isbnStr}/preliminary/prelims.html`
         chapterType = 'prelims'
       } else if (chapterNo === 'Index') {
         slug = `/books/${isbnStr}/index/${chapterFileName}.html`
@@ -746,9 +826,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
     const sections: Section[] = []
     if (prelims.length) sections.push({ title: 'Prelims', chapters: prelims })
+    if (index.length) sections.push({ title: 'Index', chapters: index })
     if (mainChapters.length) sections.push({ title: 'Chapters', chapters: mainChapters })
     if (appendices.length) sections.push({ title: 'Appendices', chapters: appendices })
-    if (index.length) sections.push({ title: 'Index', chapters: index })
 
     // Detect book PDF (<isbn>.pdf or book.pdf) if present
     let bookPdfUrl: string | null = null

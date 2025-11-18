@@ -44,6 +44,10 @@ const AdminLogin = () => {
         if (data.token) {
           localStorage.setItem('adminToken', data.token)
         }
+        // Store user information
+        if (data.user) {
+          localStorage.setItem('adminUser', JSON.stringify(data.user))
+        }
         router.push('/admin')
       } else {
         setError(data.message || 'Login failed')

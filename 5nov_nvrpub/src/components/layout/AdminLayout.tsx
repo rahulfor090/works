@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import Head from 'next/head';
 import { 
   Box, 
@@ -90,6 +90,7 @@ const AdminLayout = ({
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
   const [usersOpen, setUsersOpen] = useState(false);
   const [booksOpen, setBooksOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ username: string; email: string; role: string } | null>(null);
 
 
   const handleUsersClick = () => {
@@ -99,6 +100,21 @@ const AdminLayout = ({
   const handleBooksClick = () => {
     setBooksOpen(!booksOpen);
   };
+
+  useEffect(() => {
+    // Load user information from localStorage
+    if (typeof window !== 'undefined') {
+      const userStr = localStorage.getItem('adminUser');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          setCurrentUser(user);
+        } catch (error) {
+          console.error('Failed to parse user data:', error);
+        }
+      }
+    }
+  }, []);
 
   const handleProfileOpen = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchor(event.currentTarget);
@@ -110,15 +126,28 @@ const AdminLayout = ({
 
   const handleLogout = async () => {
     try {
+
       await fetch('/api/auth/logout', { method: 'POST' });
+=======
+      authLogout();
+      // Clear user information
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('adminUser');
+      }
       router.push('/admin/login');
     } catch (err) {
       console.error('Logout failed:', err);
     }
   };
 
+
   const handleOpenCitationWindow = () => {
     router.push('/admin/citation');
+=======
+  const getUserInitials = () => {
+    if (!currentUser) return 'A';
+    const name = currentUser.username || currentUser.email;
+    return name.substring(0, 2).toUpperCase();
   };
 
   const sidebarItems = [
@@ -186,9 +215,21 @@ const AdminLayout = ({
               </a>
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              {currentUser && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', mr: 1 }}>
+                  <Typography variant="body2" sx={{ color: 'white', fontWeight: 600, lineHeight: 1.2 }}>
+                    {currentUser.username}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.2 }}>
+                    {currentUser.role || 'Admin'}
+                  </Typography>
+                </Box>
+              )}
               <Tooltip title="Account settings">
                 <IconButton onClick={handleProfileOpen} size="small">
-                  <Avatar sx={{ width: 32, height: 32, bgcolor: 'white', color: 'primary.main' }}>A</Avatar>
+                  <Avatar sx={{ width: 36, height: 36, bgcolor: 'white', color: 'primary.main', fontWeight: 'bold' }}>
+                    {getUserInitials()}
+                  </Avatar>
                 </IconButton>
               </Tooltip>
               <Button 

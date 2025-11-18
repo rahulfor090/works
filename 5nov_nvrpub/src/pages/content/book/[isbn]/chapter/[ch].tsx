@@ -47,6 +47,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
+import LockIcon from '@mui/icons-material/Lock'
 
 type Chapter = { number?: number | null; title: string; slug: string }
 
@@ -88,6 +89,53 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
   const [shareUrl, setShareUrl] = React.useState('')
   const [snackbar, setSnackbar] = React.useState<{ open: boolean; message: string }>({ open: false, message: '' })
 
+  // User authentication state
+  const [user, setUser] = React.useState<{ email?: string; isPremium?: boolean } | null>(null)
+  const [isLocked, setIsLocked] = React.useState(true)
+
+  // Check user authentication and premium status
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return
+    
+    // Determine if chapter should be locked based on chapter number
+    // Unlock: preliminary, index, and chapter 1
+    // Lock: chapter 2 and above (unless superuser)
+    const isChapterNumeric = /^\d+$/.test(ch)
+    const chapterNumber = isChapterNumeric ? Number(ch) : null
+    
+    // Prelims and Index are always unlocked
+    if (ch === 'preliminary' || ch === 'index') {
+      setIsLocked(false)
+      return
+    }
+    
+    // Chapter 1 is always unlocked
+    if (chapterNumber === 1) {
+      setIsLocked(false)
+      return
+    }
+    
+    // For chapters 2 and above, check user authentication
+    if (chapterNumber && chapterNumber >= 2) {
+      try {
+        const userStr = window.localStorage.getItem('user')
+        if (userStr) {
+          const userData = JSON.parse(userStr)
+          setUser(userData)
+          // Only superuser@gmail.com gets full access
+          const isSuperUser = userData.email === 'superuser@gmail.com'
+          setIsLocked(!isSuperUser)
+        } else {
+          setIsLocked(true)
+        }
+      } catch {
+        setIsLocked(true)
+      }
+    } else {
+      setIsLocked(false)
+    }
+  }, [ch])
+
   const [topTab, setTopTab] = React.useState<number>(0)
   const counts = React.useMemo(() => {
     const s = html || ''
@@ -120,7 +168,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
     const makeItem = (n: number | null) => {
       if (n == null) return null
       const found = byNum(n)
-      return found ? { title: found.title, slug: found.slug } : { title: `Chapter ${n}`, slug: `/content/book/${isbn}/chapter/${n}` }
+      return found ? { title: `Chapter ${n}`, slug: found.slug } : { title: `Chapter ${n}`, slug: `/content/book/${isbn}/chapter/${n}` }
     }
     const prev = (num != null) ? ((num - 1) >= 1 ? makeItem(num - 1) : null)
       : (ch === 'index' ? makeItem(lastNum ?? null) : null)
@@ -233,12 +281,13 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
               <Box component="img" src={book.coverImage || DEFAULT_BOOK_COVER} alt={book.title} sx={{ width: '100%', borderRadius: 1, boxShadow: 1 }} />
             </Grid>
             <Grid item xs={12} md={10}>
-              <Typography variant="h6" sx={{ mb: 0.5 }}>{book.title}</Typography>
+              <Typography variant="h5" sx={{ mb: 0.5, fontWeight: 600 }}>{book.title}</Typography>
               {book.author && <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{book.author}</Typography>}
               <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
                 <Chip label="Book" size="small" />
                 <Typography variant="body2" color="text.secondary">ISBN: {isbn}</Typography>
               </Stack>
+              <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>{title}</Typography>
               <Box>
                 <TextField fullWidth placeholder={`Search within ${book.title}...`} size="small" />
               </Box>
@@ -246,15 +295,19 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
           </Grid>
         )}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <Button component={NextLink} href={`/content/book/${isbn}`} startIcon={<ArrowBackIcon />}>Back to TOC</Button>
-          <Typography variant="h5" sx={{ ml: 1, fontWeight: 600 }}>{title}</Typography>
+          <Button component={NextLink} href={`/content/book/${isbn}`} startIcon={<ArrowBackIcon />} variant="contained" sx={{ textTransform: 'none' }}>
+            Back to TOC
+          </Button>
+        </Box>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>{title}</Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
-          <Tabs value={topTab} onChange={(_, v) => setTopTab(v)} textColor="inherit">
-            <Tab label="Table of Contents" />
-            <Tab label={`Figures (${counts.figuresCount})`} />
-            <Tab label={`Tables (${counts.tablesCount})`} />
+          <Tabs value={topTab} onChange={(_, v) => setTopTab(v)} textColor="primary" indicatorColor="primary">
+            <Tab label="Table of Contents" sx={{ fontWeight: 600 }} />
+            <Tab label={`Figures (${counts.figuresCount})`} sx={{ fontWeight: 600 }} />
+            <Tab label={`Tables (${counts.tablesCount})`} sx={{ fontWeight: 600 }} />
           </Tabs>
         </Box>
 
@@ -285,16 +338,16 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
         <Paper variant="outlined" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, p: 1.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {prevNext.prev && (
-              <Typography component={NextLink} href={prevNext.prev.slug} sx={{ color: 'primary.main', fontWeight: 600 }}>
-                ‹ {prevNext.prev.title ? prevNext.prev.title.replace(/^Chapter\s*/i, '').trim() : ''}
+              <Typography component={NextLink} href={prevNext.prev.slug} sx={{ color: 'black', fontWeight: 600, fontSize: '1.1rem' }}>
+                ‹ {prevNext.prev.title}
               </Typography>
             )}
             {prevNext.prev && prevNext.next && (
-              <Typography sx={{ mx: 1, color: 'text.secondary' }}>|</Typography>
+              <Typography sx={{ mx: 1, color: 'text.secondary', fontSize: '1.1rem' }}>|</Typography>
             )}
             {prevNext.next && (
-              <Typography component={NextLink} href={prevNext.next.slug} sx={{ color: 'primary.main', fontWeight: 600 }}>
-                {prevNext.next.title ? prevNext.next.title.replace(/^Chapter\s*/i, '').trim() : ''} ›
+              <Typography component={NextLink} href={prevNext.next.slug} sx={{ color: 'black', fontWeight: 600, fontSize: '1.1rem' }}>
+                {prevNext.next.title} ›
               </Typography>
             )}
           </Box>
@@ -338,8 +391,53 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
 
         
 
-        <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden', height: '80vh' }}>
-          <Box ref={scrollRef} sx={{ overflow: 'auto', height: '80vh' }}>
+        <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden', height: '80vh', position: 'relative' }}>
+          {isLocked && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(8px)',
+                zIndex: 1000,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 2,
+              }}
+            >
+              <LockIcon sx={{ fontSize: 80, color: 'primary.main', opacity: 0.7 }} />
+              <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                Premium Content
+              </Typography>
+              <Typography variant="body1" sx={{ color: 'text.secondary', textAlign: 'center', maxWidth: 500 }}>
+                This chapter is locked. Please log in with a premium account to access the full content.
+              </Typography>
+              <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+                <Button
+                  variant="contained"
+                  component={NextLink}
+                  href="/login"
+                  sx={{ textTransform: 'none', px: 4 }}
+                >
+                  Log In
+                </Button>
+                <Button
+                  variant="outlined"
+                  component={NextLink}
+                  href="/signup"
+                  sx={{ textTransform: 'none', px: 4 }}
+                >
+                  Sign Up
+                </Button>
+              </Stack>
+            </Box>
+          )}
+          <Box ref={scrollRef} sx={{ overflow: 'auto', height: '80vh', filter: isLocked ? 'blur(5px)' : 'none', pointerEvents: isLocked ? 'none' : 'auto' }}>
           <Box sx={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: `${100/scale}%`, height: `${100/scale}%` }}>
             <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center',
               '& .chapter-html p': { fontSize: '1.05rem', lineHeight: 1.8 },
@@ -347,7 +445,14 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
               '& .chapter-html img': { display: 'block', maxWidth: '100%', height: 'auto', borderRadius: 1, boxShadow: 1, my: 2 },
               '& .chapter-html a': { textDecoration: 'underline' }
             }}>
-              <Box sx={{ width: '100%', maxWidth: 880 }}>
+              <Box sx={{ 
+                width: '210mm',
+                minHeight: '297mm',
+                maxWidth: '100%',
+                backgroundColor: 'white',
+                padding: '20mm',
+                boxShadow: '0 0 10px rgba(0,0,0,0.1)'
+              }}>
                 <div
                   ref={contentRef}
                   className="chapter-html"
@@ -388,7 +493,14 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
             <Typography variant="body1" sx={{ mb: 2 }}>{citationText}</Typography>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 3 }}>
-            <Button variant="contained" color="primary" href={risHref || undefined} download={`citation-${isbn}.ris`}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              component="a"
+              href={risHref}
+              download={`citation-${isbn}.ris`}
+              sx={{ textTransform: 'none' }}
+            >
               Download RIS
             </Button>
           </DialogActions>
