@@ -17,3 +17,8 @@ INSERT INTO `citations` (`title`, `url`, `logo`, `isPublished`, `createdAt`, `up
 ('PUBMED_CENTRAL', 'https://www.ncbi.nlm.nih.gov/pmc/articles/', 'PUBMED_CENTRAL_logo_5.png', 1, NOW(), NOW());
 
 -- End of migration
+ALTER TABLE `citations`
+  ADD COLUMN `location` VARCHAR(16) NOT NULL DEFAULT 'header';
+
+
+  UPDATE `citations` SET `location` = 'header' WHERE `location` IS NULL OR `location` = '';

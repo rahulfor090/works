@@ -25,7 +25,11 @@ import {
   TableFooter,
   Snackbar,
   Alert,
-  Grid
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material'
 import { Add, Edit, Delete, Close } from '@mui/icons-material'
 
@@ -34,6 +38,7 @@ interface Citation {
   title: string
   url: string
   logo?: string
+  location?: string
   isPublished: boolean
 }
 
@@ -60,6 +65,7 @@ const AdminCitations = () => {
           title: d.title,
           url: d.url,
           logo: d.logo,
+          location: d.location ?? 'header',
           isPublished: Boolean(d.isPublished)
         })) : [])
       } catch (err) {
@@ -84,7 +90,7 @@ const AdminCitations = () => {
   const paginated = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
   const handleOpenCreate = () => {
-    setCurrentCitation({ title: '', url: '', logo: '', isPublished: true })
+    setCurrentCitation({ title: '', url: '', logo: '', location: 'header', isPublished: true })
     setUploadFile(null)
     setEditing(false)
     setOpen(true)
@@ -119,6 +125,7 @@ const AdminCitations = () => {
           title: currentCitation.title || '',
           url: currentCitation.url || '',
           logo: uploadFile ? uploadFile.name : (currentCitation.logo || ''),
+          location: currentCitation.location || 'header',
           isPublished: currentCitation.isPublished ?? true
         }
 
@@ -179,6 +186,7 @@ const AdminCitations = () => {
                       <TableCell padding="checkbox"><Checkbox disabled /></TableCell>
                       <TableCell>Citation Type</TableCell>
                       <TableCell>Citation Url</TableCell>
+                      <TableCell>Location</TableCell>
                       <TableCell>Logo</TableCell>
                       <TableCell>Active</TableCell>
                       <TableCell align="right">Action</TableCell>
@@ -192,6 +200,7 @@ const AdminCitations = () => {
                         <TableCell>
                           <Link href={c.url} target="_blank" rel="noopener noreferrer">{c.url}</Link>
                         </TableCell>
+                        <TableCell>{c.location || '-'}</TableCell>
                         <TableCell>{c.logo ? <Link href={c.logo} target="_blank" rel="noopener noreferrer">{c.logo}</Link> : '-'}</TableCell>
                         <TableCell><Chip label={c.isPublished ? 'Active' : 'Inactive'} color={c.isPublished ? 'success' : 'default'} size="small"/></TableCell>
                         <TableCell align="right">
@@ -248,6 +257,25 @@ const AdminCitations = () => {
                     <TableCell sx={{ bgcolor: 'grey.100' }}>Base Url *</TableCell>
                     <TableCell>
                       <TextField fullWidth variant="standard" placeholder="Url" value={currentCitation.url || ''} onChange={(e) => setCurrentCitation({...currentCitation, url: e.target.value})} />
+                    </TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell sx={{ bgcolor: 'grey.100' }}>Location</TableCell>
+                    <TableCell>
+                      <FormControl fullWidth variant="standard">
+                        <InputLabel id="location-label">Location</InputLabel>
+                        <Select
+                          labelId="location-label"
+                          value={currentCitation.location || 'header'}
+                          onChange={(e) => setCurrentCitation({...currentCitation, location: String(e.target.value)})}
+                        >
+                          <MenuItem value="header">Header</MenuItem>
+                          <MenuItem value="footer">Footer</MenuItem>
+                          <MenuItem value="left">Left</MenuItem>
+                          <MenuItem value="right">Right</MenuItem>
+                        </Select>
+                      </FormControl>
                     </TableCell>
                   </TableRow>
 
