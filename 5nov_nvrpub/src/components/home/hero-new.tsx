@@ -2,8 +2,18 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ChevronDown, Play, Search, X, Filter } from 'lucide-react'
-import { heroData } from '@/data/home-mock'
+import {
+  ChevronDown,
+  Play,
+  Search,
+  X,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck,
+  Sparkles,
+  Users
+} from 'lucide-react'
 import { useRouter } from 'next/router'
 
 const HERO_SLIDES = [
@@ -47,6 +57,42 @@ const CONTENT_TYPES = [
   { label: 'Reviews', value: 'reviews' },
 ]
 
+const HERO_HIGHLIGHTS = [
+  {
+    label: 'Medical titles',
+    value: '8k+',
+    meta: 'Peer-reviewed, updated weekly'
+  },
+  {
+    label: 'Expert mentors',
+    value: '450+',
+    meta: 'Global specialists & faculty'
+  },
+  {
+    label: 'Clinical cases',
+    value: '1.2k+',
+    meta: 'Evidence-backed scenarios'
+  }
+]
+
+const TRUST_BADGES = [
+  {
+    icon: ShieldCheck,
+    title: 'Verified Content',
+    meta: 'Aligned with NMC/NBE syllabi'
+  },
+  {
+    icon: Sparkles,
+    title: 'AI Voice Companion',
+    meta: 'Listen, query & bookmark'
+  },
+  {
+    icon: Users,
+    title: 'Mentor Circles',
+    meta: 'Live case discussions'
+  }
+]
+
 const HeroNew: React.FC = () => {
   const router = useRouter()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -61,9 +107,18 @@ const HeroNew: React.FC = () => {
     return () => clearInterval(interval)
   }, [])
 
+  const changeSlide = (direction: 'prev' | 'next'): void => {
+    setCurrentImageIndex((prev) => {
+      if (direction === 'next') {
+        return (prev + 1) % HERO_SLIDES.length
+      }
+      return (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length
+    })
+  }
+
   // Close filters when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       const target = event.target as HTMLElement
       if (showFilters && !target.closest('.filter-container')) {
         setShowFilters(false)
@@ -75,7 +130,7 @@ const HeroNew: React.FC = () => {
     }
   }, [showFilters])
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent): void => {
     e.preventDefault()
     if (!searchQuery.trim()) return
     
@@ -97,7 +152,7 @@ const HeroNew: React.FC = () => {
       }}
     >
       {/* Animated Background Image Carousel */}
-      <div className="absolute inset-0 opacity-20">
+      <div className="absolute inset-0 opacity-70">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentImageIndex}
@@ -110,23 +165,29 @@ const HeroNew: React.FC = () => {
               backgroundImage: `url(${HERO_SLIDES[currentImageIndex].image})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              mixBlendMode: 'multiply'
+              mixBlendMode: 'normal',
+              filter: 'brightness(0.7) contrast(1.25)'
             }}
           />
         </AnimatePresence>
       </div>
 
-      {/* Background overlay with subtle pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url(${heroData.backgroundImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            mixBlendMode: 'multiply'
-          }}
-        />
+      {/* Manual Navigation Buttons */}
+      <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-4 z-30 pointer-events-none">
+        <button
+          onClick={() => changeSlide('prev')}
+          className="pointer-events-auto w-12 h-12 rounded-full bg-white/90 border border-gray-200 text-gray-700 shadow-lg flex items-center justify-center hover:bg-white transition-colors"
+          aria-label="Previous slide"
+        >
+          <ChevronLeft size={22} />
+        </button>
+        <button
+          onClick={() => changeSlide('next')}
+          className="pointer-events-auto w-12 h-12 rounded-full bg-white/90 border border-gray-200 text-gray-700 shadow-lg flex items-center justify-center hover:bg-white transition-colors"
+          aria-label="Next slide"
+        >
+          <ChevronRight size={22} />
+        </button>
       </div>
 
       <div className="container mx-auto px-4 relative z-10 text-center pt-32 sm:pt-40">
@@ -141,35 +202,35 @@ const HeroNew: React.FC = () => {
             onSubmit={handleSearch}
             className="relative filter-container"
           >
-            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 rounded-3xl sm:rounded-full border border-white/30 bg-white/15 backdrop-blur-2xl px-6 py-5 shadow-[0_20px_45px_rgba(15,23,42,0.18)]">
-              <div className="flex items-center w-full gap-3">
-                <Search size={24} className="shrink-0 text-white/80" />
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 rounded-3xl sm:rounded-full border border-gray-200 bg-white backdrop-blur-2xl px-5 py-4 shadow-[0_16px_35px_rgba(15,23,42,0.15)]">
+              <div className="flex items-center w-full gap-2.5">
+                <Search size={22} className="shrink-0 text-gray-600" />
                 <input
                   type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search medical resources, journals, or mentors"
-                  className="flex-1 bg-transparent text-base sm:text-lg font-medium text-white placeholder-white/70 focus:outline-none"
+                  className="flex-1 bg-transparent text-base sm:text-lg font-medium text-gray-900 placeholder-gray-500 focus:outline-none"
                   aria-label="Search medical resources"
                 />
                 <button
                   type="button"
                   onClick={() => setShowFilters(!showFilters)}
                   className={`shrink-0 p-2 rounded-full transition-colors relative ${
-                    selectedType !== 'all' ? 'bg-white/30' : 'hover:bg-white/20'
+                    selectedType !== 'all' ? 'bg-gray-100' : 'hover:bg-gray-100'
                   }`}
-                  style={{ color: 'white' }}
+                  style={{ color: 'var(--text-primary)' }}
                   aria-label="Toggle filters"
                 >
                   <Filter size={20} />
                   {selectedType !== 'all' && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-white" />
+                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-black" />
                   )}
                 </button>
               </div>
               <button
                 type="submit"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl sm:rounded-full font-semibold text-sm sm:text-base transition-colors duration-300"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl sm:rounded-full font-semibold text-sm sm:text-base transition-colors duration-300"
                 style={{
                   background: 'rgba(255, 255, 255, 0.9)',
                   color: 'var(--gradient-hero-start)'
@@ -244,20 +305,27 @@ const HeroNew: React.FC = () => {
           </form>
         </motion.div>
 
-        {/* Announcement Badge */}
+        {/* Trust Badges */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full"
-          style={{
-            background: 'rgba(255, 255, 255, 0.4)',
-            backdropFilter: 'blur(4px)'
-          }}
+          transition={{ duration: 0.7, delay: 0.25 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-5xl mx-auto mb-8"
         >
-          <span className="caption font-mono uppercase" style={{ color: 'var(--text-primary)' }}>
-            New Resources Available
-          </span>
+          {TRUST_BADGES.map(({ icon: Icon, title, meta }) => (
+            <div
+              key={title}
+              className="flex items-center gap-3 bg-white/90 border border-gray-100 rounded-2xl px-4 py-3 text-left shadow-[0_10px_25px_rgba(15,23,42,0.08)]"
+            >
+              <span className="inline-flex w-10 h-10 rounded-2xl bg-gray-900 text-white items-center justify-center">
+                <Icon size={18} />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-gray-900">{title}</p>
+                <p className="text-xs text-gray-500">{meta}</p>
+              </div>
+            </div>
+          ))}
         </motion.div>
 
         <motion.h1
@@ -295,6 +363,25 @@ const HeroNew: React.FC = () => {
           </button>
         </motion.div>
 
+        {/* Highlight Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.7 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-5xl mx-auto mb-14"
+        >
+          {HERO_HIGHLIGHTS.map((item) => (
+            <div
+              key={item.label}
+              className="bg-white/90 border border-gray-100 rounded-3xl px-6 py-5 text-left shadow-[0_18px_40px_rgba(15,23,42,0.15)]"
+            >
+              <p className="text-3xl font-semibold text-gray-900">{item.value}</p>
+              <p className="text-base font-medium text-gray-700">{item.label}</p>
+              <p className="text-sm text-gray-500 mt-1">{item.meta}</p>
+            </div>
+          ))}
+        </motion.div>
+
         {/* Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -313,6 +400,7 @@ const HeroNew: React.FC = () => {
           </motion.div>
         </motion.div>
       </div>
+
     </section>
   )
 }

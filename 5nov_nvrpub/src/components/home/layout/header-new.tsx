@@ -94,17 +94,27 @@ const HeaderNew: React.FC = () => {
       <div className="relative" ref={profileRef}>
         <button
           onClick={() => setProfileMenuOpen((prev) => !prev)}
-          className="flex items-center gap-2 px-3 py-2 rounded-full border border-white/50 bg-white/10 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.08)] hover:bg-white/20 transition-all"
+          className="flex items-center gap-3 pl-2 pr-4 py-2 rounded-full bg-white text-left shadow-[0_12px_35px_rgba(15,23,42,0.12)] border border-gray-200 hover:border-gray-300 transition-all"
         >
-          <div className="w-9 h-9 rounded-full bg-white/20 border border-white/60 text-white flex items-center justify-center font-semibold backdrop-blur-xl">
-            {avatarLabel}
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 opacity-30 blur-sm" />
+            <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-slate-900 to-slate-700 text-white flex items-center justify-center font-semibold ring-2 ring-white">
+              {avatarLabel}
+            </div>
           </div>
-          <div className="text-left hidden lg:flex flex-col">
-            <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+          <div className="hidden lg:flex flex-col leading-tight">
+            <span className="text-sm font-semibold text-gray-900">
               {user.email?.split('@')[0]}
             </span>
-            <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-              {planLabel}
+            <span className="text-xs font-medium text-gray-500 flex items-center gap-1">
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                user.isPremium
+                  ? 'bg-amber-100 text-amber-700'
+                  : 'bg-slate-100 text-slate-600'
+              }`}>
+                <Crown size={12} className={user.isPremium ? 'text-amber-500' : 'text-slate-500'} />
+                {user.isPremium ? 'Premium' : 'Free'}
+              </span>
             </span>
           </div>
         </button>
@@ -119,8 +129,11 @@ const HeaderNew: React.FC = () => {
               className="absolute right-0 mt-3 w-64 rounded-2xl border border-black/5 bg-white shadow-xl p-4 z-50"
             >
               <div className="flex items-center gap-3 pb-4 border-b border-black/5">
-                <div className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center text-lg font-semibold">
-                  {avatarLabel}
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 opacity-30 blur-md" />
+                  <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-slate-900 to-slate-700 text-white flex items-center justify-center text-lg font-semibold ring-2 ring-white">
+                    {avatarLabel}
+                  </div>
                 </div>
                 <div>
                   <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
@@ -164,10 +177,10 @@ const HeaderNew: React.FC = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
         scrolled
-          ? 'bg-white/95 backdrop-blur-lg shadow-md'
-          : 'bg-transparent'
+          ? 'bg-white shadow-lg border-gray-200'
+          : 'bg-white/90 backdrop-blur-md border-gray-200/70 shadow-sm'
       }`}
       style={{ height: '80px' }}
     >
