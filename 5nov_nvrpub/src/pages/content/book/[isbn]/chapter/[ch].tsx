@@ -48,6 +48,8 @@ import FacebookIcon from '@mui/icons-material/Facebook'
 import TwitterIcon from '@mui/icons-material/Twitter'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import LockIcon from '@mui/icons-material/Lock'
+import FullscreenIcon from '@mui/icons-material/Fullscreen'
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
 
 type Chapter = { number?: number | null; title: string; slug: string }
 
@@ -88,6 +90,8 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
   const [shareOpen, setShareOpen] = React.useState(false)
   const [shareUrl, setShareUrl] = React.useState('')
   const [snackbar, setSnackbar] = React.useState<{ open: boolean; message: string }>({ open: false, message: '' })
+  const [isFullscreen, setIsFullscreen] = React.useState(false)
+  const paperRef = React.useRef<HTMLDivElement | null>(null)
 
   // User authentication state
   const [user, setUser] = React.useState<{ email?: string; isPremium?: boolean } | null>(null)
@@ -208,6 +212,14 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
   }
   const handleBookmarkMenu = () => { toggleBookmark(); closeOptionsMenu() }
   
+  const handleFullscreen = () => {
+    setIsFullscreen(prev => {
+      const newFullscreen = !prev
+      // Set zoom to 110% when entering fullscreen, 100% when exiting
+      setScale(newFullscreen ? 1.1 : 1)
+      return newFullscreen
+    })
+  }
 
   const storageKeyBookmark = `bookmark:${isbn}:${ch}`
   
@@ -312,29 +324,31 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
         </Box>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={3}>
-            <Box sx={{ position: 'sticky', top: 80, height: '80vh', overflow: 'auto' }}>
-              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>Chapters</Typography>
-              <List dense>
-                {chapters.map((c, idx) => {
-                  const chNormForActive = String(ch).replace(/^ch/i, '')
-                  const isActive = c.slug.endsWith(`/chapter/${chNormForActive}`)
-                  return (
-                    <ListItemButton
-                      key={idx}
-                      component={NextLink}
-                      href={c.slug}
-                      selected={isActive}
-                    >
-                      <ListItemText primary={c.title} />
-                    </ListItemButton>
-                  )
-                })}
-              </List>
-            </Box>
-          </Grid>
+          {!isFullscreen && (
+            <Grid item xs={12} md={3}>
+              <Box sx={{ position: 'sticky', top: 80, height: '80vh', overflow: 'auto' }}>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>Chapters</Typography>
+                <List dense>
+                  {chapters.map((c, idx) => {
+                    const chNormForActive = String(ch).replace(/^ch/i, '')
+                    const isActive = c.slug.endsWith(`/chapter/${chNormForActive}`)
+                    return (
+                      <ListItemButton
+                        key={idx}
+                        component={NextLink}
+                        href={c.slug}
+                        selected={isActive}
+                      >
+                        <ListItemText primary={c.title} />
+                      </ListItemButton>
+                    )
+                  })}
+                </List>
+              </Box>
+            </Grid>
+          )}
 
-          <Grid item xs={12} md={9}>
+          <Grid item xs={12} md={isFullscreen ? 12 : 9}>
         <Paper variant="outlined" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, p: 1.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {prevNext.prev && (
@@ -353,6 +367,13 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Tooltip title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}>
+            <span>
+              <IconButton onClick={handleFullscreen}>
+                {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+              </IconButton>
+            </span>
+          </Tooltip>
           <Tooltip title="Zoom in"><span><IconButton onClick={() => setScale(s => Math.min(2.5, s + 0.1))}><ZoomInIcon /></IconButton></span></Tooltip>
           <Tooltip title="Zoom out"><span><IconButton onClick={() => setScale(s => Math.max(0.5, s - 0.1))}><ZoomOutIcon /></IconButton></span></Tooltip>
           <Tooltip title={'Download Book PDF'}>
@@ -391,7 +412,13 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
 
         
 
-        <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden', height: '80vh', position: 'relative' }}>
+        <Paper ref={paperRef} variant="outlined" sx={{ 
+          borderRadius: 2, 
+          overflow: 'hidden', 
+          height: isFullscreen ? 'calc(100vh - 150px)' : '80vh',
+          position: 'relative',
+          borderColor: isFullscreen ? 'white' : 'inherit'
+        }}>
           {isLocked && (
             <Box
               sx={{
@@ -437,9 +464,18 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
               </Stack>
             </Box>
           )}
-          <Box ref={scrollRef} sx={{ overflow: 'auto', height: '80vh', filter: isLocked ? 'blur(5px)' : 'none', pointerEvents: isLocked ? 'none' : 'auto' }}>
+          <Box ref={scrollRef} sx={{ 
+            overflow: 'auto', 
+            height: isFullscreen ? 'calc(100vh - 150px)' : '80vh',
+            filter: isLocked ? 'blur(5px)' : 'none', 
+            pointerEvents: isLocked ? 'none' : 'auto'
+          }}>
           <Box sx={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: `${100/scale}%`, height: `${100/scale}%` }}>
-            <Box sx={{ px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center',
+            <Box sx={{ 
+              px: { xs: 2, md: 4 }, 
+              py: isFullscreen ? { xs: 1, md: 1.5 } : { xs: 2, md: 3 }, 
+              display: 'flex', 
+              justifyContent: 'center',
               '& .chapter-html p': { fontSize: '1.05rem', lineHeight: 1.8 },
               '& .chapter-html h1, & .chapter-html h2, & .chapter-html h3': { marginTop: 2, marginBottom: 1 },
               '& .chapter-html img': { display: 'block', maxWidth: '100%', height: 'auto', borderRadius: 1, boxShadow: 1, my: 2 },
