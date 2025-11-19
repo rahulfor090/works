@@ -71,7 +71,8 @@ async function createBook(req: NextApiRequest, res: NextApiResponse) {
     book_title,
     book_subtitle,
     doi,
-    subject,
+    category_id,
+    subject_ids,
     society,
     access_type,
     book_content_type,
@@ -96,15 +97,18 @@ async function createBook(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
+    // Convert subject_ids array to comma-separated string
+    const subjectIdsString = subject_ids && Array.isArray(subject_ids) ? subject_ids.join(',') : ''
+
     const [result] = await query<ResultSetHeader>(
       `INSERT INTO books (
-        isbn, book_title, book_subtitle, doi, subject, society, access_type, book_content_type,
+        isbn, book_title, book_subtitle, doi, category_id, subject_ids, society, access_type, book_content_type,
         edition, book_type, book_bisac, publishing_year, publish_status,
         no_of_chapters, no_of_pages, no_of_volumes, featured, download_enable,
         rating, book_cover_image, book_overview, supplementary_information
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        isbn, book_title, book_subtitle, doi, subject, society, access_type, book_content_type,
+        isbn, book_title, book_subtitle, doi, category_id || null, subjectIdsString, society, access_type, book_content_type,
         edition, book_type, book_bisac, publishing_year, publish_status,
         no_of_chapters, no_of_pages, no_of_volumes, featured, download_enable,
         rating, book_cover_image, book_overview, supplementary_information

@@ -39,7 +39,13 @@ async function getBook(id: string, res: NextApiResponse) {
       return res.status(404).json({ success: false, message: 'Book not found' })
     }
 
-    return res.status(200).json({ success: true, data: books[0] })
+    const book = books[0]
+    // Parse comma-separated subject_ids string to array of numbers
+    book.subject_ids = book.subject_ids 
+      ? book.subject_ids.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id))
+      : []
+
+    return res.status(200).json({ success: true, data: book })
   } catch (error: any) {
     console.error('Get Book Error:', error)
     return res.status(500).json({ success: false, message: error.message })
@@ -52,7 +58,8 @@ async function updateBook(id: string, req: NextApiRequest, res: NextApiResponse)
     book_title,
     book_subtitle,
     doi,
-    subject,
+    category_id,
+    subject_ids,
     society,
     access_type,
     book_content_type,
@@ -73,9 +80,12 @@ async function updateBook(id: string, req: NextApiRequest, res: NextApiResponse)
   } = req.body
 
   try {
+    // Convert subject_ids array to comma-separated string
+    const subjectIdsString = subject_ids && Array.isArray(subject_ids) ? subject_ids.join(',') : ''
+
     const [result] = await query<ResultSetHeader>(
       `UPDATE books SET
-        isbn = ?, book_title = ?, book_subtitle = ?, doi = ?, subject = ?, society = ?,
+        isbn = ?, book_title = ?, book_subtitle = ?, doi = ?, category_id = ?, subject_ids = ?, society = ?,
         access_type = ?, book_content_type = ?, edition = ?, book_type = ?, book_bisac = ?,
         publishing_year = ?, publish_status = ?, no_of_chapters = ?,
         no_of_pages = ?, no_of_volumes = ?, featured = ?, download_enable = ?,
@@ -83,7 +93,7 @@ async function updateBook(id: string, req: NextApiRequest, res: NextApiResponse)
         supplementary_information = ?
       WHERE id = ? AND status != "Deleted"`,
       [
-        isbn, book_title, book_subtitle, doi, subject, society, access_type, book_content_type,
+        isbn, book_title, book_subtitle, doi, category_id || null, subjectIdsString, society, access_type, book_content_type,
         edition, book_type, book_bisac, publishing_year, publish_status,
         no_of_chapters, no_of_pages, no_of_volumes, featured, download_enable,
         rating, book_cover_image, book_overview, supplementary_information, id
