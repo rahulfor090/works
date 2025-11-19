@@ -194,6 +194,7 @@ const WebApiPage = () => {
     }
   }
 
+
   const handleView = async (id: number) => {
     try {
       setViewLoading(true)
@@ -376,7 +377,7 @@ const WebApiPage = () => {
         </Paper>
 
         <Paper sx={{ p: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2">Bulk Action</Typography>

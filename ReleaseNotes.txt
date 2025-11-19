@@ -1,0 +1,42 @@
+========== Run below Query in DB =============
+
+CREATE TABLE `alerts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `userid` int NOT NULL,
+  `email` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `alertname` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `alerttype` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `value` longtext,
+  `subscribed_date` datetime DEFAULT NULL,
+  `last_alert_datetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `alertkey` (`userid`),
+  CONSTRAINT `alertkey` FOREIGN KEY (`userid`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `alert_term_subscriptions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) NOT NULL,
+  `type` enum('Keyword','Author') NOT NULL,
+  `term` varchar(255) NOT NULL,
+  `frequency` enum('Immediate','Daily','Weekly') DEFAULT 'Weekly',
+  `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_email_type_term` (`email`,`type`,`term`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+CREATE TABLE `alert_category_subscriptions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) NOT NULL,
+  `categoryId` int NOT NULL,
+  `frequency` enum('Immediate','Daily','Weekly') DEFAULT 'Weekly',
+  `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_email_category` (`email`,`categoryId`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+
+Take pull from git then check
+
+http://localhost:3000/alerts
+

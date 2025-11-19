@@ -37,32 +37,113 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
   const [loginEmail, setLoginEmail] = React.useState('')
   const [loginPassword, setLoginPassword] = React.useState('')
   const [loginError, setLoginError] = React.useState('')
+  const [isLoggingIn, setIsLoggingIn] = React.useState(false)
 
   const [name, setName] = React.useState('')
   const [signupEmail, setSignupEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [confirmPassword, setConfirmPassword] = React.useState('')
+  const [signupError, setSignupError] = React.useState('')
+  const [isSigningUp, setIsSigningUp] = React.useState(false)
 
-  const handleLogin = (e: React.FormEvent): void => {
+  const handleLogin = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
     setLoginError('')
+    setIsLoggingIn(true)
 
-    if (loginEmail === 'superuser@gmail.com' && loginPassword === 'superuser') {
-      const payload = {
-        email: 'superuser@gmail.com',
-        isPremium: true,
+    try {
+      const response = await fetch('/api/auth/user-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(data.user))
+        window.dispatchEvent(new Event('auth-changed'))
+        window.location.href = '/'
+      } else {
+        setLoginError(data.message || 'Invalid email or password')
       }
-      localStorage.setItem('user', JSON.stringify(payload))
-      window.dispatchEvent(new Event('auth-changed'))
-      window.location.href = '/'
-    } else {
-      setLoginError('Invalid email or password')
+    } catch (error) {
+      setLoginError('An error occurred. Please try again.')
+      console.error('Login error:', error)
+    } finally {
+      setIsLoggingIn(false)
     }
   }
 
-  const handleSignup = (e: React.FormEvent): void => {
+  const handleSignup = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
-    console.log('Signup form submitted (no functionality)')
+    setSignupError('')
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setSignupError('Passwords do not match')
+      return
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      setSignupError('Password must be at least 6 characters long')
+      return
+    }
+
+    setIsSigningUp(true)
+
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          full_name: name,
+          email: signupEmail,
+          password: password,
+          plan: 'Free',
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        // Auto-login after successful signup
+        const loginResponse = await fetch('/api/auth/user-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: signupEmail,
+            password: password,
+          }),
+        })
+
+        const loginData = await loginResponse.json()
+
+        if (loginResponse.ok && loginData.success) {
+          localStorage.setItem('user', JSON.stringify(loginData.user))
+          window.dispatchEvent(new Event('auth-changed'))
+          window.location.href = '/'
+        }
+      } else {
+        setSignupError(data.message || 'Failed to create account')
+      }
+    } catch (error) {
+      setSignupError('An error occurred. Please try again.')
+      console.error('Signup error:', error)
+    } finally {
+      setIsSigningUp(false)
+    }
   }
 
   const highlights = [
@@ -498,6 +579,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                             onChange={(e) => setLoginEmail(e.target.value)}
                             fullWidth
                             required
+                            disabled={isLoggingIn}
                             InputLabelProps={{ shrink: true }}
                           />
                           <TextField
@@ -507,6 +589,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                             onChange={(e) => setLoginPassword(e.target.value)}
                             fullWidth
                             required
+                            disabled={isLoggingIn}
                             InputLabelProps={{ shrink: true }}
                           />
                           <Button
@@ -514,6 +597,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                             variant="contained"
                             size="large"
                             endIcon={<ArrowForwardIcon />}
+                            disabled={isLoggingIn}
                             sx={{
                               py: 1.4,
                               textTransform: 'none',
@@ -531,7 +615,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                             }}
                             fullWidth
                           >
-                            Access dashboard
+                            {isLoggingIn ? 'Signing in...' : 'Access dashboard'}
                           </Button>
                           <Typography variant="caption" color="text.secondary" align="center">
                             By continuing, you agree to our Terms of Service and Privacy Policy.
@@ -547,6 +631,11 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.35 }}
                     >
+                      {signupError && (
+                        <Alert severity="error" sx={{ mb: 3 }}>
+                          {signupError}
+                        </Alert>
+                      )}
                       <Box component="form" onSubmit={handleSignup}>
                         <Stack spacing={3}>
                           <TextField
@@ -555,6 +644,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
+                            disabled={isSigningUp}
                             InputLabelProps={{ shrink: true }}
                           />
                           <TextField
@@ -563,6 +653,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                             value={signupEmail}
                             onChange={(e) => setSignupEmail(e.target.value)}
                             required
+                            disabled={isSigningUp}
                             InputLabelProps={{ shrink: true }}
                           />
                           <TextField
@@ -571,6 +662,8 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
+                            disabled={isSigningUp}
+                            helperText="Minimum 6 characters"
                             InputLabelProps={{ shrink: true }}
                           />
                           <TextField
@@ -579,6 +672,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
+                            disabled={isSigningUp}
                             InputLabelProps={{ shrink: true }}
                           />
                           <Button
@@ -586,6 +680,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                             variant="contained"
                             size="large"
                             endIcon={<ArrowForwardIcon />}
+                            disabled={isSigningUp}
                             sx={{
                               py: 1.4,
                               textTransform: 'none',
@@ -603,7 +698,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                             }}
                             fullWidth
                           >
-                            Create account
+                            {isSigningUp ? 'Creating account...' : 'Create account'}
                           </Button>
                           <Typography variant="caption" color="text.secondary" align="center">
                             By creating an account, you agree to our Terms of Service and Privacy Policy.

@@ -39,8 +39,11 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import CloseIcon from '@mui/icons-material/Close'
 import DownloadIcon from '@mui/icons-material/Download'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
+import LockIcon from '@mui/icons-material/Lock'
+import LockOpenIcon from '@mui/icons-material/LockOpen'
+import SearchIcon from '@mui/icons-material/Search'
 
-type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null }
+type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null; chapterType?: string }
 type Section = { title: string; chapters: Chapter[] }
 type Book = {
   id?: number
@@ -79,6 +82,8 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const [referDialogOpen, setReferDialogOpen] = React.useState(false)
   const [librarianDialogOpen, setLibrarianDialogOpen] = React.useState(false)
   const [keywordsExpanded, setKeywordsExpanded] = React.useState(false)
+  const [searchDialogOpen, setSearchDialogOpen] = React.useState(false)
+  const [searchQuery, setSearchQuery] = React.useState('')
   
   // Form states for Refer to Friend
   const [senderName, setSenderName] = React.useState('')
@@ -99,6 +104,29 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const [company, setCompany] = React.useState('')
   const [department, setDepartment] = React.useState('')
   const [country, setCountry] = React.useState('')
+
+  // User authentication state
+  const [user, setUser] = React.useState<{ email?: string; isPremium?: boolean } | null>(null)
+  const [isLocked, setIsLocked] = React.useState(true)
+
+  // Check user authentication and premium status
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      const userStr = window.localStorage.getItem('user')
+      if (userStr) {
+        const userData = JSON.parse(userStr)
+        setUser(userData)
+        // Only superuser@gmail.com gets full access
+        const isSuperUser = userData.email === 'superuser@gmail.com'
+        setIsLocked(!isSuperUser)
+      } else {
+        setIsLocked(true)
+      }
+    } catch {
+      setIsLocked(true)
+    }
+  }, [])
 
   const favStorageKey = `book:favourite:${isbn}`
 
@@ -214,6 +242,38 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
     chapters: normalizedQuery ? sec.chapters.filter(ch => ch.title.toLowerCase().includes(normalizedQuery)) : sec.chapters,
   }))
 
+  // Compute search results
+  const searchResults = React.useMemo(() => {
+    if (!searchQuery.trim()) return []
+    const lowerQuery = searchQuery.toLowerCase()
+    const results: Array<Chapter & { isKeyword?: boolean }> = []
+    
+    // Search in chapters
+    sections.forEach(sec => {
+      sec.chapters.forEach(ch => {
+        if (ch.title.toLowerCase().includes(lowerQuery)) {
+          results.push(ch)
+        }
+      })
+    })
+    
+    // Search in keywords
+    if (book?.keywords) {
+      const keywords = book.keywords.split(',').map(k => k.trim()).filter(Boolean)
+      keywords.forEach(kw => {
+        if (kw.toLowerCase().includes(lowerQuery)) {
+          results.push({ 
+            title: kw, 
+            slug: null, 
+            isKeyword: true 
+          })
+        }
+      })
+    }
+    
+    return results
+  }, [searchQuery, sections, book])
+
   // Fallback sections if none parsed
   const displaySections: Section[] = (sections && sections.length > 0)
     ? sections
@@ -322,7 +382,29 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
               </Box>
             )}
             <Box sx={{ mt: 2 }}>
-              <TextField fullWidth placeholder={`Search within ${title}...`} size="small" value={query} onChange={(e) => setQuery(e.target.value)} />
+              <Box 
+                onClick={() => setSearchDialogOpen(true)}
+                sx={{ 
+                  cursor: 'pointer',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: '24px',
+                  px: 2,
+                  py: 0.75,
+                  display: 'flex',
+                  alignItems: 'center',
+                  transition: 'all 0.2s',
+                  '&:hover': { 
+                    borderColor: 'primary.main',
+                    backgroundColor: 'action.hover'
+                  }
+                }}
+              >
+                <SearchIcon sx={{ fontSize: 18, color: 'text.secondary', mr: 0.75 }} />
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  Search within {title}
+                </Typography>
+              </Box>
             </Box>
           </Grid>
         </Grid>
@@ -358,21 +440,56 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                 </AccordionSummary>
                 <AccordionDetails>
                   <List dense>
-                    {sec.chapters.map((ch, idx) => (
-                      <ListItem key={`${sec.title}-${idx}`}>
-                        {ch.slug ? (
-                          <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
-                              {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
-                            </Typography>
-                          </NextLink>
-                        ) : (
-                          <Typography>
-                            {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
-                          </Typography>
-                        )}
-                      </ListItem>
-                    ))}
+                    {sec.chapters.map((ch, idx) => {
+                      // Determine if this chapter should be locked
+                      // Unlock: Prelims, Index, and Chapter 1
+                      // Lock: Chapter 2 and above, and all appendices (unless superuser)
+                      const shouldShowLock = isLocked && (
+                        (ch.number != null && ch.number >= 2) || 
+                        ch.chapterType === 'appendix'
+                      )
+                      const shouldShowUnlock = !shouldShowLock
+                      
+                      return (
+                        <ListItem key={`${sec.title}-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {ch.slug ? (
+                            <>
+                              <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                                <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
+                                  {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                                </Typography>
+                              </NextLink>
+                              {shouldShowLock && (
+                                <Tooltip title="Premium content - Login required">
+                                  <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                                </Tooltip>
+                              )}
+                              {shouldShowUnlock && (
+                                <Tooltip title="Unlocked content">
+                                  <LockOpenIcon sx={{ fontSize: 18, color: 'success.main' }} />
+                                </Tooltip>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <Typography sx={{ flex: 1 }}>
+                                {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                              </Typography>
+                              {shouldShowLock && (
+                                <Tooltip title="Premium content - Login required">
+                                  <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                                </Tooltip>
+                              )}
+                              {shouldShowUnlock && (
+                                <Tooltip title="Unlocked content">
+                                  <LockOpenIcon sx={{ fontSize: 18, color: 'success.main' }} />
+                                </Tooltip>
+                              )}
+                            </>
+                          )}
+                        </ListItem>
+                      )
+                    })}
                   </List>
                 </AccordionDetails>
               </Accordion>
@@ -667,6 +784,76 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             Submit
           </Button>
         </DialogActions>
+      </Dialog>
+
+      {/* Search Dialog */}
+      <Dialog 
+        open={searchDialogOpen} 
+        onClose={() => {
+          setSearchDialogOpen(false)
+          setSearchQuery('')
+        }}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            Search within {title}
+            <IconButton onClick={() => {
+              setSearchDialogOpen(false)
+              setSearchQuery('')
+            }} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            placeholder="Search chapters..."
+            size="small"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            autoFocus
+            sx={{ mb: 2 }}
+          />
+          {searchQuery.trim() && (
+            <Box>
+              {searchResults.length > 0 ? (
+                <List>
+                  {searchResults.map((ch, idx) => {
+                    const isKeyword = (ch as any).isKeyword
+                    return (
+                      <ListItem 
+                        key={idx}
+                        {...(!isKeyword && ch.slug ? { component: NextLink, href: ch.slug } : {})}
+                        sx={{
+                          cursor: isKeyword ? 'default' : 'pointer',
+                          '&:hover': !isKeyword ? { backgroundColor: 'action.hover' } : {},
+                          borderRadius: 1,
+                          mb: 0.5,
+                          display: 'flex',
+                          gap: 1
+                        }}
+                      >
+                        <Typography sx={{ flex: 1 }}>
+                          {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                        </Typography>
+                        {isKeyword && (
+                          <Chip label="Keyword" size="small" color="primary" variant="outlined" />
+                        )}
+                      </ListItem>
+                    )
+                  })}
+                </List>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  No results found for "{searchQuery}"
+                </Typography>
+              )}
+            </Box>
+          )}
+        </DialogContent>
       </Dialog>
     </>
   )

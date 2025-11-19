@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           u.subscription_type,
           u.status,
           u.role as role_name
-        FROM users u
+        FROM admin_users u
         ORDER BY u.createdAt DESC
       `;
       
@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Insert user
       const insertUserSql = `
-        INSERT INTO users (
+        INSERT INTO admin_users (
           username, 
           password, 
           first_name, 
@@ -91,7 +91,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       const updateSql = `
-        UPDATE users 
+        UPDATE admin_users 
         SET username = ?, 
             first_name = ?, 
             last_name = ?, 
@@ -123,7 +123,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ success: false, message: 'User ID is required' });
       }
 
-      const deleteSql = `DELETE FROM users WHERE user_id = ?`;
+      const deleteSql = `DELETE FROM admin_users WHERE user_id = ?`;
       await query(deleteSql, [user_id]);
 
       return res.status(200).json({ success: true, message: 'User deleted successfully' });

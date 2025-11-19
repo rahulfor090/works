@@ -263,10 +263,10 @@ const StackCardsNew: React.FC = () => {
   return (
     <section
       ref={containerRef}
-      className="relative -mt-14 md:-mt-20 pt-10 md:pt-12 pb-16 md:pb-20"
+      className="relative mt-10 md:mt-16 pt-16 md:pt-20 pb-20 md:pb-24"
       style={{ 
         background: 'var(--bg-page)',
-        minHeight: '150vh'
+        minHeight: '170vh'
       }}
     >
       <div className="container mx-auto px-4">

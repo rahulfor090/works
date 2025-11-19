@@ -198,11 +198,12 @@ const HeroNew: React.FC = () => {
 
   return (
     <section
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative flex items-center justify-center overflow-hidden"
       style={{
         background: 'var(--gradient-hero-warm)',
-        paddingTop: '5rem',
-        paddingBottom: '3rem'
+        minHeight: '100vh',
+        paddingTop: '2rem',
+        paddingBottom: '2rem'
       }}
     >
       {/* Manual Navigation Buttons */}
@@ -245,6 +246,20 @@ const HeroNew: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10 text-center pt-32 sm:pt-40">
+      {/* Background overlay with subtle pattern */}
+      <div className="absolute inset-0 opacity-30">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url(${heroData.backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            mixBlendMode: 'multiply'
+          }}
+        />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10 text-center pt-40 sm:pt-48 pb-12">
         {/* Floating Search Bar */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

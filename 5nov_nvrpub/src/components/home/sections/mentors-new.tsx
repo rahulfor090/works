@@ -2,8 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
-import { Star, Users, BookOpen } from 'lucide-react'
-import { mentors, mentorStats } from '@/data/home-mock'
+import { BookOpen, Star, Users } from 'lucide-react'
 
 interface CountUpProps {
   end: number
@@ -53,7 +52,158 @@ const CountUp: React.FC<CountUpProps> = ({ end, duration = 2, suffix = '' }) => 
   )
 }
 
+interface MentorRecord {
+  id: number
+  name: string
+  photo: string
+  category: string
+  specialty: string
+  description: string
+  companyName: string
+  hospital: string
+  companyLogo: string
+  displayOrder: number
+  isActive: boolean
+}
+
+interface MentorStat {
+  label: string
+  value: number
+  suffix?: string
+}
+
+const defaultStats: MentorStat[] = [
+  { label: 'Active Mentors', value: 0, suffix: '+' },
+  { label: 'Specialties', value: 0, suffix: '+' },
+  { label: 'Institutions', value: 0, suffix: '+' },
+]
+
+const createDefaultStats = () => defaultStats.map(stat => ({ ...stat }))
+
 const MentorsNew: React.FC = () => {
+  const [mentorList, setMentorList] = useState<MentorRecord[]>([])
+  const [stats, setStats] = useState<MentorStat[]>(() => createDefaultStats())
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    const loadMentors = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/mentors', { signal: controller.signal })
+        if (!response.ok) {
+          throw new Error('Failed to load mentors')
+        }
+        const payload = await response.json()
+        const mentors: MentorRecord[] = payload?.mentors ?? []
+        const serverStats: MentorStat[] = payload?.stats ?? []
+
+        setMentorList(mentors)
+        setStats(serverStats.length ? serverStats : deriveStats(mentors))
+        setError(null)
+      } catch (err: any) {
+        if (controller.signal.aborted) return
+        console.error('Mentors section error:', err)
+        setError('Unable to load mentors right now. Please try again later.')
+        setStats(createDefaultStats())
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadMentors()
+
+    return () => controller.abort()
+  }, [])
+
+  const renderMentorCards = () => {
+    if (loading) {
+      return Array.from({ length: 4 }).map((_, index) => (
+        <div key={`mentor-skeleton-${index}`} className="h-96 rounded-xl bg-white p-6 animate-pulse" />
+      ))
+    }
+
+    if (error) {
+      return (
+        <div className="col-span-full text-center text-red-500" role="status">
+          {error}
+        </div>
+      )
+    }
+
+    if (!mentorList.length) {
+      return (
+        <div className="col-span-full text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
+          No mentors have been published yet. Please add mentors from the admin panel.
+        </div>
+      )
+    }
+
+    return mentorList.map((mentor, index) => {
+      const organization = mentor.hospital || mentor.companyName || 'Healthcare Leader'
+      const category = mentor.category || mentor.specialty
+      const description = mentor.description || 'Details coming soon.'
+
+      return (
+        <motion.div
+          key={mentor.id}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+          className="bg-white rounded-xl overflow-hidden hover-lift cursor-pointer group"
+          style={{ boxShadow: '0 2px 6px rgba(0, 0, 0, 0.03)' }}
+        >
+          <div className="relative h-64 overflow-hidden">
+            <motion.img
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.5 }}
+              src={mentor.photo || '/images/mentors/default.jpg'}
+              alt={mentor.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute bottom-4 left-4 right-4 space-y-2">
+                <div className="flex items-center gap-2 text-white text-sm">
+                  <Users size={16} />
+                  <span className="truncate">{organization}</span>
+                </div>
+                <div className="flex items-center gap-2 text-white text-sm">
+                  <BookOpen size={16} />
+                  <span className="truncate">{category}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <h3 className="heading-3 mb-2">{mentor.name}</h3>
+            <p className="body-small mb-3" style={{ color: 'var(--text-secondary)' }}>
+              {mentor.specialty}
+            </p>
+            <p className="caption mb-4" style={{ color: 'var(--text-muted)' }}>
+              {description}
+            </p>
+            <div className="flex items-center justify-between">
+              <span className="caption truncate" style={{ color: 'var(--text-muted)' }}>
+                Spotlight #{mentor.displayOrder}
+              </span>
+              <div className="flex items-center gap-1 text-primary-600">
+                <Star size={16} fill="#2563EB" stroke="#2563EB" />
+                <span className="text-sm font-medium">{category}</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )
+    })
+  }
+
+  const statsToRender = stats.length ? stats : deriveStats(mentorList)
+
   return (
     <section className="py-20" style={{ background: 'var(--bg-page)' }} id="mentors">
       <div className="container mx-auto px-4">
@@ -76,7 +226,7 @@ const MentorsNew: React.FC = () => {
           viewport={{ once: true }}
           className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
         >
-          {mentorStats.map((stat, index) => (
+          {statsToRender.map((stat, index) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -101,56 +251,7 @@ const MentorsNew: React.FC = () => {
 
         {/* Mentors Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {mentors.map((mentor, index) => (
-            <motion.div
-              key={mentor.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-xl overflow-hidden hover-lift cursor-pointer group"
-              style={{
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.03)'
-              }}
-            >
-              <div className="relative h-64 overflow-hidden">
-                <motion.img
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.5 }}
-                  src={mentor.image}
-                  alt={mentor.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="flex items-center gap-2 text-white text-sm mb-2">
-                      <Users size={16} />
-                      <span>{mentor.students.toLocaleString()} students</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-white text-sm">
-                      <BookOpen size={16} />
-                      <span>{mentor.courses} courses</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="heading-3 mb-2">{mentor.name}</h3>
-                <p className="body-small mb-3" style={{ color: 'var(--text-secondary)' }}>
-                  {mentor.specialty}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="caption" style={{ color: 'var(--text-muted)' }}>
-                    {mentor.experience}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <Star size={16} fill="#FFA500" stroke="#FFA500" />
-                    <span className="text-sm font-medium">{mentor.rating}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+          {renderMentorCards()}
         </div>
       </div>
     </section>
@@ -158,4 +259,19 @@ const MentorsNew: React.FC = () => {
 }
 
 export default MentorsNew
+
+const deriveStats = (mentors: MentorRecord[]): MentorStat[] => {
+  if (!mentors.length) {
+    return createDefaultStats()
+  }
+
+  const specialtyCount = new Set(mentors.map(m => m.category)).size
+  const institutionCount = new Set(mentors.map(m => m.hospital || m.companyName)).size
+
+  return [
+    { label: 'Active Mentors', value: mentors.length, suffix: '+' },
+    { label: 'Specialties', value: specialtyCount, suffix: '+' },
+    { label: 'Institutions', value: institutionCount, suffix: '+' },
+  ]
+}
 

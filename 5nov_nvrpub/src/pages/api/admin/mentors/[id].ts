@@ -1,50 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import fs from 'fs'
-import path from 'path'
-
-const mentorsFile = path.join(process.cwd(), 'src/data/mentors-management.json')
-
-interface Mentor {
-  id: number
-  name: string
-  photo: string
-  category: string
-  specialty: string
-  description: string
-  companyName: string
-  hospital: string
-  companyLogo: string
-  displayOrder: number
-  isActive: boolean
-}
-
-const getMentors = (): Mentor[] => {
-  try {
-    if (fs.existsSync(mentorsFile)) {
-      const data = fs.readFileSync(mentorsFile, 'utf-8')
-      return JSON.parse(data)
-    }
-  } catch (error) {
-    console.error('Error reading mentors:', error)
-  }
-  return []
-}
-
-const saveMentors = (mentors: Mentor[]): void => {
-  try {
-    fs.writeFileSync(mentorsFile, JSON.stringify(mentors, null, 2))
-  } catch (error) {
-    console.error('Error saving mentors:', error)
-    throw error
-  }
-}
+import { readMentors, writeMentors } from '@/utils/mentors-store'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query
 
   if (req.method === 'PUT') {
     try {
-      const mentors = getMentors()
+      const mentors = readMentors()
       const mentorIndex = mentors.findIndex(m => m.id === parseInt(id as string))
 
       if (mentorIndex === -1) {
@@ -57,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         id: mentors[mentorIndex].id,
       }
 
-      saveMentors(mentors)
+      writeMentors(mentors)
       return res.status(200).json(mentors[mentorIndex])
     } catch (error: any) {
       console.error('Mentors PUT API error:', error)
@@ -67,14 +29,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'DELETE') {
     try {
-      const mentors = getMentors()
+      const mentors = readMentors()
       const filteredMentors = mentors.filter(m => m.id !== parseInt(id as string))
 
       if (filteredMentors.length === mentors.length) {
         return res.status(404).json({ message: 'Mentor not found' })
       }
 
-      saveMentors(filteredMentors)
+      writeMentors(filteredMentors)
       return res.status(200).json({ message: 'Mentor deleted successfully' })
     } catch (error: any) {
       console.error('Mentors DELETE API error:', error)
