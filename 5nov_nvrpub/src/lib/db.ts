@@ -14,7 +14,7 @@ type DBConfig = {
 const dbConfig: DBConfig = {
   host: process.env.DB_HOST || process.env.MYSQL_HOST || 'localhost',
   user: process.env.DB_USER || process.env.MYSQL_USER || 'root',
-  password: process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || 'anand@4138d',
+  password: process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || 'anshpandey@18072006',
   database: process.env.DB_NAME || process.env.MYSQL_DATABASE || 'jaypeedigi',
   waitForConnections: true,
   connectionLimit: 10,
