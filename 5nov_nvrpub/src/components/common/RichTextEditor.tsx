@@ -19,22 +19,39 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   // In a real implementation, you would initialize the editor here
   // For this demo, we'll use a contentEditable div as a simple editor
   const editorRef = useRef<HTMLDivElement>(null);
+  const isUserTyping = useRef(false);
 
   useEffect(() => {
-    // Ensure the editor content is updated when value prop changes
-    if (editorRef.current && editorRef.current.innerHTML !== value) {
-      // Add null check and ensure DOM element exists before accessing properties
-      try {
-        if (editorRef.current && typeof editorRef.current.innerHTML !== 'undefined') {
-          editorRef.current.innerHTML = value;
+    // Only update if user is not actively typing
+    if (editorRef.current && !isUserTyping.current && editorRef.current.innerHTML !== value) {
+      const selection = window.getSelection();
+      const range = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+      const startOffset = range ? range.startOffset : 0;
+      const endOffset = range ? range.endOffset : 0;
+      
+      editorRef.current.innerHTML = value;
+      
+      // Try to restore cursor position
+      if (range && editorRef.current.childNodes.length > 0) {
+        try {
+          const textNode = editorRef.current.childNodes[0];
+          if (textNode) {
+            const newRange = document.createRange();
+            newRange.setStart(textNode, Math.min(startOffset, textNode.textContent?.length || 0));
+            newRange.setEnd(textNode, Math.min(endOffset, textNode.textContent?.length || 0));
+            selection?.removeAllRanges();
+            selection?.addRange(newRange);
+          }
+        } catch (error) {
+          // Ignore cursor restoration errors
         }
-      } catch (error) {
-        console.warn('Error updating editor content:', error);
       }
     }
+    isUserTyping.current = false;
   }, [value]);
 
-  const handleChange = (e: React.FormEvent<HTMLDivElement>) => {
+  const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
+    isUserTyping.current = true;
     const content = e.currentTarget.innerHTML;
     onChange(content);
   };
@@ -69,8 +86,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <div
             ref={editorRef}
             contentEditable
-            dangerouslySetInnerHTML={{ __html: value }}
-            onInput={handleChange}
+            onInput={handleInput}
+            suppressContentEditableWarning
             style={{
               minHeight: 'calc(100% - 10px)',
               outline: 'none',

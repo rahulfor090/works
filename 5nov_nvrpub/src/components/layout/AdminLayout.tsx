@@ -149,7 +149,7 @@ const AdminLayout = ({ children, title = 'Admin Dashboard', breadcrumbs = [] }: 
     { label: 'Book', href: '/admin/books', icon: <BookIcon /> },
     { label: 'Book Import', href: '/admin/books/import', icon: <UploadIcon /> },
     { label: 'Book Review', href: '/admin/books/review', icon: <ReviewsIcon /> },
-    { label: 'Chapter', href: '/admin/books/chapter', icon: <MenuBookOutlinedIcon /> },
+    { label: 'Chapter', href: '/admin/chapters', icon: <MenuBookOutlinedIcon /> },
   ];
 
   return (

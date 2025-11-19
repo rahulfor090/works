@@ -14,7 +14,8 @@ import {
   Checkbox,
   FormControlLabel,
   Alert,
-  CircularProgress
+  CircularProgress,
+  ListItemText
 } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { useRouter } from 'next/router'
@@ -26,7 +27,8 @@ interface BookFormData {
   book_title: string
   book_subtitle: string
   doi: string
-  subject: string
+  category_id: number | string
+  subject_ids: number[]
   society: string
   access_type: string
   book_content_type: string
@@ -46,6 +48,16 @@ interface BookFormData {
   supplementary_information: string
 }
 
+interface Category {
+  id: number
+  name: string
+}
+
+interface Subject {
+  id: number
+  subject: string
+}
+
 const CreateEditBookPage = () => {
   useAuth() // Protect this route
   
@@ -56,13 +68,17 @@ const CreateEditBookPage = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [subjects, setSubjects] = useState<Subject[]>([])
+  const [uploading, setUploading] = useState(false)
 
   const [formData, setFormData] = useState<BookFormData>({
     isbn: '',
     book_title: '',
     book_subtitle: '',
     doi: '',
-    subject: '',
+    category_id: '',
+    subject_ids: [],
     society: '',
     access_type: 'Paid',
     book_content_type: 'Book',
@@ -88,6 +104,35 @@ const CreateEditBookPage = () => {
     }
   }, [id, isEdit])
 
+  useEffect(() => {
+    fetchCategories()
+    fetchSubjects()
+  }, [])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/admin/categories')
+      const data = await response.json()
+      if (data.success) {
+        setCategories(data.data)
+      }
+    } catch (err: any) {
+      console.error('Failed to fetch categories:', err)
+    }
+  }
+
+  const fetchSubjects = async () => {
+    try {
+      const response = await fetch('/api/admin/subjects')
+      const data = await response.json()
+      if (data.success) {
+        setSubjects(data.data)
+      }
+    } catch (err: any) {
+      console.error('Failed to fetch subjects:', err)
+    }
+  }
+
   const fetchBook = async (bookId: string) => {
     try {
       setLoading(true)
@@ -101,7 +146,9 @@ const CreateEditBookPage = () => {
           no_of_chapters: data.data.no_of_chapters || '',
           no_of_pages: data.data.no_of_pages || '',
           no_of_volumes: data.data.no_of_volumes || 1,
-          rating: data.data.rating || ''
+          rating: data.data.rating || '',
+          category_id: data.data.category_id || '',
+          subject_ids: data.data.subject_ids || []
         })
       } else {
         setError(data.message || 'Failed to fetch book')
@@ -115,6 +162,52 @@ const CreateEditBookPage = () => {
 
   const handleInputChange = (field: keyof BookFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']
+    if (!allowedTypes.includes(file.type)) {
+      setError('Only JPG, JPEG, and PNG files are allowed')
+      return
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('File size must be less than 5MB')
+      return
+    }
+
+    setUploading(true)
+    setError(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/admin/upload-book-cover', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (data.filename) {
+        // Save only the filename to the database
+        handleInputChange('book_cover_image', data.filename)
+        setSuccess(true)
+        setTimeout(() => setSuccess(false), 3000)
+      } else {
+        setError(data.message || 'Upload failed')
+      }
+    } catch (err: any) {
+      setError(err.message || 'Upload failed')
+    } finally {
+      setUploading(false)
+    }
   }
 
   const handleSubmit = async (saveAndContinue = false) => {
@@ -215,14 +308,48 @@ const CreateEditBookPage = () => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Subject"
-              value={formData.subject}
-              onChange={(e) => handleInputChange('subject', e.target.value)}
-              placeholder="Enter subject"
-            />
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel>Category *</InputLabel>
+              <Select
+                value={formData.category_id}
+                onChange={(e) => handleInputChange('category_id', e.target.value)}
+                label="Category *"
+              >
+                <MenuItem value="">Select category</MenuItem>
+                {categories.map((cat) => (
+                  <MenuItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel>Subjects *</InputLabel>
+              <Select
+                multiple
+                value={formData.subject_ids}
+                onChange={(e) => handleInputChange('subject_ids', e.target.value)}
+                label="Subjects *"
+                renderValue={(selected) => {
+                  const selectedNames = (selected as number[]).map(id => {
+                    const subject = subjects.find(s => s.id === id)
+                    return subject?.subject || ''
+                  }).filter(Boolean)
+                  return selectedNames.join(', ')
+                }}
+              >
+                {subjects.map((subject) => (
+                  <MenuItem key={subject.id} value={subject.id}>
+                    <Checkbox checked={formData.subject_ids.indexOf(subject.id) > -1} />
+                    {subject.subject}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
 
           <Grid item xs={12}>
@@ -277,9 +404,24 @@ const CreateEditBookPage = () => {
             <Typography variant="body2" sx={{ mb: 1 }}>
               Book Cover Image
             </Typography>
-            <Button variant="outlined">
-              Browse...
+            <Button
+              variant="outlined"
+              component="label"
+              disabled={uploading}
+            >
+              {uploading ? 'Uploading...' : 'Browse...'}
+              <input
+                type="file"
+                hidden
+                accept="image/jpeg,image/jpg,image/png"
+                onChange={handleFileUpload}
+              />
             </Button>
+            {formData.book_cover_image && (
+              <Typography variant="body2" sx={{ mt: 1, color: 'success.main' }}>
+                Selected: {formData.book_cover_image}
+              </Typography>
+            )}
             <Typography variant="caption" display="block" sx={{ mt: 1 }}>
               (Allowed formats: .jpg, .jpeg or .png. Recommend pixel size:[370,50])
             </Typography>
