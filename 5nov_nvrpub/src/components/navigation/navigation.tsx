@@ -1,52 +1,70 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useCallback, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import CircularProgress from '@mui/material/CircularProgress'
-
-interface MenuItem {
-  id: string
-  label: string
-  path: string
-  isActive: boolean
-  order: number
-}
+import {
+  ContentTypeNavItem,
+  defaultContentTypeNav,
+  fetchContentTypeNav,
+} from '@/utils/contenttype-nav'
 
 const Navigation: FC = () => {
   const router = useRouter()
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([])
+  const [menuItems, setMenuItems] = useState<ContentTypeNavItem[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchMenuItems = async () => {
+  const fetchMenuItems = useCallback(
+    async (signal?: AbortSignal, showSpinner = false) => {
       try {
-        const response = await fetch('/api/admin/menus')
-        if (response.ok) {
-          const data = await response.json()
-          // Filter only active items and sort by order
-          const activeItems = data
-            .filter((item: MenuItem) => item.isActive)
-            .sort((a: MenuItem, b: MenuItem) => a.order - b.order)
-          setMenuItems(activeItems)
-        }
-      } catch (error) {
+        if (showSpinner) setLoading(true)
+        const homepageItems = await fetchContentTypeNav(signal)
+        console.log('Navigation menu items:', homepageItems)
+        setMenuItems(homepageItems)
+      } catch (error: any) {
+        if (error?.name === 'AbortError') return
         console.error('Failed to fetch menu items:', error)
-        // Fallback to default items
-        setMenuItems([
-          { id: '1', label: 'Books', path: '/contenttypes/books', isActive: true, order: 1 },
-          { id: '2', label: 'Videos', path: '/contenttypes/videos', isActive: true, order: 2 },
-          { id: '3', label: 'Journals', path: '/contenttypes/journals', isActive: true, order: 3 },
-          { id: '4', label: 'Cases', path: '/contenttypes/cases', isActive: true, order: 4 },
-          { id: '5', label: 'MCQs', path: '/contenttypes/mcqs', isActive: true, order: 5 },
-          { id: '6', label: 'Reviews', path: '/contenttypes/reviews', isActive: true, order: 6 },
-        ])
+        setMenuItems(defaultContentTypeNav)
       } finally {
-        setLoading(false)
+        if (!signal?.aborted) setLoading(false)
+      }
+    },
+    []
+  )
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchMenuItems(controller.signal, true)
+    return () => controller.abort()
+  }, [fetchMenuItems])
+
+  useEffect(() => {
+    const handleRouteChange = () => fetchMenuItems(undefined, false)
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchMenuItems(undefined, false)
+      }
+    }
+    
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'contenttype-update') {
+        console.log('Detected contenttype update from admin, refreshing navigation...')
+        fetchMenuItems(undefined, false)
       }
     }
 
-    fetchMenuItems()
-  }, [])
+    router.events.on('routeChangeComplete', handleRouteChange)
+    window.addEventListener('focus', handleRouteChange)
+    window.addEventListener('storage', handleStorageChange)
+    document.addEventListener('visibilitychange', handleVisibility)
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange)
+      window.removeEventListener('focus', handleRouteChange)
+      window.removeEventListener('storage', handleStorageChange)
+      document.removeEventListener('visibilitychange', handleVisibility)
+    }
+  }, [fetchMenuItems, router.events])
 
   return (
     <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
