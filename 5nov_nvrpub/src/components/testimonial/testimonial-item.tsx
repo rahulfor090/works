@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import Box from '@mui/material/Box'
 import Rating from '@mui/material/Rating'
 import Avatar from '@mui/material/Avatar'
@@ -7,18 +7,30 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import { Testimonial } from '@/interfaces/testimonial'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
+import Chip from '@mui/material/Chip'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
 
 interface Props {
   item: Testimonial
 }
 
 const TestimonialItem: FC<Props> = ({ item }) => {
+  const [open, setOpen] = useState(false)
+
   if (!item || !item.user) {
     return null
   }
 
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+
   return (
-    <Box sx={{ px: 3, py: 2 }}>
+    <>
+      <Box sx={{ px: 3, py: 2 }}>
       <Card
         sx={{
           p: { xs: 4, md: 5 },
@@ -88,8 +100,15 @@ const TestimonialItem: FC<Props> = ({ item }) => {
                 pl: 3,
                 borderLeft: '3px solid',
                 borderColor: 'primary.light',
+                overflow: 'hidden',
+                maxHeight: '6.8em', // approx 4 lines * 1.7 line-height
+                textOverflow: 'ellipsis',
                 transition: 'all 0.3s ease',
+                cursor: 'pointer',
               }}
+              onClick={handleOpen}
+              role="button"
+              tabIndex={0}
             >
               {item.content}
             </Typography>
@@ -99,6 +118,7 @@ const TestimonialItem: FC<Props> = ({ item }) => {
             <Avatar
               className="user-avatar"
               src={item.user.photo || undefined}
+              alt={item.user.name || 'User avatar'}
               sx={{
                 width: 64,
                 height: 64,
@@ -128,20 +148,24 @@ const TestimonialItem: FC<Props> = ({ item }) => {
               >
                 {item.user.name}
               </Typography>
-              <Typography 
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Typography 
                 variant="body2" 
                 sx={{ 
                   color: 'text.secondary',
-                  mb: 1.5,
-                  fontSize: '0.875rem',
+                    fontSize: '0.875rem',
                 }}
               >
                 {item.user.professional}
               </Typography>
+                {item.user.organization && (
+                  <Chip label={item.user.organization} size="small" variant="outlined" />
+                )}
+              </Box>
               <Rating 
                 className="rating-stars"
                 name="rating" 
-                value={5} 
+                value={Math.max(0, Math.min(5, item.rating ?? 5))} 
                 readOnly 
                 size="small"
                 sx={{
@@ -155,8 +179,24 @@ const TestimonialItem: FC<Props> = ({ item }) => {
           </Box>
         </CardContent>
       </Card>
-    </Box>
+      </Box>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ m: 0, p: 2 }}>
+        {item.user.name}
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{ position: 'absolute', right: 8, top: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers>
+        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>{item.content}</Typography>
+      </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
-export { TestimonialItem }
+export default TestimonialItem
