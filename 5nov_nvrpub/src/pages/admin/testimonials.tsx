@@ -112,8 +112,10 @@ const AdminTestimonials = () => {
           body: JSON.stringify(testimonialData),
         })
         
+        const result = await response.json()
+        
         if (!response.ok) {
-          throw new Error('Failed to update testimonial')
+          throw new Error(result.message || 'Failed to update testimonial')
         }
         
         setSnackbar({
