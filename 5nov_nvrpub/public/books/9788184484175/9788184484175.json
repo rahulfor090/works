@@ -1,0 +1,724 @@
+{
+  "language": "English",
+  "publisher-name": "Jaypee Brothers Medical Publishers (P) Ltd.",
+  "publisher_location": "Delhi",
+  "book_title": "Medical Research",
+  "book_sub_title": "",
+  "print_isbn": "9788184484175",
+  "electronic_isbn": "",
+  "electronic_issn": "",
+  "book_doi": "10.5005/jp/books/19020",
+  "total_chapter": "20 Chapters",
+  "book_author_name": "Bijlani RL",
+  "copyright-name": "Jaypee Brothers Medical Publishers",
+  "copyright_year": 2008,
+  "book_subject": "Medicine",
+  "medicine": "Biostatistics and Research Methodology",
+  "dentistry": "",
+  "nursing": "",
+  "edition": "1/e",
+  "book-type": "Textbook",
+  "book_series": "",
+  "book_keywords": "Medical research, research methodology, clinical research, evidence-based medicine, study design, research ethics, biostatistics, data analysis, literature review, hypothesis formulation, randomized controlled trials, observational study, qualitative research, quantitative research, scientific writing, peer review process, research proposal, thesis writing, publication ethics, health research, informed consent, systematic review, meta-analysis, academic publishing, medical statistics",
+  "book_abstract": "“Medical research: all you wanted to know but did not know whom to ask” is a comprehensive and accessible guide designed for medical students, early-career clinicians, healthcare professionals, and curious minds seeking clarity on the often-intimidating world of medical research. Written in an easy-to-understand format, the book demystifies the core principles of research methodology, study design, data analysis, ethics, and publication practices. Covering a wide spectrum—from formulating a research question to interpreting statistics and publishing in peer-reviewed journals—the book bridges the gap between theory and practice. Real-world examples, simplified explanations, and practical tips make it a valuable resource for those venturing into research for the first time or aiming to strengthen their foundation. Whether you are preparing for a thesis, evaluating scientific literature, or embarking on an independent study, this book equips you with the essential tools to understand, conduct, and critique medical research with confidence.  ",
+  "book-basic": "MED106000",
+  "total-page": 343,
+  "book-author": [
+    {
+      "firstname": "RL",
+      "othername": "",
+      "surname": "Bijlani",
+      "jobtitle": "Former Professor and Head, Department of Physiology",
+      "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+      "email": ""
+    }
+  ],
+  "chapters": [
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Prelims",
+      "chapter-title": "Prelims",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_1",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 0,
+      "chapter-fpage": "i",
+      "chapter-lpage": "xvii",
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "front"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-01",
+      "chapter-title": "What is Research and Why Should We Do It?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_2",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 1,
+      "chapter-fpage": 1,
+      "chapter-lpage": 5,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Research, critical intellectual activity, original intellectual activity, research definition, research methodology, research requirement, research type, original exploratory activity, new knowledge acquisition  ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch1",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-02",
+      "chapter-title": "Am I in the Right Job at the Right Place?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_3",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 2,
+      "chapter-fpage": 6,
+      "chapter-lpage": 12,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Research, research career, research worker, experimental research, research equipment, research worker age, right place for research, quality research, research pre-requisite, research output",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch2",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-03",
+      "chapter-title": "Steps in Systematic Research",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_4",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 3,
+      "chapter-fpage": 13,
+      "chapter-lpage": 23,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Research, systematic research, systematic research step, IDEA, good research worker, research problem, research problem category, coronary heart disease, CHD, experimental design, research grant   ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch3",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-04",
+      "chapter-title": "Experimental Design",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_5",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 4,
+      "chapter-fpage": 24,
+      "chapter-lpage": 43,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Experimental design, experimental design type, research, research type, hypothesis, null hypothesis, external validity, independent variable, dependent variable, extraneous variable, internal validity, descriptive research design, cross-over design, parallel design, post-test design, pre-test design",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch4",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-05",
+      "chapter-title": "Presentation, Analysis and Interpretation of Data",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_6",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 5,
+      "chapter-fpage": 44,
+      "chapter-lpage": 72,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Data, data presentation, data analysis, data interpretation, data type, discrete data, discontinuous data, continuous data, graphs, data condensation, central tendency measurement, dispersion measure, inferential statistics, hypothesis testing, statistical test selection",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch5",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-06",
+      "chapter-title": "Clinical Research",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_7",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 6,
+      "chapter-fpage": 73,
+      "chapter-lpage": 86,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Clinical research, systematic clinical research, randomized controlled trial, RCT, RCT objective, coronary artery disease, CAD, experimental design, randomization, blocked randomization, stratified randomization, non-randomized trial",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch6",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-07",
+      "chapter-title": "Public Health Research",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_8",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 7,
+      "chapter-fpage": 87,
+      "chapter-lpage": 109,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Public health research, public health characteristics, frequency measurement, prevalence study, incidence study, risk measurement, Cohort study, prognostic factor study, survival analysis, retrieving article, selecting article",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch7",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-08",
+      "chapter-title": "Mental Health Research",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_9",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 8,
+      "chapter-fpage": 110,
+      "chapter-lpage": 116,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Mental health research, clinical research, psychiatric disorder, psychiatric disorder treatment, non-formal case study, non-formal case study limitation, research design-based case study, quasi-experimental case study, test standardization, psychometric test limitation",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch8",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-09",
+      "chapter-title": "Laboratory Research",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_10",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 9,
+      "chapter-fpage": 117,
+      "chapter-lpage": 131,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Laboratory research, biological research material, preliminary preparation, standard operations procedure, sample collection, quality assurance, quality control, constant systematic error, CSE, proportional systematic error, PSE, quality control pool, calibration material",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch9",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-10",
+      "chapter-title": "Qualitative Research",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_11",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 10,
+      "chapter-fpage": 132,
+      "chapter-lpage": 148,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Qualitative research, hypertension, coronary artery disease, qualitative research subjectivity, qualitative research flexibility, qualitative research aims, hypothesis, quantitative research, project genesis, literature review, sampling, deviant case sampling, maximum variation sampling, homogenous sampling, typical case sampling, critical case sampling, convenience sampling, data collection, data analysis, data interpretation",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch10",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-11",
+      "chapter-title": "Beyond Scientific Research?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_12",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 11,
+      "chapter-fpage": 149,
+      "chapter-lpage": 165,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Scientific research, scientific research method, yoga, research on yoga, transcendental meditation effect, research limitation, yoga physiological effect, RCT designing, electroencephalography, positron emission tomography, research on spiritual healing, research on intercessory prayer",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch11",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-12",
+      "chapter-title": "How to Make a Research Grant Application?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_13",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 12,
+      "chapter-fpage": 166,
+      "chapter-lpage": 182,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Research grant application, research grant application importance, valuable research, foreign exchange component, FEC, Programme evaluation and review technique, PERT, ethical clearance, research grant application expert review, research grant application committee review",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch12",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-13",
+      "chapter-title": "How to Write a Thesis?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_14",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 13,
+      "chapter-fpage": 183,
+      "chapter-lpage": 199,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Research, thesis, thesis work, research topic selection, thesis step, work on thesis, writing up thesis, thesis anatomy, thesis method, thesis result, reference collection, thesis defence, proof reading, citations section ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch13",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-14",
+      "chapter-title": "How to Write a Research Paper?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_15",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 14,
+      "chapter-fpage": 200,
+      "chapter-lpage": 218,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Research paper, publishing research work, IMRAD, IMRAD structure, literature review, statistical technique, raw data, quantitative data, data interpretation, post-IMRAD, non-IMRAD, reference list, abstract, acknowledgement, paper packaging, article processing, scientific publication, Indian council of medical research, ICMR",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch14",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-15",
+      "chapter-title": "How to Present Research Work at a Conference?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_16",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 15,
+      "chapter-fpage": 219,
+      "chapter-lpage": 229,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Research work, oral presentation, poster presentation, abstract, transparencies, slide making, PowerPoint slide, template, data different type, speaking, poster presentation, poster carrying",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch15",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-16",
+      "chapter-title": "Ethics of Experimentation on Human Subjects",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_17",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 16,
+      "chapter-fpage": 230,
+      "chapter-lpage": 244,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Medical research, human subject experimentation ethics, historical background, world medical association, WMA, Indian council of medical research, ICMR, ICMR guideline, ethical consideration, planning, informed consent, ethics committee, institutional ethics committee, self-experimentation, exploiting ethics, beyond ethics ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch16",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-17",
+      "chapter-title": "Ethics of Experimentation on Animals",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_18",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 17,
+      "chapter-fpage": 245,
+      "chapter-lpage": 255,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Experimentation on animals ethics, human experiment, case against animal experiment, case for animal experiment, official response, ICMR, human study, tissue culture study, cell culture study, ethical principle",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch17",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-18",
+      "chapter-title": "Is There a Method About the Madness Called Research?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_19",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 18,
+      "chapter-fpage": 256,
+      "chapter-lpage": 264,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Research, research method, scientific method, scientific method principle, scientific method process, scientific knowledge, attitudinal essential, typical sequence, scientific revolution",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch18",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-19",
+      "chapter-title": "Why Not We?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_20",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 19,
+      "chapter-fpage": 265,
+      "chapter-lpage": 285,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Scientific activity, usual explanations, usual scapegoats, our culture, our slavery, our working condition, Indian science today, science education, mental education, science future prediction",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch19",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-20",
+      "chapter-title": "Science and Spirituality",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_21",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 20,
+      "chapter-fpage": 286,
+      "chapter-lpage": 294,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Science, spirituality, scientific method, experimental design, hypothesis, spiritual method, yoga, spiritual experiments replication, environmental degradation, spiritual experiment replication, spirituality goal",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch20",
+      "chapter-author": [
+        {
+          "firstname": "RL",
+          "othername": "",
+          "surname": "Bijlani",
+          "jobtitle": "Former Professor and Head, Department of Physiology",
+          "orgname": "All India Institute of Medical Sciences, New Delhi, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Appendix-I",
+      "chapter-title": "Is Medical Research in India a Fraud?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_22",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 21,
+      "chapter-fpage": 295,
+      "chapter-lpage": 297,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch21"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Appendix-II",
+      "chapter-title": "Dilemma of Fresh Medical Graduates",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_23",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 22,
+      "chapter-fpage": 298,
+      "chapter-lpage": 302,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch22"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Appendix-III",
+      "chapter-title": "Inspired and Inspiring Thoughts",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_24",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 23,
+      "chapter-fpage": 303,
+      "chapter-lpage": 320,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch23"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Appendix-IV",
+      "chapter-title": "Sources of Funding for Medical Research in India",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_25",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 24,
+      "chapter-fpage": 321,
+      "chapter-lpage": 322,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch24"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Index",
+      "chapter-title": "Index",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19020_26",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 25,
+      "chapter-fpage": 323,
+      "chapter-lpage": 326,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "index"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "case1",
+      "case_title": "Case Presentation Proforma",
+      "case_keywords": "Case presentation, common data, chief complaints, history, personal history, family history, treatment history, general examination, local examination",
+      "chapter_number": "11",
+      "fpage": "149",
+      "lpage": "165"
+    },
+    {
+      "case_id": "case2",
+      "case_title": "Case Sheet Presentation for Inguinal Hernia, Varicose Veins, Thyroid Swelling, Thromboangiitis Obliterans, Abdominal Lumps and Gastric Outlet Obstruction ",
+      "case_keywords": "Typical case sheet, inguinal hernia, history, local examination, varicose veins, clinical examination, thyroid swelling, abdominal lumps, carcinoma breast   ",
+      "chapter_number": "12",
+      "fpage": "166",
+      "lpage": "182"
+    }
+  ]
+}

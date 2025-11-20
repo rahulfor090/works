@@ -1,0 +1,456 @@
+{
+  "language": "English",
+  "publisher-name": "Jaypee Brothers Medical Publishers (P) Ltd.",
+  "publisher_location": "Delhi",
+  "book_title": "Basics of Electrotherapy",
+  "book_sub_title": "",
+  "print_isbn": "9789366167541",
+  "electronic_isbn": "",
+  "electronic_issn": "",
+  "book_doi": "10.5005/jp/books/19025",
+  "total_chapter": "12 Chapters",
+  "book_author_name": "Khatri Subhash M",
+  "copyright-name": "Jaypee Brothers Medical Publishers",
+  "copyright_year": 2025,
+  "book_subject": "Medicine",
+  "medicine": "Physiotherapy",
+  "dentistry": "",
+  "nursing": "",
+  "edition": "3/e",
+  "book-type": "Textbook",
+  "book_series": "",
+  "book_keywords": "Electrotherapy, electrotherapy history, muscle stimulating current, nerve stimulating current, diagnostic electrotherapy, thermotherapy, therapeutic ultrasound, cryotherapy, phototherapy, electrotherapy safety precaution, biofeedback, electrotherapy key purpose, electrotherapy history timeline, electro-sleep therapy  ",
+  "book_abstract": "This third edition of Basics of Electrotherapy remains a trusted and comprehensive textbook tailored for physiotherapy students and practitioners. It has been thoroughly updated to reflect recent technological advancements and modern clinical guidelines in the field of electrotherapeutics. This book is divided into 12 chapters, which mainly focus on basic concepts and pain, electrotherapy, history of electrotherapy, muscle and nerve stimulating currents, diagnostic electrotherapy, thermotherapy, therapeutic ultrasound, cryotherapy, phototherapy, safety precautions in electrotherapy, clinical decision-making in electrotherapy, and biofeedback. The purpose of this book is to provide a foundation of knowledge for the management of most types of patients using electrotherapeutic modalities. The content is evidence-based, clearly articulated, and visually enriched with enhanced diagrams and illustrations designed to support learning. A large number of suggested readings have been included at the end.",
+  "book-basic": "MED003060",
+  "total-page": 344,
+  "book-author": [
+    {
+      "firstname": "Subhash",
+      "othername": "M",
+      "surname": "Khatri",
+      "jobtitle": "Principal",
+      "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+      "email": ""
+    }
+  ],
+  "chapters": [
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Prelims",
+      "chapter-title": "Prelims",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_1",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 0,
+      "chapter-fpage": "i",
+      "chapter-lpage": "xviii",
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "front"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-01",
+      "chapter-title": "Basic Concepts and Pain",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_2",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 1,
+      "chapter-fpage": 1,
+      "chapter-lpage": 34,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Pain, pain basic concept, electricity, electricity basic concept, electrical charge production, charged body characteristics, lines of forces characteristics, potential difference, current electricity, resistance, fuse, Ohm’s law, electrical shocks, electrical burn, chemical burns, condensers, magnetism, electromagnetic induction, electromagnetic spectrum, transcranial magnetic stimulation, ionization, pain perception, pain pathway, pain measurement",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch1",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-02",
+      "chapter-title": "What is Electrotherapy?",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_3",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 2,
+      "chapter-fpage": 35,
+      "chapter-lpage": 54,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Electrotherapy, low-frequency current, medium-frequency current, high-frequency current, phototherapy, electrodiagnosis, biofeedback, current classification, active modality, passive modality, electrotherapy approaches, electrotherapy key purpose, muscle contraction, gate control theory, low-frequency current action mechanism, current clinical application, short-wave diathermy, microwave diathermy, therapeutic ultrasound",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch2",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-03",
+      "chapter-title": "History of Electrotherapy",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_4",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 3,
+      "chapter-fpage": 55,
+      "chapter-lpage": 64,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Electrotherapy, electrotherapy history, muscle-nerve stimulation, iontophoresis, high-frequency currents, phototherapy, electricity medical use, electrotherapy history timeline, electro-sleep therapy, cranial electrotherapy stimulation, apparatus, electric bath, electrical foot bath, pulvermacher electric chain",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch3",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-04",
+      "chapter-title": "Muscle and Nerve Stimulating Currents",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_5",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 4,
+      "chapter-fpage": 65,
+      "chapter-lpage": 124,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Nerve stimulating current, muscle stimulating current, direct current, faradic current, interrupted direct current, peripheral nerve injury physiotherapy, nerve injury classification, transcutaneous electrical nerve stimulation, interferential current, Russian current, sinusoidal current, high voltage pulsed galvanic current, diadynamic current ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch4",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-05",
+      "chapter-title": "Diagnostic Electrotherapy",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_6",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 5,
+      "chapter-fpage": 125,
+      "chapter-lpage": 169,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Diagnostic electrotherapy, electrodiagnosis, rheobase, chronaxie, strength-duration curve, pulse ratio, faradic interrupted direct current test, nerve conductivity test, nerve distribution test, neurotization time, Galvanic-tetanus ratio, dermo ohmometry, polar formula, myotonic reaction, degeneration reaction, electromyography, motor unit potential",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch5",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-06",
+      "chapter-title": "Thermotherapy",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_7",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 6,
+      "chapter-fpage": 170,
+      "chapter-lpage": 201,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Thermotherapy, short-wave diathermy, microwave diathermy, long-wave diathermy, Oudin current, paraffin wax bath therapy, hot packs, electrical heating pads, high-frequency current application, short-wave diathermy advantage, short-wave diathermy production, short-wave diathermy therapeutic effects, MWD production, MWD advantage, MWD indication, MWD contraindication",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch6",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-07",
+      "chapter-title": "Therapeutic Ultrasound",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_8",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 7,
+      "chapter-fpage": 202,
+      "chapter-lpage": 217,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Therapeutic ultrasound, pulsed ultrasound, phonophoresis, combination therapy, extracorporeal shockwave therapy, ESWT, ultrasound wave production, ultrasonic generator functional parts, therapeutic ultrasound machine, therapeutic ultrasound uses, therapeutic ultrasound contraindication",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch7",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-08",
+      "chapter-title": "Cryotherapy",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_9",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 8,
+      "chapter-fpage": 218,
+      "chapter-lpage": 226,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Cryotherapy, hypothermy, cryotherapy physiological effect, cryotherapy therapeutic effect, cryotherapy indication, cryotherapy contraindication, cryotherapy precaution, cryotherapy application method, vapocoolant sprays, ice massage, cold immersion, compressive cryotherapy, chemical cold packs, musculoskeletal injury management ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch8",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-09",
+      "chapter-title": "Phototherapy",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_10",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 9,
+      "chapter-fpage": 227,
+      "chapter-lpage": 257,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Phototherapy, phototherapy history, therapeutic laser, infrared rays, ultraviolet rays, Puva and ionozone therapy, heliotherapy, phototherapy application, therapeutic laser historical aspect, laser characteristics, laser classification, laser type, semiconductor laser, laser production, infrared rays’ classification, penetration depth, infrared irradiation hazards ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch9",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-10",
+      "chapter-title": "Safety Precautions in Electrotherapy",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_11",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 10,
+      "chapter-fpage": 258,
+      "chapter-lpage": 267,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Electrotherapy, safety precaution, safety precaution importance, hazards type, hazards cause, transcutaneous electrical nerve stimulation, electrotherapy modality, hazards primary causes, shortwave diathermy, SWD, electrical muscle stimulation, EMS, patient assessment, patient safety during treatment",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch10",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-11",
+      "chapter-title": "Clinical Decision-making in Electrotherapy",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_12",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 11,
+      "chapter-fpage": 268,
+      "chapter-lpage": 274,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Clinical Decision-making, electrotherapy, clinical decision-making suggestion, clinical decision-making key component, medical history, pain assessment, functional impairment, skin condition, electrotherapy modality selection, high voltage pulsed current, ultrasound therapy, evidence-based electrotherapy practice ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch11",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-12",
+      "chapter-title": "Biofeedback",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_13",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 12,
+      "chapter-fpage": 275,
+      "chapter-lpage": 300,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Biofeedback, biofeedback type, treatment duration, biofeedback advantage, biofeedback disadvantage, electroencephalography, galvanic skin response, GSR, heart rate variability, HRV, functional MRI, fMRI, myoelectric feedback, postural biofeedback, feedback goniometer device, force biofeedback, orofacial control device, toilet training biofeedback device, stress-related device, cardiovascular biofeedback, electroencephalograph biofeedback, feedback thermometer, hemoencephalography biofeedback, pneumograph biofeedback",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch12",
+      "chapter-author": [
+        {
+          "firstname": "Subhash",
+          "othername": "M",
+          "surname": "Khatri",
+          "jobtitle": "Principal",
+          "orgname": "Maharashtra Institute of Physiotherapy, Latur, Maharashtra, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Glossary",
+      "chapter-title": "Glossary",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_14",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 13,
+      "chapter-fpage": 301,
+      "chapter-lpage": 304,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch13"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Suggested Reading",
+      "chapter-title": "Suggested Reading",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_15",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 14,
+      "chapter-fpage": 305,
+      "chapter-lpage": 312,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch14"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Index",
+      "chapter-title": "Index",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19025_16",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 15,
+      "chapter-fpage": 313,
+      "chapter-lpage": 330,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "index"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "case1",
+      "case_title": "Vitiligo ",
+      "case_keywords": "Explosive vitiligo, mildly active vitiligo, full dose modified OMP regimen, half dose modified OMP regimen, oral levamisole, fluticasone cream, body weight, oral mini-pulse therapy, OMP  ",
+      "chapter_number": "4",
+      "fpage": "65",
+      "lpage": "124"
+    }
+  ]
+}

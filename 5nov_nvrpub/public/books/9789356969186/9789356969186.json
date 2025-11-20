@@ -1,0 +1,730 @@
+{
+  "language": "English",
+  "publisher-name": "Jaypee Brothers Medical Publishers (P) Ltd.",
+  "publisher_location": "Delhi",
+  "book_title": "Manual of Histology",
+  "book_sub_title": "",
+  "print_isbn": "9789356969186",
+  "electronic_isbn": "",
+  "electronic_issn": "",
+  "book_doi": "10.5005/jp/books/19023",
+  "total_chapter": "18 Chapters",
+  "book_author_name": "Kohli Mangala, Mahajan Reeha",
+  "copyright-name": "Jaypee Brothers Medical Publishers",
+  "copyright_year": 2025,
+  "book_subject": "Medicine",
+  "medicine": "Anatomy",
+  "dentistry": "",
+  "nursing": "",
+  "edition": "2/e",
+  "book-type": "Textbook",
+  "book_series": "",
+  "book_keywords": "Histology, epithelium, glandular tissue, connective tissue, cartilage, bone, muscular tissue, lymphatic system, cardiovascular system, integumentary system, respiratory system, alimentary system, urinary system, male reproductive system, female reproductive system, endocrine system, nervous system, special senses",
+  "book_abstract": "“Manual of Histology” is a comprehensive guide designed for medical students, nursing students, and allied health professionals, providing an in-depth understanding of histology. This book is based on the competencies mentioned in the Competency-Based Medical Education (CBME) for histology curriculum. This book consists of 18 chapters, which mainly focus on introduction to histology, epithelium, glandular tissue, connective tissue, cartilage, bone, muscular tissue, lymphatic system, cardiovascular system, integumentary system, respiratory system, alimentary system, urinary system, male reproductive system, female reproductive system, endocrine system, nervous system, and special senses. The text addresses both basic histological concepts and more advanced topics, including tissue development, organogenesis, and tissue pathology, providing a holistic view of histology. This book is Organized in a student-friendly manner, with clear chapter divisions, subheadings, and bullet points to help learners easily navigate and find key concepts. This book also includes review questions and practical exercises that help students revise the key concepts and prepare for exams in histology and related subjects.",
+  "book-basic": "MED005000",
+  "total-page": 220,
+  "book-author": [
+    {
+      "firstname": "Mangala",
+      "othername": "",
+      "surname": "Kohli",
+      "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+      "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+      "email": ""
+    },
+    {
+      "firstname": "Reeha",
+      "othername": "",
+      "surname": "Mahajan",
+      "jobtitle": "Associate Professor, Department of Anatomy",
+      "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+      "email": ""
+    }
+  ],
+  "chapters": [
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Prelims",
+      "chapter-title": "Prelims",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_1",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 0,
+      "chapter-fpage": "i",
+      "chapter-lpage": "xx",
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "front"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-01",
+      "chapter-title": "Introduction to Histology",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_2",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 1,
+      "chapter-fpage": 1,
+      "chapter-lpage": 6,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Histology, microanatomy, microanatomy importance, microanatomy technique, microscope, compound microscope, cell, epithelial cell, connective cell, muscular cell, nervous cell, smooth muscle cell, skeletal muscle cell, cytoplasm",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch1",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-02",
+      "chapter-title": "Epithelium",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_3",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 2,
+      "chapter-fpage": 7,
+      "chapter-lpage": 19,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Epithelium, cell adhesive molecule, simple squamous epithelium, simple cuboidal epithelium, simple columnar epithelium, pseudostratified epithelium, stratified epithelium, stratified squamous epithelium, stratified cuboidal epithelium, stratified columnar epithelium, transitional epithelium, simple epithelia, stratified epithelia, metaplasia, epithelial cell-derived tumor",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch2",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-03",
+      "chapter-title": "Glandular Tissue",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_4",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 3,
+      "chapter-fpage": 20,
+      "chapter-lpage": 30,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Glandular tissue, gland, gland classification, exocrine gland, endocrine gland, unicellular gland, multicellular gland, simple gland, compound gland, epicrine gland, apocrine gland, holocrine gland, cytocrine gland, serous gland, mucous gland, seromucous gland, acini",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch3",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-04",
+      "chapter-title": "Connective Tissue",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_5",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 4,
+      "chapter-fpage": 31,
+      "chapter-lpage": 51,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Connective tissue, connective tissue type, general feature, embryonic connective tissue, connective tissue classification, connective tissue component, cell, connective tissue cell, connective tissue fiber, fibroblasts, mast cells, plasma cell, plasmatocytes, pigment cell, collagen fiber, reticular fiber, dense connective tissue ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch4",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-05",
+      "chapter-title": "Cartilage",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_6",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 5,
+      "chapter-fpage": 52,
+      "chapter-lpage": 57,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Cartilage, cartilages type, hyaline cartilage, white cartilage, elastic cartilage, yellow cartilage, fibrocartilage, basophilic homogenous matrix, elastic fibers, cartilage tumor, hyaline cartilage degeneration",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch5",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-06",
+      "chapter-title": "Bone",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_7",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 6,
+      "chapter-fpage": 58,
+      "chapter-lpage": 63,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Bone, bone classification, morphologically bone, microscopically bone, compact bone, cancellous bone, woven bone, lamellar bone, cell, osteoprogenitor cell, osteoblast, osteocytes, osteoclasts, spongy bone",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch6",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-07",
+      "chapter-title": "Muscular Tissue",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_8",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 7,
+      "chapter-fpage": 64,
+      "chapter-lpage": 71,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Muscular tissue, muscle fiber, connective tissue, smooth endoplasmic reticulum, mitochondria, skeletal muscle, smooth muscle, cardiac muscle, myoepithelial cell, myofibroblasts cell, clinical correlation, vertical integration",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch7",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-08",
+      "chapter-title": "Lymphatic System",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_9",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 8,
+      "chapter-fpage": 72,
+      "chapter-lpage": 80,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Lymphatic system, lymph node microanatomy, spleen microanatomy, thymus microanatomy, tonsil microanatomy, lymphoid organ, lymphatic system component, lymphoid tissue classification, diffuse lymphoid tissue, dense lymphoid tissue  ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch8",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-09",
+      "chapter-title": "Cardiovascular System",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_10",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 9,
+      "chapter-fpage": 81,
+      "chapter-lpage": 92,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Cardiovascular system, muscular blood vessel, blood vessel, blood vessel type, arteries, capillaries, veins, blood vessel structure, conducting artery, large artery, elastic artery, distributing artery, arteriole, venules, large vein, muscular artery",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch9",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-10",
+      "chapter-title": "Integumentary System",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_11",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 10,
+      "chapter-fpage": 93,
+      "chapter-lpage": 98,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Integumentary system, skin, skin appendages, skin type, skin type structure, thin skin, hairy skin, glabrous skin, thick skin, epidermis skin, dermis skin, epidermis cell, mammary gland, ceruminous gland, meibomian gland, sebaceous gland",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch10",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-11",
+      "chapter-title": "Respiratory System",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_12",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 11,
+      "chapter-fpage": 99,
+      "chapter-lpage": 106,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Respiratory system, parathyroid gland microanatomy, nasal cavity, pharynx, larynx, trachea, bronchial tree, respiratory system component, respiratory system function, principal bronchi, intrapulmonary bronchi, alveolar ducts, epiglottis",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch11",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-12",
+      "chapter-title": "Alimentary System",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_13",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 12,
+      "chapter-fpage": 107,
+      "chapter-lpage": 130,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Alimentary system, tongue microanatomy, salivary gland microanatomy, gastrointestinal system microanatomical feature, duodenum, jejunum, lleum, large intestine, appendix, liver, gallbladder, tooth histological structure, parotid gland, submandibular gland, gastrointestinal tract general plan, small intestine ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch12",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-13",
+      "chapter-title": "Urinary System",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_14",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 13,
+      "chapter-fpage": 131,
+      "chapter-lpage": 140,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Urinary system, urinary system microanatomical feature, kidney, ureter, urinary bladder, nephron, collecting tubule, juxta glomerular apparatus, renal circulation, Bowman’s capsule, kidney cortex, kidney medulla, urinary bladder ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch13",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-14",
+      "chapter-title": "Male Reproductive System",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_15",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 14,
+      "chapter-fpage": 141,
+      "chapter-lpage": 149,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Male reproductive system, male reproductive system microanatomical feature, testis, epididymis, vas deferens, prostate gland, seminal vesicles, spermatogenesis, spermatogonium, primary spermatocyte, secondary spermatocyte, spermatid",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch14",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-15",
+      "chapter-title": "Female Reproductive System",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_16",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 15,
+      "chapter-fpage": 150,
+      "chapter-lpage": 162,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Female reproductive system, ovary, uterus, uterine tube, cervix, placenta, umbilical cord, female reproductive system microanatomical feature, fallopian tube, vagina, mammary gland, human placenta, endometrium, myometrium, perimetrium, ectopic pregnancy, cervical carcinoma",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch15",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-16",
+      "chapter-title": "Endocrine System",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_17",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 16,
+      "chapter-fpage": 163,
+      "chapter-lpage": 173,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Endocrine system, pituitary gland anatomy, thyroid gland anatomy, gastrointestinal system, gastrointestinal system microanatomical feature, suprarenal gland, endocrine gland, endocrine tissue, hypophysis cerebri, adrenal gland, Cushing’s syndrome, hyperparathyroidism",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch16",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-17",
+      "chapter-title": "Nervous System",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_18",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 17,
+      "chapter-fpage": 174,
+      "chapter-lpage": 191,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Nervous system, spinal cord microanatomical feature, cerebellum microanatomical feature, cerebrum microanatomical feature, unipolar neuron, ganglia, peripheral nerve, multipolar neuron, excitable cell, non-excitable cell, neuroglial cell, neuron cell, nerve cell, multipolar neuron structure, nerve fiber, cerebral cortex",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch17",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-18",
+      "chapter-title": "Special Senses",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_19",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 18,
+      "chapter-fpage": 192,
+      "chapter-lpage": 198,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Special senses, cornea structure, retina structure, uveal tract, middle vascular coat, inner photosensitive coat, corneal epithelium, Bowman’s membrane, Descemet’s membrane, posterior limiting membrane, pigment epithelium, nervous layer, eyeball",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch18",
+      "chapter-author": [
+        {
+          "firstname": "Mangala",
+          "othername": "",
+          "surname": "Kohli",
+          "jobtitle": "Dean, International Studies and Affairs; Former Director Professor and Head, Department of Anatomy; Former Assistant Director General, Directorate of Health Services",
+          "orgname": "FH Medical College, Agra, Uttar Pradesh, India; VMMC and Safdarjung Hospital, New Delhi, India; MoHFW, Government of India",
+          "email": ""
+        },
+        {
+          "firstname": "Reeha",
+          "othername": "",
+          "surname": "Mahajan",
+          "jobtitle": "Associate Professor, Department of Anatomy",
+          "orgname": "All India Institute of Medical Sciences, Vijaypur, Jammu, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "References",
+      "chapter-title": "References",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19023_20",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 19,
+      "chapter-fpage": 199,
+      "chapter-lpage": 199,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch19"
+    }
+  ]
+}

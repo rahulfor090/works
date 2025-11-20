@@ -1,0 +1,858 @@
+{
+  "language": "English",
+  "publisher-name": "Jaypee Brothers Medical Publishers (P) Ltd.",
+  "publisher_location": "Delhi",
+  "book_title": "Essentials of Ophthalmology",
+  "book_sub_title": "",
+  "print_isbn": "9789356963825",
+  "electronic_isbn": "",
+  "electronic_issn": "",
+  "book_doi": "10.5005/jp/books/19024",
+  "total_chapter": "28 Chapters",
+  "book_author_name": "Basak Samar K",
+  "copyright-name": "Jaypee Brothers Medical Publishers",
+  "copyright_year": 2025,
+  "book_subject": "Medicine",
+  "medicine": "Ophthalmology",
+  "dentistry": "",
+  "nursing": "",
+  "edition": "8/e Reprint",
+  "book-type": "Textbook",
+  "book_series": "",
+  "book_keywords": "Ocular embryology, ocular anatomy, eyeball anatomy, eye physiology, vision physiology, neurology vision, ocular pharmacology, normal eye refraction, eyelid disease, conjunctiva disease, cornea disease, glaucoma, intraocular tumor, ocular motility, common eye surgery, surgical instrument, blindness, refractive error, accommodation, refractive error correction, refractive error estimation, eye-case examination, sclera disease, lens disease, uvea disease, glaucoma, vitreous disease, orbit disease, squint, ocular injury",
+  "book_abstract": "Essentials of Ophthalmology by Samar K Basak is a widely used reference book for medical students, residents, and practicing clinicians interested in the field of ophthalmology. The book provides a comprehensive yet concise overview of the key concepts, diagnostic techniques, and treatments relevant to the discipline. As of the latest editions, the book includes modern advancements in ophthalmology, ensuring that readers are up-to-date with current trends and techniques in the field. This book is divided into 28 chapters, the book begins with discussion on ocular embryology and anatomy, physiology of the eye, neurology of vision, ocular pharmacology, refraction of normal eye, and history-taking and physical examination, diseases of the eyelid, diseases of conjunctiva, diseases of the cornea, glaucoma, intraocular tumors, ocular motility, common eye surgery, surgical instruments, and blindness. The text is written in a clear, straightforward manner, making it accessible for beginners and intermediate learners in ophthalmology. The book is well-illustrated, with numerous diagrams, tables, and figures to help explain complex concepts and enhance understanding. ",
+  "book-basic": "MED063000",
+  "total-page": 628,
+  "book-author": [
+    {
+      "firstname": "Samar",
+      "othername": "K",
+      "surname": "Basak",
+      "jobtitle": "Director",
+      "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+      "email": ""
+    }
+  ],
+  "chapters": [
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Prelims",
+      "chapter-title": "Prelims",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_1",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 0,
+      "chapter-fpage": "i",
+      "chapter-lpage": "xx",
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "front"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-01",
+      "chapter-title": "Embryology and Anatomy",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_2",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 1,
+      "chapter-fpage": 1,
+      "chapter-lpage": 25,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Ophthalmology, eyeball embryology, eyeball anatomy, globe, cornea, sclera, limbus, uvea, ciliary body, choroid, crystalline lens, conjunctiva, extraocular muscles, lacrimal apparatus, lymphatic drainage, Tenon’s Capsule, orbit, Arteries, Veins ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch1",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-02",
+      "chapter-title": "Physiology of the Eye",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_3",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 2,
+      "chapter-fpage": 26,
+      "chapter-lpage": 31,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Eye physiology, cornea, lens, tears, aqueous humor, lens transparency, peripheral cornea, metabolism, wound healing, tears composition, ultrafiltration, cataract pathogenesis, tears circulation, precorneal tear film function, aqueous humor formation, aqueous humor circulation",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch2",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-03",
+      "chapter-title": "Physiology of Vision",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_4",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 3,
+      "chapter-fpage": 32,
+      "chapter-lpage": 41,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Vision physiology, electro-oculography, electroretinography, visual-evoked potential, visual perception, light effect, photochemical change, electrical change, retinal pigment epithelium, electroretinography waveform, electroretinography clinical significance, visual-evoked potential clinical significance, light sense, color sense",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch3",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-04",
+      "chapter-title": "Neurology of Vision",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_5",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 4,
+      "chapter-fpage": 42,
+      "chapter-lpage": 46,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Neurology, vision neurology, neurology visual pathways, hemianopia, papillomacular bundle, pupillary pathway, pupil function, pupillary reflex, light reflex, near reflex, sensory reflex, Horner’s syndrome, pupillary reflexes common anomaly, Hippus, Marcus Gunn pupil, Argyll Robertson’s pupil, Adie’s pupil ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch4",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-05",
+      "chapter-title": "Ocular Pharmacology",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_6",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 5,
+      "chapter-fpage": 47,
+      "chapter-lpage": 64,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Ocular pharmacology, drug delivery system, antibiotics, antivirals, antifungal, autonomic drugs, local anesthetics, antiglaucoma medication, ocular hypotensive, corticosteroids, triamcinolone acetonide, nonsteroidal anti-inflammatory drug, viscoelastic substance, immunosuppressive agent in ophthalmology, anti-vascular endothelial growth factor agents, ocular preservative, astringents, decongestant",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch5",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-06",
+      "chapter-title": "Refraction of the Normal Eye",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_7",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 6,
+      "chapter-fpage": 65,
+      "chapter-lpage": 69,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Normal eye refraction, eye optical system, schematic eye, reduced eye, physiological optical defects, retinal images formation, Purkinje-sanson images, catoptric imagery, entoptic imagery, cornea role in eye, lens role in eye",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch6",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-07",
+      "chapter-title": "Refractive Errors",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_8",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 7,
+      "chapter-fpage": 70,
+      "chapter-lpage": 85,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Refractive error, refractive error classification, hypermetropia, long-sightedness, myopia, short-sightedness, astigmatism, aphakia, aphakia etiology anisometropia, emmetropia, ametropia, photorefractive keratoplasty, cataract surgery, hypermetropia clinical type, hypermetropia etiology, hypermetropia clinical type, myopia etiology, myopia clinical type, anisometropia etiology, anisometropia treatment",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch7",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-08",
+      "chapter-title": "Accommodation and its Disturbances",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_9",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 8,
+      "chapter-fpage": 86,
+      "chapter-lpage": 89,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Accommodation, accommodation mechanism, accommodation pathway, accommodation range, physical accommodation, physiological accommodation, presbyopia, presbyopia causes, presbyopia symptoms, presbyopia treatment, accommodation insufficiency, accommodation spasm",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch8",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-09",
+      "chapter-title": "Estimation and Correction of Refractive Errors",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_10",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 9,
+      "chapter-fpage": 90,
+      "chapter-lpage": 95,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Refractive error correction, Refractive error estimation, refractive error objective method, refractive error subjective method, retinoscopy, refractometry, keratometry, fundus examination, ophthalmoscopy method, postcycloplegic test, dark-room test, direct ophthalmoscopy, indirect ophthalmoscopy, objective optometry, refraction subjective verification",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch9",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-10",
+      "chapter-title": "History-taking and Examination of an Eye Case",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_11",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 10,
+      "chapter-fpage": 96,
+      "chapter-lpage": 124,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Eye case, eye case history, eye case examination, slit lamp examination, eye clinical examination, general examination, ocular examination, uniocular loupe, binocular loupe, direct diffuse illumination, direct focal illumination, retroillumination, conjunctiva, corneal sensation, lacrimal apparatus",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch10",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-11",
+      "chapter-title": "Diseases of the Eyelids",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_12",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 11,
+      "chapter-fpage": 125,
+      "chapter-lpage": 148,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Eyelids disease, congenital abnormality, shape abnormality, position abnormality, lid tumor, epicanthus, blepharophimosis, entropion, cicatricial, ectropion, trichiasis, lagophthalmos, symblepharon, floppy eyelid syndrome, blepharospasm, blepharitis, meibomianitis, external hordeolum ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch11",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-12",
+      "chapter-title": "Diseases of the Conjunctiva",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_13",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 12,
+      "chapter-fpage": 149,
+      "chapter-lpage": 177,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Conjunctival diseases, hyperemia, Conjunctivitis, acute mucopurulent conjunctivitis, purulent conjunctivitis, membranous conjunctivitis, simple chronic conjunctivitis, angular conjunctivitis, follicular conjunctivitis, allergic conjunctivitis, phlyctenular conjunctivitis, vernal conjunctivitis, conjunctival degeneration, conjunctival cyst, conjunctival tumor, conjunctiva symptomatic condition",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch12",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-13",
+      "chapter-title": "Diseases of the Cornea and Sclera",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_14",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 13,
+      "chapter-fpage": 178,
+      "chapter-lpage": 222,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Cornea disease, Sclera disease, corneal disease evaluation, congenital anomaly, corneal edema, bacterial keratitis, hypopyon corneal ulcer, mycotic keratitis, keratomycosis, Acanthamoeba keratitis, herpes zoster ophthalmicus, neurotrophic keratitis, atheromatous ulcer, peripheral ulcerative keratitis, phlyctenular keratitis, interstitial keratitis, contact lens, cornea inflammation, recurrent HSV keratitis, lagophthalmic keratitis, exposure keratitis, corneal degeneration, corneal dystrophy",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch13",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-14",
+      "chapter-title": "Diseases of the Uvea",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_15",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 14,
+      "chapter-fpage": 223,
+      "chapter-lpage": 255,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Uvea disease, uveal disease, congenital anomaly, uveitis, anterior uveitis, Iridocyclitis, intermediate uveitis, posterior uveitis, specific uveitic entity, juvenile rheumatoid arthritis, tubercular uveitis, sarcoid uveitis, toxoplasmosis, toxocariasis, Behçet’s disease, Vogt-Koyanagi-Harada syndrome, sympathetic ophthalmitis, glaucomatocyclitic crisis, cytomegalovirus retinitis, onchocerciasis, presumed ocular histoplasmosis syndrome, acute retinal necrosis, acquired immunodeficiency syndrome, uveal tract degeneration, rubeosis iridis, choroidal degeneration, choroidal detachment, iris cyst",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch14",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-15",
+      "chapter-title": "Diseases of the Lens",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_16",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 15,
+      "chapter-fpage": 256,
+      "chapter-lpage": 285,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Lens disease, lens congenital anomaly, ectopia lentis, lens-induced ocular disease, cataract, congenital cataract, developmental cataract, senile cataract, cataract management, specific cataract entity, lens subluxation, lens dislocation",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch15",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-16",
+      "chapter-title": "Glaucoma",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_17",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 16,
+      "chapter-fpage": 286,
+      "chapter-lpage": 322,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Glaucoma, Glaucoma definition, intraocular pressure, corneal thickness, congenital glaucoma, infantile glaucoma, Buphthalmos etiopathogenesis, Buphthalmos symptoms, Buphthalmos signs, Buphthalmos management, acquired glaucoma, primary angle-closure glaucoma, primary open-angle glaucoma, secondary glaucoma",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch16",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-17",
+      "chapter-title": "Diseases of the Vitreous",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_18",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 17,
+      "chapter-fpage": 323,
+      "chapter-lpage": 329,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Vitreous disease, vitreous humor, vitreous detachment, vitreous opacity, vitreous hemorrhage, vitrectomy, vitreous humor composition, syneresis, posterior vitreous detachment, asteroid hyalosis, synchysis scintillans, pars plana vitrectomy",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch17",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-18",
+      "chapter-title": "Diseases of the Retina",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_19",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 18,
+      "chapter-fpage": 330,
+      "chapter-lpage": 360,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Retina disease, retina disease symptom, ophthalmoscopic finding, fundus examination, ophthalmoscopy method, retinal vascular disorder, retinal vein occlusion, central retinal venous occlusion, branch retinal venous occlusion, central serous retinopathy, fundus fluorescein angiography, cystoid macular edema, age-related macular degeneration, retinitis pigmentosa, retinal detachment, rhegmatogenous retinal detachment, tractional retinal detachment, exudative retinal detachment, hypertensive retinopathy, diabetic retinopathy ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch18",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-19",
+      "chapter-title": "Diseases of the Optic Nerve",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_20",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 19,
+      "chapter-fpage": 361,
+      "chapter-lpage": 374,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Optic nerve, optic nerve disease, optic nerve disease symptom, optic nerve disease sign, developmental abnormality, optic neuritis, toxic amblyopias, toxic optic neuropathy, anterior ischemic optic neuropathy, papilledema, optic atrophy, optic nerve tumor, persistent hyaloid artery, optic disc pit, tilted optic disc, centrocecal scotoma, drug-induced toxic amblyopia",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch19",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-20",
+      "chapter-title": "Intraocular Tumors",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_21",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 20,
+      "chapter-fpage": 375,
+      "chapter-lpage": 386,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Intraocular tumor, iris tumor, ciliary body tumor, choroidal tumor, choroidal hemangioma, retinoblastoma, leukocoria differential diagnosis, malignant melanoma, medulloepithelioma, benign melanoma, metastatic choroidal tumor, intraocular malignancy, large endophytic retinoblastoma",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch20",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-21",
+      "chapter-title": "Diseases of the Orbit",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_22",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 21,
+      "chapter-fpage": 387,
+      "chapter-lpage": 403,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Orbit disease, developmental anomaly, proptosis, proptosis investigation, orbital inflammation, thyroid ophthalmopathy, rhabdomyosarcoma, optic nerve tumor, cavernous sinus thrombosis, carotid-cavernous fistula, orbit fracture",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch21",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-22",
+      "chapter-title": "Diseases of the Lacrimal Apparatus",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_23",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 22,
+      "chapter-fpage": 404,
+      "chapter-lpage": 419,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Lacrimal apparatus disease, Lacrimal apparatus disease symptoms, Lacrimal apparatus disease sign, lacrimal gland disease, dry eye syndrome, lacrimal sac tumor, lacrimal passage disease, lacrimal sac tumor, acute dacryoadenitis, chronic dacryoadenitis, Mikulicz syndrome, vital dye staining, differential leukocyte count, dacryocystitis",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch22",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-23",
+      "chapter-title": "Ocular Motility: Squint",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_24",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 23,
+      "chapter-fpage": 420,
+      "chapter-lpage": 443,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Ocular motility, ocular movement, visual development, diplopia, amblyopia, squint, strabismus, concomitant squint, paralytic squint, Duane’s retraction syndrome, nystagmus, duction, supranuclear movement, binocular single vision, supranuclear eye movement, diplopia classification, physiological diplopia, pathological diplopia, latent squint, concomitant squint treatment ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch23",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-24",
+      "chapter-title": "Ocular Injuries",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_25",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 24,
+      "chapter-fpage": 444,
+      "chapter-lpage": 464,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Ocular injury, mechanical injury, mechanical injury classification, contusions, blunt injury, blow-out fracture, open-globe injury, penetrating injury, perforating injury, foreign body, chemical injury, thermal burns, radiational injury",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch24",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-25",
+      "chapter-title": "Common Eye Surgeries",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_26",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 25,
+      "chapter-fpage": 465,
+      "chapter-lpage": 503,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Common eye surgery, dacryocystorhinostomy, dacryocystectomy, general principle, preoperative preparation, postoperative care, postoperative treatment, manual small incision cataract surgery, phacoemulsification, femtosecond laser cataract surgery, intracapsular cataract extraction, intraocular lens implantation, glaucoma operation, cyclocryotherapy, cyclophotocoagulation, tarsorrhaphy, pterygium operation, chalazion operation",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch25",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-26",
+      "chapter-title": "Blindness and its Prevention",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_27",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 26,
+      "chapter-fpage": 504,
+      "chapter-lpage": 521,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Blindness, vitamin A deficiency, visual impairment category, legal blindness, economical blindness, visually handicapped, preventable blindness, curable blindness, manpower development, xerophthalmia, onchocerciasis",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch26",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-27",
+      "chapter-title": "Surgical Instruments",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_28",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 27,
+      "chapter-fpage": 522,
+      "chapter-lpage": 559,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Surgical instrument, eye speculums, Silcock’s needle holder, Arruga’s needle holder, artery forceps, fixation forceps, Von Graefe’s cataract knife, conjunctival scissors, scalpel handle, blade breaker, thermocautery, plain dissecting forceps, iris forceps, De-Wecker’s iris scissor, intracapsular forceps, lens expressor, colibri forceps, bone punch, lacrimal cannula, chalazion scoop, ophthalmic lens, retinoscope, prism, St. Martin’s forceps, superior rectus holding forceps, capsulotomy forceps, Vannas’ scissors, Angular keratome, Disc-Holding forceps, Beer’s knife, Stenopeic slit, Jackson’s cross cylinder, sterilization method",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch27",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-28",
+      "chapter-title": "Miscellaneous",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_29",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 28,
+      "chapter-fpage": 560,
+      "chapter-lpage": 588,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Miscellaneous, laser in ophthalmology, cryotherapy in ophthalmology, fluorescein dye, ultrasonography, ultrasound biomicroscopy, ocular emergency, subconjunctival injection, sub-tenon injection, intravitreal injection, ocular infection laboratory diagnosis, corneal topography, corneal tomography, specular microscopy, scanning laser polarimetry, optical coherence tomography, computer vision syndrome, migraine, eye disease, COVID-19 ocular manifestation",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch28",
+      "chapter-author": [
+        {
+          "firstname": "Samar",
+          "othername": "K",
+          "surname": "Basak",
+          "jobtitle": "Director",
+          "orgname": "Disha Eye Hospitals, Kolkata, West Bengal, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Index",
+      "chapter-title": "Index",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19024_30",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 29,
+      "chapter-fpage": 589,
+      "chapter-lpage": 608,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "index"
+    }
+  ]
+}

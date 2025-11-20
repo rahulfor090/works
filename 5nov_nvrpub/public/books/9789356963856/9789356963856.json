@@ -1,0 +1,588 @@
+{
+  "language": "English",
+  "publisher-name": "Jaypee Brothers Medical Publishers (P) Ltd.",
+  "publisher_location": "Delhi",
+  "book_title": "Nursing Foundation-II",
+  "book_sub_title": "",
+  "print_isbn": "9789356963856",
+  "electronic_isbn": "",
+  "electronic_issn": "",
+  "book_doi": "10.5005/jp/books/19022",
+  "total_chapter": "18 Chapters",
+  "book_author_name": "Clement I",
+  "copyright-name": "Jaypee Brothers Medical Publishers",
+  "copyright_year": 2024,
+  "book_subject": "Nursing",
+  "medicine": "",
+  "dentistry": "",
+  "nursing": "Fundamentals of Nursing",
+  "edition": "2/e",
+  "book-type": "Textbook",
+  "book_series": "",
+  "book_keywords": "Health assessment, hygiene, nursing process, nutritional needs, elimination needs, diagnostic testing, oxygenation needs, acid–base balance, sensory needs, self-concept, stress, adaptation, sexuality, cultural diversity, spirituality, nursing theory, surgical procedure",
+  "book_abstract": "Nursing Foundation-II by I Clement is an essential resource for nursing students, providing a thorough exploration of core nursing principles and practices. The book emphasizes the importance of holistic patient care, integrating physical, emotional, and social aspects of health. This textbook is divided into 18 chapters, which include health assessment, hygiene, nursing process, nutritional needs, elimination needs, diagnostic testing, oxygenation needs, fluid, electrolyte, and acid–base balance, sensory needs, stress and adaptation, sexuality, cultural diversity, meeting needs of perioperative patients, nursing theories, and surgical procedure. Each chapter is enriched with needed tables and diagrams, narrated with lucid language from the examination point of view. Each chapter is framed with review questions and multiple-choice questions (MCQs), designed to create interest for the students to review after reading each chapter. All the descriptions are framed on the basis of latest information; findings and evidence-based research and content are drafted in the simple form of English and facilitate reading from the examination point of view. Each chapter in the book is self-contained and subject areas have been regrouped and made more concise and relevant to the needs of today’s students.",
+  "book-basic": "MED058050",
+  "total-page": 743,
+  "book-author": [
+    {
+      "firstname": "I",
+      "othername": "",
+      "surname": "Clement",
+      "jobtitle": "Professor and Head, Department of Research and Development",
+      "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+      "email": ""
+    }
+  ],
+  "chapters": [
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Prelims",
+      "chapter-title": "Prelims",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_1",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 0,
+      "chapter-fpage": "i",
+      "chapter-lpage": "xxiii",
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "front"
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-01",
+      "chapter-title": "Health Assessment",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_2",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 1,
+      "chapter-fpage": 1,
+      "chapter-lpage": 47,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Health assessment, health observation technique, health assessment purpose, health assessment process, health history, physical examination, general assessment, each body system assessment, documenting health assessment finding, factors affecting health assessment, mental health assessment, admission assessment, pain assessment, shift assessment, focused assessment, head to toe examination, nurse role in health assessment, health assessment recording",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch1",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-02",
+      "chapter-title": "Nursing Process",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_3",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 2,
+      "chapter-fpage": 48,
+      "chapter-lpage": 97,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Nursing process, Nursing process terminology, Nursing process abbreviation, Personal Critical Thinking Indicator, Nursing Judgment, nursing diagnosis, nursing planning, nursing implementation, nursing evaluation, nursing judgment, critical thinking importance, good critical thinker characteristics, critical thinking enhancement behavior, concept mapping, nursing assessment, planning type, nursing process overview, Nanda approved diagnosis",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch2",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-03",
+      "chapter-title": "Nutritional Needs",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_4",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 3,
+      "chapter-fpage": 98,
+      "chapter-lpage": 132,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Nutritional needs, nutritional needs terminology, nutrition importance, nutritional assessment, factors affecting nutritional needs, special diet, therapeutic diet, dysphagia, anorexia, nausea, vomiting, parenteral nutrition, polyunsaturated fatty acid, food guide pyramid, nasogastric tube insertion, gastric gavage, gastrojejunostomy feeding, breastfeeding, artificial feeding,  total parenteral nutrition, gastric analysis ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch3",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-04",
+      "chapter-title": "Hygiene",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_5",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 4,
+      "chapter-fpage": 133,
+      "chapter-lpage": 171,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Hygiene, hygiene terminology, hygiene clinical significance, hygiene type, personal hygiene, factors influencing hygienic practice, hygienic care, skin care, pressure ulcer assessment, pressure ulcer cause, pressure ulcer stage, pressure ulcer manifestation, pressure ulcer prevention, oral hygiene, bed bath, eye care, hand care, back care, pressure point care, hair care maintaining, hair combing, pediculosis treatment, dentures care, dentures care, hearing aid care",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch4",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-05",
+      "chapter-title": "Elimination Needs",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_6",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 5,
+      "chapter-fpage": 172,
+      "chapter-lpage": 221,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Elimination needs, urinary elimination, monitoring urinary output, urinal use, bowel elimination, urinary bladder catheterization, continuous bladder irrigation, collecting urine specimen, urine culture, urine testing, bowel elimination physiology, bowel wash, colostomy irrigation, factors influencing urination, facilitating urine elimination, intermittent catheterization, indwelling urinary catheter, urinary drainage, urinary diversion, bladder irrigation, bowel diversion procedure",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch5",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-06",
+      "chapter-title": "Diagnostic Testing",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_7",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 6,
+      "chapter-fpage": 222,
+      "chapter-lpage": 277,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Diagnostic testing, complete blood count, serum electrolyte, LFT, liver function test, lipoprotein profile, monitoring capillary blood glucose, glucometer random blood sugar, stool routine examination, urine testing, radiologic procedure, endoscopic procedure, bone marrow biopsy, sputum culture, blood smear, blood culture, throat swab, urine testing, endoscopy, radiological study",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch6",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-07",
+      "chapter-title": "Oxygenation Needs",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_8",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 7,
+      "chapter-fpage": 278,
+      "chapter-lpage": 322,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Oxygenation needs, oxygenation needs terminology, respiratory physiology, cardiovascular physiology, factors affecting respiratory functioning, respiration type, respiration assessment, respiration management, oxygen therapy need, factors affecting oxygenation, nasal cannula, nasal catheter, oxygen mask, oxygen tent, home oxygen therapy, airway management, oropharyngeal airway, nasopharyngeal airway, endotracheal tube, tracheostomy tube, artificial airway management, oxygen transport, chest physiotherapy percussion, pulse oximetry, hydration, humidification, coughing technique, breathing exercise, incentive spirometry ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch7",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-08",
+      "chapter-title": "Fluid, Electrolyte and Acid-Base Balances",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_9",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 8,
+      "chapter-fpage": 323,
+      "chapter-lpage": 376,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Fluid, electrolyte, acid–base balance, factors affecting fluid, factors affecting electrolyte, factors affecting acid-base balance, fluid volume disturbance, deficit-hypovolemia dehydration, excess-fluid overload edema, electrolyte imbalance, intravenous therapy, peripheral venipuncture sites, blood component, restricting fluid intake, fluid intake, water intake source, body fluids physiology, factors affecting fluid movement, fluid imbalance, hypovolemia, edema, blood transfusion",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch8",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-09",
+      "chapter-title": "Administration of Medications",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_10",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 9,
+      "chapter-fpage": 377,
+      "chapter-lpage": 446,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Medication administration, medication order, drug nomenclature, factors influencing medication action, medication orders, medication dose calculation, drug storage, drug maintenance, inhalation, needle-stick injury prevention, bioavailability, drug source, medicine care, medicine cupboard, oral medication, safe medication administration, injection, intramuscular injection, subcutaneous injection, intradermal injection, intravenous injection, intravenous infusion, transdermal route, transmucosal, topical drug application, instilling nasal drops, eye irrigation, bladder irrigation, bowel irrigation, colostomy irrigation, endotracheal drug administration",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch9",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-10",
+      "chapter-title": "Sensory Needs",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_11",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 10,
+      "chapter-fpage": 447,
+      "chapter-lpage": 476,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Sensory needs, sensory needs terminology, sensory experience reception component, arousal mechanism, factors affecting sensory function, unconsciousness, artificial airway, sensory integration concept, fiber type, sensory cortex, sensory experience component, factors influencing sensory function, sensory system physiology, sensory organ functioning, sensory alteration, sensory deficits, sensory deprivation, sensory overload, unconscious patient care",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch10",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-11",
+      "chapter-title": "Care of Terminally Ill, Death and Dying",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_12",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 11,
+      "chapter-fpage": 477,
+      "chapter-lpage": 506,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Terminally ill care, grief manifestation, impending death sign, dying patient care, death declaration, death certification, death autopsy, death embalming, death care, organ donation, loss classification, loss, grief, grief type, grief stages, grief process, documentation death, medicolegal issue, postmortem care",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch11",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-12",
+      "chapter-title": "Self-concept",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_13",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 12,
+      "chapter-fpage": 507,
+      "chapter-lpage": 527,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Self-concept, factors affecting self-concept, nursing management, self-concept characteristics, self-concept development, self-concept type, positive health concept, Erikson’s theory, body image, role performance, self-esteem, self-concept disturbance, disturbed body image, self-concept theory, self-concept component, self-concept assessment, situational low self-esteem",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch12",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-13",
+      "chapter-title": "Sexuality",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_14",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 13,
+      "chapter-fpage": 528,
+      "chapter-lpage": 556,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Sexuality, Sexuality terminology, sexual health concern, sexual development throughout life, sexual health, sexual orientation, factors affecting sexuality, sexual harassment, sexual behavior, sexuality model circle, sexuality component, sexual health characteristics, sexual health importance, myths about sexuality, sexual response cycle, sexual dysfunction, unwanted pregnancy prevention, sexually transmitted disease prevention, sexual health education, prevention sexual abuse",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch13",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-14",
+      "chapter-title": "Stress and Adaptation",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_15",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 14,
+      "chapter-fpage": 557,
+      "chapter-lpage": 583,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Stress, adaptation, stress type, stress sources, stress effect, stress type, general adaptation syndrome, GAS, local adaptation syndrome, LAS, stress management, recreational therapy, diversion therapy, stress continuum, crisis intervention, maladaptive grief response",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch14",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-15",
+      "chapter-title": "Cultural Diversity and Spirituality",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_16",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 15,
+      "chapter-fpage": 584,
+      "chapter-lpage": 611,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Cultural diversity, cultural spirituality, cultural concept, transcultural nursing, cultural competence, factors affecting spirituality, multicultural concept, subculture concept, providing culturally responsive care, psychosocial care, acute illness, chronic illness, terminal illness, age-specific spiritual intervention, spirituality characteristics",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch15",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-16",
+      "chapter-title": "Nursing Theories",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_17",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 16,
+      "chapter-fpage": 612,
+      "chapter-lpage": 629,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Nursing theory, nursing purpose, nursing theory type, nursing theory history, nursing metaparadigm, nursing theory component, theoretical nursing model, nursing theory importance, nursing theory type, Peplau’s theory, Henderson’s theory, Orem’s theory, Neuman’s theory, nursing theory development ",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch16",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-17",
+      "chapter-title": "Meeting Needs of Perioperative Patients",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_18",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 17,
+      "chapter-fpage": 630,
+      "chapter-lpage": 670,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Perioperative nursing concept, operation theater set-up, postoperative phrase, wounds type, surgical asepsis, drainage care, perioperative nursing objective, perioperative nursing phase, surgical procedure classification, surgical process step, intraoperative phase, wound classification, wound healing process, factors affecting wound healing, wound suturing, surgical dressing, suture removal",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch17",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Chapter-18",
+      "chapter-title": "Surgical Procedures",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_19",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 18,
+      "chapter-fpage": 671,
+      "chapter-lpage": 694,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "Surgical procedure, abdominal paracentesis, thoracentesis, lumbar puncture, bone marrow biopsy, surgical dressing, liver biopsy, wound care, dressing type, dry dressing, wet dressing, pressure dressing",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "ch18",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "book-part": "",
+      "book-section": "",
+      "chapter-number": "Index",
+      "chapter-title": "Index",
+      "chapter-sub-title": "",
+      "chapter-doi": "10.5005/jp/books/19022_20",
+      "chapter-language": "English",
+      "chapter-id": "",
+      "chapter-sequence": 19,
+      "chapter-fpage": 695,
+      "chapter-lpage": 714,
+      "chapter-copyright-name": "Jaypee Brothers Medical Publishers",
+      "chapter-keyword": "",
+      "chapter-basic": "",
+      "chapter-abstract": "",
+      "chapter-file-name": "index",
+      "chapter-author": [
+        {
+          "firstname": "I",
+          "othername": "",
+          "surname": "Clement",
+          "jobtitle": "Professor and Head, Department of Research and Development",
+          "orgname": "RV College of Nursing, Bengaluru, Karnataka, India",
+          "email": ""
+        }
+      ]
+    }
+  ]
+}
