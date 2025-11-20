@@ -8,10 +8,13 @@ import { useRouter } from 'next/router'
 import { createEmotionCache } from '@/utils'
 import { MUIProvider } from '@/providers'
 import { PageLoader } from '@/components/loaders'
+import { Toaster } from '@/app/new-home/components/ui/toaster'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import '@/styles/globals.css'
 import '@/styles/react-slick.css'
+import '@/styles/App.css'
+import '@/styles/index.css'
 import { NextPageWithLayout } from '@/interfaces/layout'
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -74,6 +77,7 @@ const App: FC<AppPropsWithLayout> = (props: AppPropsWithLayout) => {
         <CssBaseline />
         <PageLoader isLoading={isPageLoading || !isHydrated} />
         {isHydrated && getLayout(<Component {...pageProps} />)}
+        <Toaster />
       </MUIProvider>
     </CacheProvider>
   )
