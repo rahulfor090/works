@@ -270,11 +270,10 @@ const HeroNew: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`p-2 rounded-full transition-colors relative ${
-                    selectedType !== 'all'
+                  className={`p-2 rounded-full transition-colors relative ${selectedType !== 'all'
                       ? 'bg-gray-100'
                       : 'hover:bg-gray-100'
-                  }`}
+                    }`}
                 >
                   <Filter size={20} />
                   {selectedType !== 'all' && (
@@ -326,11 +325,10 @@ const HeroNew: React.FC = () => {
                           setSelectedType(type.value)
                           setShowFilters(false)
                         }}
-                        className={`px-4 py-2 rounded-full text-sm font-medium ${
-                          selectedType === type.value
+                        className={`px-4 py-2 rounded-full text-sm font-medium ${selectedType === type.value
                             ? 'bg-black text-white'
                             : 'bg-white text-black hover:bg-gray-100'
-                        }`}
+                          }`}
                         style={{ border: '1px solid rgba(0,0,0,0.1)' }}
                       >
                         {type.label}
@@ -403,7 +401,7 @@ const HeroNew: React.FC = () => {
           <span>{normalizedSlides[currentImageIndex]?.title}</span>
           {normalizedSlides[currentImageIndex]?.highlightedWord &&
             normalizedSlides[currentImageIndex]?.highlightedWord !==
-              normalizedSlides[currentImageIndex]?.title && (
+            normalizedSlides[currentImageIndex]?.title && (
               <span className="block text-primary">
                 {normalizedSlides[currentImageIndex]?.highlightedWord}
               </span>
