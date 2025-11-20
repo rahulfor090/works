@@ -16,6 +16,26 @@ import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
+import { styled } from '@mui/material/styles'
+
+const HiddenFileInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1
+})
+
+type SlideButton = {
+  label: string
+  variant?: 'contained' | 'outlined'
+  icon?: boolean
+  scrollTo?: string
+}
 
 type HomepageSlide = {
   id?: number
@@ -23,50 +43,38 @@ type HomepageSlide = {
   highlightedWord: string
   subtitle: string
   image: string
-  sortOrder: number
+  displayOrder: number
+  buttons?: SlideButton[]
+  isActive?: boolean | number
   createdAt?: string
 }
 
-const AdminHomepageSlides = () => {
+const AdminHomepageSlides = (): React.ReactElement => {
   const [slides, setSlides] = useState<HomepageSlide[]>([])
   const [form, setForm] = useState<HomepageSlide>({ 
     title: '', 
     highlightedWord: '', 
     subtitle: '', 
     image: '', 
-    sortOrder: 0 
+    displayOrder: 0 
   })
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string>('')
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success' as 'success' | 'error' | 'info' | 'warning'
   })
 
-  const load = async () => {
+  const load = async (): Promise<void> => {
     try {
-      // For now, we'll use sample data. In a real app, this would fetch from API
-      const sampleSlides: HomepageSlide[] = [
-        {
-          id: 1,
-          title: 'Welcome to',
-          highlightedWord: 'NRV Publication',
-          subtitle: 'Your gateway to digital learning and excellence',
-          image: '/images/slide1.jpg',
-          sortOrder: 1,
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: 2,
-          title: 'Discover',
-          highlightedWord: 'Innovation',
-          subtitle: 'Cutting-edge courses and resources for modern learners',
-          image: '/images/slide2.jpg',
-          sortOrder: 2,
-          createdAt: new Date().toISOString()
-        }
-      ]
-      setSlides(sampleSlides)
+      const response = await fetch('/api/slides')
+      if (!response.ok) {
+        throw new Error('Failed to fetch slides')
+      }
+      const data = await response.json()
+      setSlides(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Failed to load homepage slides:', error)
       setSnackbar({
@@ -78,47 +86,105 @@ const AdminHomepageSlides = () => {
   }
 
   useEffect(() => { 
-    load()
+    void load()
   }, [])
 
-  const submit = async () => {
+  const submit = async (): Promise<void> => {
+    let imagePath = form.image
+
+    if (selectedFile) {
+      try {
+        const formData = new FormData()
+        formData.append('file', selectedFile)
+
+        const response = await fetch('/api/upload/slider-image', {
+          method: 'POST',
+          body: formData
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to upload image')
+        }
+
+        const result = await response.json()
+        imagePath = result.filename
+      } catch (error) {
+        console.error('Image upload failed:', error)
+        setSnackbar({
+          open: true,
+          message: 'Image upload failed. Please try again.',
+          severity: 'error'
+        })
+        return
+      }
+    }
+
+    const baseButtons = editingId
+      ? slides.find(slide => slide.id === editingId)?.buttons ?? []
+      : []
+
+    const payload = {
+      title: form.title,
+      highlightedWord: form.highlightedWord,
+      subtitle: form.subtitle,
+      image: imagePath,
+      displayOrder: form.displayOrder || 0,
+      buttons: baseButtons,
+      isActive: true
+    }
+
     try {
       if (editingId) {
-        // Update existing slide
-        const updatedSlides = slides.map(slide => 
-          slide.id === editingId 
-            ? { ...form, id: editingId }
-            : slide
+        const response = await fetch(`/api/slides/${editingId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to update slide')
+        }
+
+        setSlides(prev =>
+          prev.map(slide =>
+            slide.id === editingId ? { ...slide, ...payload, id: editingId } : slide
+          )
         )
-        setSlides(updatedSlides)
         setSnackbar({
           open: true,
           message: 'Homepage slide updated successfully',
           severity: 'success'
         })
       } else {
-        // Add new slide
-        const newSlide = {
-          ...form,
-          id: Date.now(), // In real app, this would be generated by the backend
-          createdAt: new Date().toISOString()
+        const response = await fetch('/api/slides', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to create slide')
         }
-        setSlides([...slides, newSlide])
+
+        const result = await response.json()
+        setSlides(prev => [...prev, { ...payload, id: result.id, createdAt: new Date().toISOString() }])
         setSnackbar({
           open: true,
           message: 'Homepage slide created successfully',
           severity: 'success'
         })
       }
-      
+
       setForm({ 
         title: '', 
         highlightedWord: '', 
         subtitle: '', 
         image: '', 
-        sortOrder: 0 
+        displayOrder: 0 
       })
       setEditingId(null)
+      setSelectedFile(null)
+      setImagePreview('')
     } catch (error) {
       console.error('Error saving homepage slide:', error)
       setSnackbar({
@@ -129,21 +195,33 @@ const AdminHomepageSlides = () => {
     }
   }
 
-  const edit = (slide: HomepageSlide) => {
-    setEditingId(slide.id!)
+  const edit = (slide: HomepageSlide): void => {
+    if (!slide.id) {
+      return
+    }
+    setEditingId(slide.id)
     setForm({ 
       title: slide.title, 
       highlightedWord: slide.highlightedWord, 
       subtitle: slide.subtitle, 
       image: slide.image, 
-      sortOrder: slide.sortOrder 
+      displayOrder: slide.displayOrder ?? 0 
     })
+    setSelectedFile(null)
+    setImagePreview(
+      slide.image
+        ? (slide.image.startsWith('http') ? slide.image : `/images/sliders/${slide.image}`)
+        : ''
+    )
   }
 
-  const remove = async (id: number) => {
+  const remove = async (id: number): Promise<void> => {
     try {
-      const updatedSlides = slides.filter(slide => slide.id !== id)
-      setSlides(updatedSlides)
+      const response = await fetch(`/api/slides/${id}`, { method: 'DELETE' })
+      if (!response.ok) {
+        throw new Error('Failed to delete slide')
+      }
+      setSlides(prev => prev.filter(slide => slide.id !== id))
       setSnackbar({
         open: true,
         message: 'Homepage slide deleted successfully',
@@ -159,7 +237,7 @@ const AdminHomepageSlides = () => {
     }
   }
 
-  const handleCloseSnackbar = () => {
+  const handleCloseSnackbar = (): void => {
     setSnackbar({ ...snackbar, open: false })
   }
 
@@ -203,7 +281,7 @@ const AdminHomepageSlides = () => {
                 helperText="Descriptive subtitle text"
               />
             </Grid>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={6}>
               <TextField 
                 fullWidth 
                 label="Image URL" 
@@ -213,16 +291,67 @@ const AdminHomepageSlides = () => {
                 helperText="URL or path to the slide background image"
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
+              <Button
+                variant="outlined"
+                component="label"
+                fullWidth
+                sx={{ height: '100%' }}
+              >
+                Upload Image
+                <HiddenFileInput
+                  type="file"
+                  accept="image/*"
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    const file = event.target.files?.[0]
+                    if (file) {
+                      setSelectedFile(file)
+                      const reader = new FileReader()
+                      reader.onloadend = () => setImagePreview(reader.result as string)
+                      reader.readAsDataURL(file)
+                    }
+                  }}
+                />
+              </Button>
+            </Grid>
+            <Grid item xs={12} md={3}>
               <TextField 
                 type="number" 
                 fullWidth 
-                label="Sort Order" 
-                value={form.sortOrder} 
-                onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })} 
+                label="Display Order" 
+                value={form.displayOrder} 
+                onChange={(e) => setForm({ ...form, displayOrder: Number(e.target.value) })} 
                 helperText="Display order (lower numbers first)"
               />
             </Grid>
+            {imagePreview && (
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    border: '1px dashed',
+                    borderColor: 'divider',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1
+                  }}
+                >
+                  <Typography variant="subtitle2">Preview</Typography>
+                  <Box
+                    component="img"
+                    src={imagePreview}
+                    alt="Slide preview"
+                    sx={{ width: '100%', maxHeight: 250, objectFit: 'cover', borderRadius: 1 }}
+                  />
+                  {selectedFile && (
+                    <Typography variant="caption" color="text.secondary">
+                      {selectedFile.name} • {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                    </Typography>
+                  )}
+                </Box>
+              </Grid>
+            )}
             <Grid item xs={12}>
               <Button variant="contained" onClick={submit} size="large">
                 {editingId ? 'Update Slide' : 'Create Slide'}
@@ -237,8 +366,10 @@ const AdminHomepageSlides = () => {
                       highlightedWord: '', 
                       subtitle: '', 
                       image: '', 
-                      sortOrder: 0 
+                      displayOrder: 0 
                     })
+                    setSelectedFile(null)
+                    setImagePreview('')
                   }}
                   sx={{ ml: 2 }}
                 >
@@ -256,14 +387,18 @@ const AdminHomepageSlides = () => {
           ) : (
             <Grid container spacing={3}>
               {slides
-                .sort((a, b) => a.sortOrder - b.sortOrder)
+                .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
                 .map((slide) => (
                 <Grid item xs={12} md={6} lg={4} key={slide.id}>
                   <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <CardMedia
                       component="img"
                       height="200"
-                      image={slide.image}
+                      image={
+                        slide.image
+                          ? (slide.image.startsWith('http') ? slide.image : `/images/sliders/${slide.image}`)
+                          : ''
+                      }
                       alt={slide.title}
                       sx={{ objectFit: 'cover' }}
                       onError={(e) => {
@@ -281,7 +416,7 @@ const AdminHomepageSlides = () => {
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
                           <Chip 
-                            label={`Order: ${slide.sortOrder}`} 
+                            label={`Order: ${slide.displayOrder ?? 0}`} 
                             size="small" 
                             variant="outlined" 
                           />
@@ -298,7 +433,15 @@ const AdminHomepageSlides = () => {
                         <IconButton onClick={() => edit(slide)} color="primary" size="small">
                           <EditIcon />
                         </IconButton>
-                        <IconButton color="error" onClick={() => remove(slide.id!)} size="small">
+                        <IconButton 
+                          color="error" 
+                          onClick={() => {
+                            if (slide.id) {
+                              void remove(slide.id)
+                            }
+                          }} 
+                          size="small"
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Box>

@@ -1,13 +1,14 @@
 import React from 'react';
 import { Button } from './ui/button';
 import { Play, Stethoscope, Pill, HeartPulse } from 'lucide-react';
+import HeroSlider from './ui/HeroSlider';
 
 const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#F0F9FF] via-white to-[#FFF5F5]"></div>
-      
+
       {/* Floating Shapes */}
       <div className="absolute top-20 left-10 w-32 h-32 bg-[#3B82F6]/5 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-40 right-20 w-48 h-48 bg-[#FF6B6B]/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
@@ -71,70 +72,9 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Right Visual - Medical Journals Display */}
-          <div className="relative lg:h-[600px] flex items-center justify-center">
-            <div className="relative w-full h-full flex items-center justify-center">
-              {/* Main Journal Stack */}
-              <div className="relative transform hover:scale-105 transition-transform duration-500">
-                {/* Journal 1 */}
-                <div
-                  className="absolute top-0 left-0 w-56 h-80 rounded-lg shadow-2xl transform -rotate-6 hover:rotate-0 transition-all duration-300"
-                  style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    zIndex: 1
-                  }}
-                >
-                  <div className="p-6 h-full flex flex-col justify-between">
-                    <div>
-                      <div className="text-white/80 text-xs font-semibold mb-2">JOURNAL</div>
-                      <h3 className="text-white font-bold text-lg mb-2">Advanced Science</h3>
-                      <p className="text-white/70 text-xs">Open Access</p>
-                    </div>
-                    <div className="text-white/60 text-xs">Vol. 12, Issue 4</div>
-                  </div>
-                </div>
-
-                {/* Journal 2 */}
-                <div
-                  className="absolute top-8 left-12 w-56 h-80 rounded-lg shadow-2xl transform rotate-3 hover:rotate-0 transition-all duration-300"
-                  style={{
-                    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                    zIndex: 2
-                  }}
-                >
-                  <div className="p-6 h-full flex flex-col justify-between">
-                    <div>
-                      <div className="text-white/80 text-xs font-semibold mb-2">RESEARCH</div>
-                      <h3 className="text-white font-bold text-lg mb-2">Clinical Medicine</h3>
-                      <p className="text-white/70 text-xs">Peer Reviewed</p>
-                    </div>
-                    <div className="text-white/60 text-xs">Vol. 8, Issue 2</div>
-                  </div>
-                </div>
-
-                {/* Journal 3 */}
-                <div
-                  className="absolute top-16 left-24 w-56 h-80 rounded-lg shadow-2xl transform rotate-6 hover:rotate-0 transition-all duration-300"
-                  style={{
-                    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                    zIndex: 3
-                  }}
-                >
-                  <div className="p-6 h-full flex flex-col justify-between">
-                    <div>
-                      <div className="text-white/80 text-xs font-semibold mb-2">JOURNAL</div>
-                      <h3 className="text-white font-bold text-lg mb-2">Medical Innovation</h3>
-                      <p className="text-white/70 text-xs">Monthly Edition</p>
-                    </div>
-                    <div className="text-white/60 text-xs">Vol. 15, Issue 7</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Decorative Circles */}
-              <div className="absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-[#FF6B6B] to-[#FF8E53] rounded-full opacity-20 blur-2xl"></div>
-              <div className="absolute -bottom-8 -left-8 w-40 h-40 bg-gradient-to-br from-[#3B82F6] to-[#2563EB] rounded-full opacity-20 blur-2xl"></div>
-            </div>
+          {/* Right Visual - Hero Slider */}
+          <div className="relative lg:h-[600px] flex items-center justify-center w-full">
+            <HeroSlider />
           </div>
         </div>
       </div>
