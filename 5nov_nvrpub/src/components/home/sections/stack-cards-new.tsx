@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useState } from 'react'
-import { motion, useScroll, useMotionValueEvent } from 'motion/react'
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { BookOpen, Users, Award, TrendingUp, ArrowRight } from 'lucide-react'
 
 const cards = [
@@ -244,6 +244,12 @@ const Card: React.FC<CardProps> = ({ card, index, activeIndex }) => {
 }
 
 const StackCardsNew: React.FC = () => {
+  // Toggle to hide this entire section without removing the file.
+  // Set to `true` to hide the section (keeps component in codebase as requested).
+  const HIDE_STACK_CARDS = true
+
+  if (HIDE_STACK_CARDS) return null
+
   const containerRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const { scrollYProgress } = useScroll({

@@ -169,12 +169,19 @@ export const newReleases: NewRelease[] = [
   }
 ];
 
+export interface Subcategory {
+  id: number;
+  name: string;
+  description: string;
+}
+
 export interface Specialty {
   id: number;
   name: string;
   icon: string;
   description: string;
   gradient: string;
+  subcategories?: Subcategory[];
 }
 
 export const specialties: Specialty[] = [
@@ -183,7 +190,39 @@ export const specialties: Specialty[] = [
     name: "Biochemistry",
     icon: "FlaskConical",
     description: "Master molecular mechanisms and metabolic pathways",
-    gradient: "from-blue-500/10 to-cyan-500/10"
+    gradient: "from-blue-500/10 to-cyan-500/10",
+    subcategories: [
+      {
+        id: 11,
+        name: "Metabolic Biochemistry",
+        description: "Metabolic pathways and bioenergetics"
+      },
+      {
+        id: 12,
+        name: "Structural Biochemistry",
+        description: "Protein structure, folding, and molecular architecture"
+      },
+      {
+        id: 13,
+        name: "Enzymology",
+        description: "Enzyme kinetics, mechanisms, and regulation"
+      },
+      {
+        id: 14,
+        name: "Molecular Biology",
+        description: "DNA, RNA, and gene expression mechanisms"
+      },
+      {
+        id: 15,
+        name: "Bioorganic Chemistry",
+        description: "Chemical processes in biological systems"
+      },
+      {
+        id: 16,
+        name: "Physical Biochemistry",
+        description: "Physical principles of biological molecules"
+      }
+    ]
   },
   {
     id: 2,

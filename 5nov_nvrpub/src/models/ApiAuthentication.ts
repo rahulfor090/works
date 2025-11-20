@@ -114,7 +114,7 @@ export class ApiAuthenticationRepository {
   static async delete(id: number): Promise<boolean> {
     const result = await query<any>(
       `DELETE FROM ${this.TABLE_NAME} WHERE id = ?`,
-      [id]
+      [id] 
     );
     return ((result as any).affectedRows || (result as any).affectedrows || 0) > 0;
   }
