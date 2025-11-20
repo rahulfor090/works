@@ -28,30 +28,28 @@ import AddIcon from '@mui/icons-material/Add'
 interface Mentor {
   id: number
   name: string
-  photo: string
-  category: string
-  specialty: string
-  description: string
-  companyName: string
+  speciality: string
   hospital: string
-  companyLogo: string
-  displayOrder: number
-  isActive: boolean
+  photo_url: string
+  company_logo_url: string
+  description: string
+  order: number
+  active: boolean
+  rating: number
 }
 
 const AdminMentors = () => {
   const [mentors, setMentors] = useState<Mentor[]>([])
   const [form, setForm] = useState({
     name: '',
-    photo: '',
-    category: 'Cardiology',
-    specialty: 'Cardiology',
-    description: '',
-    companyName: '',
+    speciality: 'Cardiology',
     hospital: '',
-    companyLogo: '',
-    displayOrder: 1,
-    isActive: true,
+    photo_url: '',
+    company_logo_url: '',
+    description: '',
+    order: 1,
+    active: true,
+    rating: 0,
   })
   const [editingId, setEditingId] = useState<number | null>(null)
   const [snackbar, setSnackbar] = useState({
@@ -101,29 +99,27 @@ const AdminMentors = () => {
       setEditingId(mentor.id)
       setForm({
         name: mentor.name,
-        photo: mentor.photo,
-        category: mentor.category,
-        specialty: mentor.specialty,
-        description: mentor.description,
-        companyName: mentor.companyName,
+        speciality: mentor.speciality,
         hospital: mentor.hospital,
-        companyLogo: mentor.companyLogo,
-        displayOrder: mentor.displayOrder,
-        isActive: mentor.isActive,
+        photo_url: mentor.photo_url,
+        company_logo_url: mentor.company_logo_url,
+        description: mentor.description,
+        order: mentor.order,
+        active: mentor.active,
+        rating: mentor.rating || 0,
       })
     } else {
       setEditingId(null)
       setForm({
         name: '',
-        photo: '',
-        category: 'Cardiology',
-        specialty: 'Cardiology',
-        description: '',
-        companyName: '',
+        speciality: 'Cardiology',
         hospital: '',
-        companyLogo: '',
-        displayOrder: mentors.length + 1,
-        isActive: true,
+        photo_url: '',
+        company_logo_url: '',
+        description: '',
+        order: mentors.length + 1,
+        active: true,
+        rating: 0,
       })
     }
     setOpenDialog(true)
@@ -136,7 +132,7 @@ const AdminMentors = () => {
 
   const submit = async () => {
     try {
-      if (!form.name || !form.specialty || !form.hospital) {
+      if (!form.name || !form.speciality || !form.hospital) {
         setSnackbar({
           open: true,
           message: 'Please fill in all required fields',
@@ -224,7 +220,7 @@ const AdminMentors = () => {
       const response = await fetch(`/api/admin/mentors/${mentor.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...mentor, isActive: !mentor.isActive }),
+        body: JSON.stringify({ ...mentor, active: !mentor.active }),
       })
 
       if (!response.ok) {
@@ -268,9 +264,10 @@ const AdminMentors = () => {
               <TableHead>
                 <TableRow sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
                   <TableCell sx={{ color: 'white', fontWeight: 700 }}>Name</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 700 }}>Specialty</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 700 }}>Speciality</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 700 }}>Hospital</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 700 }}>Order</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 700 }}>Rating</TableCell>
                   <TableCell align="center" sx={{ color: 'white', fontWeight: 700 }}>
                     Active
                   </TableCell>
@@ -283,16 +280,17 @@ const AdminMentors = () => {
                 {mentors.map(mentor => (
                   <TableRow key={mentor.id} hover>
                     <TableCell sx={{ fontWeight: 600 }}>{mentor.name}</TableCell>
-                    <TableCell>{mentor.specialty}</TableCell>
+                    <TableCell>{mentor.speciality}</TableCell>
                     <TableCell>{mentor.hospital}</TableCell>
                     <TableCell>
                       <Box sx={{ display: 'inline-block', px: 2, py: 1, background: '#f5f5f5', borderRadius: 2 }}>
-                        {mentor.displayOrder}
+                        {mentor.order}
                       </Box>
                     </TableCell>
+                    <TableCell>{typeof mentor.rating === 'number' && !isNaN(mentor.rating) ? mentor.rating.toFixed(1) : '-'}</TableCell>
                     <TableCell align="center">
                       <Switch
-                        checked={mentor.isActive}
+                        checked={mentor.active}
                         onChange={() => toggleActive(mentor)}
                         color="primary"
                       />
@@ -334,9 +332,9 @@ const AdminMentors = () => {
 
               <TextField
                 select
-                label="Specialty / Field of Work"
-                value={form.specialty}
-                onChange={e => setForm({ ...form, specialty: e.target.value, category: e.target.value })}
+                label="Speciality / Field of Work"
+                value={form.speciality}
+                onChange={e => setForm({ ...form, speciality: e.target.value })}
                 fullWidth
                 SelectProps={{
                   native: true,
@@ -352,22 +350,22 @@ const AdminMentors = () => {
               <TextField
                 label="Hospital / Institution"
                 value={form.hospital}
-                onChange={e => setForm({ ...form, hospital: e.target.value, companyName: e.target.value })}
+                onChange={e => setForm({ ...form, hospital: e.target.value })}
                 fullWidth
                 required
               />
 
               <TextField
                 label="Photo URL"
-                value={form.photo}
-                onChange={e => setForm({ ...form, photo: e.target.value })}
+                value={form.photo_url}
+                onChange={e => setForm({ ...form, photo_url: e.target.value })}
                 fullWidth
               />
 
               <TextField
                 label="Company Logo URL"
-                value={form.companyLogo}
-                onChange={e => setForm({ ...form, companyLogo: e.target.value })}
+                value={form.company_logo_url}
+                onChange={e => setForm({ ...form, company_logo_url: e.target.value })}
                 fullWidth
               />
 
@@ -382,14 +380,24 @@ const AdminMentors = () => {
 
               <TextField
                 type="number"
-                label="Display Order"
-                value={form.displayOrder}
-                onChange={e => setForm({ ...form, displayOrder: parseInt(e.target.value) })}
+                label="Order"
+                value={form.order}
+                onChange={e => setForm({ ...form, order: parseInt(e.target.value) })}
                 fullWidth
               />
 
+              <TextField
+                type="number"
+                label="Rating (e.g. 4.9)"
+                value={form.rating}
+                onChange={e => setForm({ ...form, rating: parseFloat(e.target.value) })}
+                fullWidth
+                inputProps={{ min: 0, max: 5, step: 0.1 }}
+                required
+              />
+
               <FormControlLabel
-                control={<Switch checked={form.isActive} onChange={e => setForm({ ...form, isActive: e.target.checked })} />}
+                control={<Switch checked={form.active} onChange={e => setForm({ ...form, active: e.target.checked })} />}
                 label="Active"
               />
             </DialogContent>

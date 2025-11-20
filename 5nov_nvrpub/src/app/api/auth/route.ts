@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     } catch (tableError: any) {
       // If table doesn't exist, create it
       if (tableError.code === 'ER_NO_SUCH_TABLE' || tableError.message?.includes("doesn't exist") || tableError.message?.includes("Unknown table")) {
-        const { query } = await import('@/lib/db');
+        const { query } = await import('@/utils/db');
         await query(`
           CREATE TABLE IF NOT EXISTS \`api_authentications\` (
             \`id\` INT NOT NULL AUTO_INCREMENT,
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     } catch (tableError: any) {
       // If table doesn't exist, create it
       if (tableError.code === 'ER_NO_SUCH_TABLE' || tableError.message?.includes("doesn't exist")) {
-        const { query } = await import('@/lib/db');
+        const { query } = await import('@/utils/db');
         await query(`
           CREATE TABLE IF NOT EXISTS \`api_authentications\` (
             \`id\` INT NOT NULL AUTO_INCREMENT,

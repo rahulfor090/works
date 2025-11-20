@@ -17,6 +17,7 @@ import InputLabel from '@mui/material/InputLabel'
 import FormHelperText from '@mui/material/FormHelperText'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
+import Checkbox from '@mui/material/Checkbox'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
 
@@ -45,6 +46,7 @@ const AdminSubjectCategories = () => {
     isslider: 0
   })
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [pendingChanges, setPendingChanges] = useState<Set<number>>(new Set())
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -203,6 +205,62 @@ const AdminSubjectCategories = () => {
     setSnackbar({ ...snackbar, open: false })
   }
 
+  const handleHomepageToggle = async (id: number, currentValue: number) => {
+    const newValue = currentValue ? 0 : 1
+    
+    // Optimistically update UI
+    setSubjectCategories(prev => 
+      prev.map(cat => cat.id === id ? { ...cat, ishomepage: newValue } : cat)
+    )
+    
+    // Mark as pending
+    setPendingChanges(prev => new Set(prev).add(id))
+    
+    try {
+      const category = subjectCategories.find(cat => cat.id === id)
+      if (!category) return
+
+      const response = await fetch(`/api/subjectcategories/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          ...category,
+          ishomepage: newValue 
+        })
+      })
+
+      if (response.ok) {
+        setPendingChanges(prev => {
+          const updated = new Set(prev)
+          updated.delete(id)
+          return updated
+        })
+        setSnackbar({
+          open: true,
+          message: `Homepage visibility ${newValue ? 'enabled' : 'disabled'} successfully`,
+          severity: 'success'
+        })
+      } else {
+        throw new Error('Failed to update')
+      }
+    } catch (error) {
+      // Revert on error
+      setSubjectCategories(prev => 
+        prev.map(cat => cat.id === id ? { ...cat, ishomepage: currentValue } : cat)
+      )
+      setPendingChanges(prev => {
+        const updated = new Set(prev)
+        updated.delete(id)
+        return updated
+      })
+      setSnackbar({
+        open: true,
+        message: 'Failed to update homepage visibility',
+        severity: 'error'
+      })
+    }
+  }
+
   const getContentTypeName = (id: number) => {
     const contentType = contentTypes.find(ct => ct.id === id)
     return contentType ? contentType.title : 'Unknown'
@@ -331,7 +389,12 @@ const AdminSubjectCategories = () => {
         </Paper>
 
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Subject Categories List</Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6">Subject Categories List</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Showing on Home: {subjectCategories.filter(cat => cat.ishomepage === 1).length}
+            </Typography>
+          </Box>
           {subjectCategories.length === 0 ? (
             <Typography color="text.secondary">No subject categories found. Create your first subject category!</Typography>
           ) : (
@@ -367,13 +430,31 @@ const AdminSubjectCategories = () => {
                     )}
                   </Typography>
                 </Box>
-                <Box>
-                  <IconButton onClick={() => edit(subjectCategory)} color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color="error" onClick={() => remove(subjectCategory.id!)}>
-                    <DeleteIcon />
-                  </IconButton>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mr: 2 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5 }}>
+                      Add to Home
+                    </Typography>
+                    <Checkbox
+                      checked={Boolean(subjectCategory.ishomepage)}
+                      onChange={() => handleHomepageToggle(subjectCategory.id!, subjectCategory.ishomepage ?? 0)}
+                      disabled={pendingChanges.has(subjectCategory.id!)}
+                      color="primary"
+                    />
+                    {pendingChanges.has(subjectCategory.id!) && (
+                      <Typography variant="caption" color="warning.main" sx={{ fontSize: '0.65rem' }}>
+                        Saving...
+                      </Typography>
+                    )}
+                  </Box>
+                  <Box>
+                    <IconButton onClick={() => edit(subjectCategory)} color="primary">
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton color="error" onClick={() => remove(subjectCategory.id!)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
                 </Box>
               </Box>
             ))

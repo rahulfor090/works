@@ -1,8 +1,45 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { Star, TrendingUp, Users, CheckCircle } from 'lucide-react';
 import { mockData } from '../mock';
 
 const MostViewed = () => {
+  const [mentors, setMentors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMentors = async () => {
+      try {
+        const response = await fetch('/api/home/mentors');
+        if (response.ok) {
+          const data = await response.json();
+          // Add hardcoded rating and reviews to each mentor
+          const mentorsWithRatings = data.map((mentor, index) => ({
+            ...mentor,
+            rating: mentor.rating ?? 4.8 + (index * 0.1 % 0.2), // Use DB rating or fallback
+            reviews: 120 + (index * 40), // Increment reviews
+            experience: '5+ Years', // Default experience
+            image: mentor.photo_url && mentor.photo_url.trim() !== '' ? mentor.photo_url : 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop',
+            speciality: mentor.speciality || 'Medical Professional'
+          }));
+          setMentors(mentorsWithRatings);
+        } else {
+          // Fallback to mock data if API fails
+          setMentors(mockData.mentors);
+        }
+      } catch (error) {
+        console.error('Error fetching mentors:', error);
+        // Fallback to mock data on error
+        setMentors(mockData.mentors);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMentors();
+  }, []);
+
   return (
     <section className="py-20 bg-gradient-to-br from-[#F0F9FF] via-white to-[#FFF5F5] relative overflow-hidden">
       {/* Background Pattern */}
@@ -60,7 +97,23 @@ const MostViewed = () => {
 
         {/* Mentors Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {mockData.mentors.map((mentor, index) => (
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-3xl overflow-hidden shadow-sm animate-pulse"
+              >
+                <div className="aspect-square bg-gray-200"></div>
+                <div className="p-6">
+                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            ))
+          ) : (
+            mentors.map((mentor, index) => (
             <div
               key={mentor.id}
               className="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer"
@@ -116,7 +169,8 @@ const MostViewed = () => {
                 </p>
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
       </div>
     </section>

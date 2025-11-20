@@ -1,4 +1,4 @@
-import { query } from '@/lib/db';
+import { query } from '@/utils/db';
 
 export interface ApiAuthentication {
   id?: number;
@@ -58,19 +58,21 @@ export class ApiAuthenticationRepository {
       }
     }
 
-    return query<ApiAuthentication[]>(sql, params);
+    const [rows] = await query<ApiAuthentication>(sql, params);
+    return rows as ApiAuthentication[];
   }
 
   static async findById(id: number): Promise<ApiAuthentication | null> {
-    const results = await query<ApiAuthentication[]>(
+    const [results] = await query<ApiAuthentication>(
       `SELECT * FROM ${this.TABLE_NAME} WHERE id = ?`,
       [id]
     );
-    return (Array.isArray(results) && results.length > 0) ? results[0] : null;
+    const rows = results as ApiAuthentication[];
+    return (Array.isArray(rows) && rows.length > 0) ? rows[0] : null;
   }
 
   static async create(data: Omit<ApiAuthentication, 'id' | 'created_at' | 'updated_at'>): Promise<number> {
-    const result = await query<any>(
+    const [result] = await query<any>(
       `INSERT INTO ${this.TABLE_NAME} (username, token_value, auth_method, status) VALUES (?, ?, ?, ?)`,
       [data.username, data.token_value, data.auth_method, data.status]
     );
@@ -103,7 +105,7 @@ export class ApiAuthenticationRepository {
     }
 
     params.push(id);
-    const result = await query<any>(
+    const [result] = await query<any>(
       `UPDATE ${this.TABLE_NAME} SET ${fields.join(', ')} WHERE id = ?`,
       params
     );
@@ -112,7 +114,7 @@ export class ApiAuthenticationRepository {
   }
 
   static async delete(id: number): Promise<boolean> {
-    const result = await query<any>(
+    const [result] = await query<any>(
       `DELETE FROM ${this.TABLE_NAME} WHERE id = ?`,
       [id] 
     );
@@ -128,7 +130,8 @@ export class ApiAuthenticationRepository {
       params.push(filters.status);
     }
 
-    const results = await query<{ count: number }[]>(sql, params);
-    return (Array.isArray(results) && results.length > 0) ? results[0].count : 0;
+    const [results] = await query<{ count: number }>(sql, params);
+    const rows = results as { count: number }[];
+    return (Array.isArray(rows) && rows.length > 0) ? rows[0].count : 0;
   }
 }
