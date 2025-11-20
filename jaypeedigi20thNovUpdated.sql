@@ -108,7 +108,7 @@ CREATE TABLE `api_authentications` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_username` (`username`),
   KEY `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,6 +117,7 @@ CREATE TABLE `api_authentications` (
 
 LOCK TABLES `api_authentications` WRITE;
 /*!40000 ALTER TABLE `api_authentications` DISABLE KEYS */;
+INSERT INTO `api_authentications` VALUES (1,'Test','nvr_R4FfnGGm4UPFKKGZUlSnKOXOcuR6hRRtWnnGrPWOdNg','IP-Based','Active','2025-11-20 14:09:32','2025-11-20 14:09:32');
 /*!40000 ALTER TABLE `api_authentications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -245,8 +246,9 @@ CREATE TABLE `citations` (
   `isPublished` tinyint(1) NOT NULL DEFAULT '1',
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `location` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'header',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -255,7 +257,7 @@ CREATE TABLE `citations` (
 
 LOCK TABLES `citations` WRITE;
 /*!40000 ALTER TABLE `citations` DISABLE KEYS */;
-INSERT INTO `citations` VALUES (1,'PUBMED','https://pubmed.ncbi.nlm.nih.gov/','PUBMED_logo_4.png',1,'2025-11-18 18:03:19','2025-11-18 18:03:19'),(2,'PUBMED_CENTRAL','https://www.ncbi.nlm.nih.gov/pmc/articles/','PUBMED_CENTRAL_logo_5.png',1,'2025-11-18 18:03:19','2025-11-18 18:03:19');
+INSERT INTO `citations` VALUES (1,'PUBMED','https://pubmed.ncbi.nlm.nih.gov/','PUBMED_logo_4.png',1,'2025-11-18 18:03:19','2025-11-18 18:03:19','header'),(2,'PUBMED_CENTRAL','https://www.ncbi.nlm.nih.gov/pmc/articles/','PUBMED_CENTRAL_logo_5.png',1,'2025-11-18 18:03:19','2025-11-18 18:03:19','header'),(3,'PUBMED','https://pubmed.ncbi.nlm.nih.gov/','PUBMED_logo_4.png',1,'2025-11-20 14:02:12','2025-11-20 14:02:12','header'),(4,'PUBMED_CENTRAL','https://www.ncbi.nlm.nih.gov/pmc/articles/','PUBMED_CENTRAL_logo_5.png',1,'2025-11-20 14:02:12','2025-11-20 14:02:12','header');
 /*!40000 ALTER TABLE `citations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -385,6 +387,40 @@ LOCK TABLES `hero_slides` WRITE;
 /*!40000 ALTER TABLE `hero_slides` DISABLE KEYS */;
 INSERT INTO `hero_slides` VALUES (11,'Test','Test','Test','slider-1762790645416-940945050.png','[{\"label\":\"Medicine\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Dentistry\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Nursing\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Watch Video\",\"variant\":\"outlined\",\"icon\":true,\"scrollTo\":\"video-section\"}]',7,1,'2025-11-10 10:34:05','2025-11-10 10:34:05'),(12,'Test 2','Test 2','Test 2','slider-1762791418053-77233224.png','[{\"label\":\"Medicine\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Dentistry\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Nursing\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Watch Video\",\"variant\":\"outlined\",\"icon\":true,\"scrollTo\":\"video-section\"}]',3,1,'2025-11-10 10:46:58','2025-11-10 10:46:58'),(13,'Empowering Medical','Minds','Jaypee products are being distributed globally by renowned  distributors in the USA, Central and South America, UK, Canada,  Europe, Africa, Middle East, South East Asia, North Asia.','slider-1762792309708-717873117.png','[{\"label\":\"Medicine\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Dentistry\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Nursing\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Watch Video\",\"variant\":\"outlined\",\"icon\":true,\"scrollTo\":\"video-section\"}]',0,1,'2025-11-10 11:01:49','2025-11-10 11:19:04'),(14,'Test1','Test1','Test1','slider-1763396294392-115007109.png','[{\"label\":\"Medicine\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Dentistry\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Nursing\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Watch Video\",\"variant\":\"outlined\",\"icon\":true,\"scrollTo\":\"video-section\"}]',4,1,'2025-11-17 10:48:14','2025-11-17 10:48:14'),(15,'Test3','Test3','Test3','slider-1763396522071-600141016.png','[{\"label\":\"Medicine\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Dentistry\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Nursing\",\"variant\":\"contained\",\"scrollTo\":\"popular-course\"},{\"label\":\"Watch Video\",\"variant\":\"outlined\",\"icon\":true,\"scrollTo\":\"video-section\"}]',5,1,'2025-11-17 10:52:02','2025-11-17 10:52:02');
 /*!40000 ALTER TABLE `hero_slides` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `mentors`
+--
+
+DROP TABLE IF EXISTS `mentors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mentors` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `speciality` varchar(255) DEFAULT NULL,
+  `hospital` varchar(255) DEFAULT NULL,
+  `photo_url` varchar(255) DEFAULT NULL,
+  `company_logo_url` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `order` int DEFAULT NULL,
+  `active` tinyint(1) DEFAULT NULL,
+  `rating` int DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mentors`
+--
+
+LOCK TABLES `mentors` WRITE;
+/*!40000 ALTER TABLE `mentors` DISABLE KEYS */;
+INSERT INTO `mentors` VALUES (7,'Dr. Rajesh Kumar','Cardiology','AIIMS Delhi','/images/mentors/christian-buehner-DItYlc26zVI-unsplash.jpg','/images/companies/google.png','Leading cardiologist with 15+ years of experience in interventional cardiology and medical education.',1,1,4,'2025-11-20 21:32:09','2025-11-20 21:24:13'),(8,'Dr. Priya Sharma','Pediatrics','Safdarjung Hospital','/images/mentors/jonas-kakaroto-KIPqvvTOC1s-unsplash.jpg','/images/companies/microsoft.png','Renowned pediatrician specializing in neonatal care and child development with extensive teaching experience.',2,1,5,'2025-11-20 21:39:43','2025-11-20 21:35:20'),(9,'Dr. Amit Patel','Orthopedics','Fortis Healthcare','/images/mentors/noah-buscher-8A7fD6Y5VF8-unsplash.jpg','/images/companies/airbnb.png','Expert orthopedic surgeon with specialization in joint replacement and sports medicine.',3,1,5,'2025-11-20 21:36:42','2025-11-20 21:36:42'),(10,'Dr. Sunita Gupta','Gynecology','Max Healthcare','/images/mentors/philip-martin-5aGUyCW_PJw-unsplash.jpg','/images/companies/grab.png','Senior gynecologist and obstetrician with expertise in high-risk pregnancies and minimally invasive surgery.',4,1,3,'2025-11-20 21:37:31','2025-11-20 21:37:31');
+/*!40000 ALTER TABLE `mentors` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -526,7 +562,7 @@ CREATE TABLE `subjectcategory` (
   UNIQUE KEY `slug` (`slug`),
   KEY `idx_category` (`contentTypeId`),
   CONSTRAINT `fk_subcategory_category` FOREIGN KEY (`contentTypeId`) REFERENCES `contenttype` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -535,7 +571,7 @@ CREATE TABLE `subjectcategory` (
 
 LOCK TABLES `subjectcategory` WRITE;
 /*!40000 ALTER TABLE `subjectcategory` DISABLE KEYS */;
-INSERT INTO `subjectcategory` VALUES (1,'Medicine','medicine','Welcome to the Dummy Text',1,1,'2025-10-23 16:46:11',1,1),(2,'Dentistry','dentistry','Welcome to the Dummy Text',1,2,'2025-10-23 16:46:11',1,1),(3,'Nursing','nursing','Welcome to the Dummy Text',1,3,'2025-10-23 16:46:11',1,1),(4,'Surgery','surgery','Welcome to the Dummy Text',1,4,'2025-10-23 16:46:11',0,0),(5,'Radiology','radiology','Welcome to the Dummy Text',1,5,'2025-10-23 16:46:11',0,0),(6,'Paediatrics','paediatrics','Child health & paediatric medicine',1,6,'2025-10-23 16:46:11',0,0),(7,'Anatomy','anatomy','Welcome to the Dummy Text',1,7,'2025-10-23 16:46:11',0,0),(51,'Alternative Medicine','alternative-medicine','Welcome to the Dummy Text',1,0,'2025-10-24 18:41:23',0,0),(52,'Biochemistry','biochemistry','Welcome to the Dummy Text',1,0,'2025-10-24 18:41:48',1,0),(53,'Biotechnology','biotechnology','Welcome to the Dummy Text',1,0,'2025-10-24 18:42:12',1,0),(54,'Cardiology','cardiology','This is dummy text',3,0,'2025-10-24 18:47:27',1,0),(55,'Critical Care','critical-care','this is dummy text',1,0,'2025-10-24 18:48:03',1,0),(56,'Dental Materials','dental-materials','This is dummy text',3,0,'2025-10-24 18:48:58',1,0);
+INSERT INTO `subjectcategory` VALUES (1,'Medicine','medicine','Welcome to the Dummy Text',1,1,'2025-10-23 16:46:11',1,1),(2,'Dentistry','dentistry','Welcome to the Dummy Text',1,2,'2025-10-23 16:46:11',1,1),(3,'Nursing','nursing','Welcome to the Dummy Text',1,3,'2025-10-23 16:46:11',0,1),(4,'Surgery','surgery','Welcome to the Dummy Text',1,4,'2025-10-23 16:46:11',0,0),(5,'Radiology','radiology','Welcome to the Dummy Text',1,5,'2025-10-23 16:46:11',1,0),(6,'Paediatrics','paediatrics','Child health & paediatric medicine',1,6,'2025-10-23 16:46:11',0,0),(7,'Anatomy','anatomy','Welcome to the Dummy Text',1,7,'2025-10-23 16:46:11',0,0),(51,'Alternative Medicine','alternative-medicine','Welcome to the Dummy Text',1,0,'2025-10-24 18:41:23',1,0),(52,'Biochemistry','biochemistry','Welcome to the Dummy Text',1,0,'2025-10-24 18:41:48',1,0),(53,'Biotechnology','biotechnology','Welcome to the Dummy Text',1,0,'2025-10-24 18:42:12',1,0),(54,'Cardiology','cardiology','This is dummy text',3,0,'2025-10-24 18:47:27',1,0),(55,'Critical Care','critical-care','this is dummy text',1,0,'2025-10-24 18:48:03',1,0),(56,'Dental Materials','dental-materials','This is dummy text',3,0,'2025-10-24 18:48:58',1,0),(57,'Test','test','Test',1,0,'2025-11-20 14:26:00',0,0);
 /*!40000 ALTER TABLE `subjectcategory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -632,4 +668,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-19 22:40:02
+-- Dump completed on 2025-11-20 21:42:35
