@@ -88,6 +88,10 @@ const AdminContenttypes = () => {
         if (response.ok) {
           // Reload data from server
           await load()
+          // Broadcast update to other tabs/windows
+          if (typeof window !== 'undefined' && window.localStorage) {
+            localStorage.setItem('contenttype-update', Date.now().toString())
+          }
           setSnackbar({
             open: true,
             message: 'Content type updated successfully',
@@ -109,6 +113,10 @@ const AdminContenttypes = () => {
         if (response.ok) {
           // Reload data from server
           await load()
+          // Broadcast update to other tabs/windows
+          if (typeof window !== 'undefined' && window.localStorage) {
+            localStorage.setItem('contenttype-update', Date.now().toString())
+          }
           setSnackbar({
             open: true,
             message: 'Content type created successfully',
@@ -159,6 +167,10 @@ const AdminContenttypes = () => {
       if (response.ok) {
         // Reload data from server
         await load()
+        // Broadcast update to other tabs/windows
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('contenttype-update', Date.now().toString())
+        }
         setSnackbar({
           open: true,
           message: 'Content type deleted successfully',

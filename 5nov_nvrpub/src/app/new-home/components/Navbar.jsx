@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from './ui/button';
 import { Menu, X } from 'lucide-react';
 import { mockData } from '../mock';
+import { fetchContentTypeNav, defaultContentTypeNav } from '../../../utils/contenttype-nav';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [navLinks, setNavLinks] = useState(mockData.navLinks);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,6 +16,55 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const mapNavItemsToLinks = useCallback((items) =>
+    items.map((item) => ({ name: item.label, href: item.path })), []);
+
+  const refreshNavLinks = useCallback(async ({ signal, showLoading = false } = {}) => {
+    try {
+      if (showLoading) {
+        setNavLinks((current) => current.length ? current : mapNavItemsToLinks(defaultContentTypeNav));
+      }
+      const navItems = await fetchContentTypeNav(signal);
+      setNavLinks(mapNavItemsToLinks(navItems));
+    } catch (error) {
+      if (error?.name === 'AbortError') return;
+      console.error('Failed to load navbar links:', error);
+      setNavLinks(mapNavItemsToLinks(defaultContentTypeNav));
+    }
+  }, [mapNavItemsToLinks]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    refreshNavLinks({ signal: controller.signal, showLoading: true });
+    return () => controller.abort();
+  }, [refreshNavLinks]);
+
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'contenttype-update') {
+        refreshNavLinks();
+      }
+    };
+
+    const handleFocus = () => refreshNavLinks();
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        refreshNavLinks();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [refreshNavLinks]);
 
   return (
     <nav
@@ -33,7 +84,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {mockData.navLinks.map((link) => (
+            {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
@@ -74,7 +125,7 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100">
           <div className="px-4 py-4 space-y-3">
-            {mockData.navLinks.map((link) => (
+            {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
