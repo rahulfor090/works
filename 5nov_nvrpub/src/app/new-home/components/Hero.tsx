@@ -1,10 +1,12 @@
-import React, { useState } from 'react';  
+'use client';
+
+import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Play } from 'lucide-react';
-import HeroSlider, { heroDefaultSlides } from './ui/HeroSlider';
+import HeroSlider, { heroDefaultSlides, type HeroSlide } from './ui/HeroSlider';
 
-const Hero = () => {
-  const [activeSlide, setActiveSlide] = useState(heroDefaultSlides[0]);
+const Hero = (): JSX.Element => {
+  const [activeSlide, setActiveSlide] = useState<HeroSlide>(heroDefaultSlides[0]!);
   const primaryStat = activeSlide?.stats;
 
   return (
@@ -23,12 +25,12 @@ const Hero = () => {
           <div className="space-y-8 animate-fadeIn">
             <div className="flex flex-wrap gap-3">
               {activeSlide?.badge && (
-                <span className="px-4 py-2 bg-[#3B82F6]/10 text-[#3B82F6] rounded-full text-sm font-semibold backdrop-blur-sm uppercase tracking-wide">
+                <span className="px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide text-white bg-gradient-to-r from-[#FF6B6B] via-[#FF7F56] to-[#FF8E53] shadow-[0_10px_25px_rgba(255,107,107,0.25)]">
                   {activeSlide.badge}
                 </span>
               )}
               {activeSlide?.highlightedWord && (
-                <span className="px-4 py-2 bg-[#FF6B6B]/10 text-[#FF6B6B] rounded-full text-sm font-semibold backdrop-blur-sm">
+                <span className="px-4 py-2 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-[#FF6B6B] via-[#FF7F56] to-[#FF8E53] shadow-[0_10px_25px_rgba(255,107,107,0.25)]">
                   {activeSlide.highlightedWord}
                 </span>
               )}
