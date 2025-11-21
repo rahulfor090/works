@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import SiteNavbar from '@/components/layout/SiteNavbar';
 import Hero from './components/Hero';
@@ -9,7 +11,7 @@ import MostViewed from './components/MostViewed';
 import Newsletter from './components/Newsletter';
 import SiteFooter from '@/components/layout/SiteFooter';
 
-const HomePage = () => {
+const HomePage = (): JSX.Element => {
   return (
     <div className="min-h-screen bg-white">
       <SiteNavbar />
