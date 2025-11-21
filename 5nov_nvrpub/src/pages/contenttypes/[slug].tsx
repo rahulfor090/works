@@ -64,7 +64,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
     if (activeSubjectcategory === 0) {
       return contents // Show all contents in contenttype
     }
-    
+
     const selectedSubjectcategory = subjectcategories[activeSubjectcategory - 1]
     return contents.filter((content: Content) => content.subjectcategoryId === selectedSubjectcategory.id)
   }
@@ -78,7 +78,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
         <title>{contenttypeName} Contents - Jaypee Digital</title>
         <meta name="description" content={`Browse all ${contenttypeName.toLowerCase()} contents available on Jaypee Digital`} />
       </Head>
-      
+
       <Box
         sx={{
           pt: { xs: 6, md: 8 },
@@ -112,9 +112,9 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                 </IconButton>
               </Link>
               <Box>
-                <Typography 
-                  variant="h1" 
-                  sx={{ 
+                <Typography
+                  variant="h1"
+                  sx={{
                     fontSize: { xs: 32, md: 48 },
                     fontWeight: 700,
                     color: 'text.primary'
@@ -122,9 +122,9 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                 >
                   {contenttypeName} Contents
                 </Typography>
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
+                <Typography
+                  variant="h6"
+                  sx={{
                     color: 'text.secondary',
                     mt: 1
                   }}
@@ -220,7 +220,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                     const categoryIndex = index + 1;
                     const isActive = activeSubjectcategory === categoryIndex;
                     const contentCount = contents.filter((content: Content) => content.subjectcategoryId === subjectcategory.id).length;
-                    
+
                     return (
                       <Box
                         key={subjectcategory.id}
@@ -330,9 +330,9 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
             {/* Active Category Name Display */}
             {activeSubjectcategory > 0 && (
               <Box sx={{ mb: 3 }}>
-                <Typography 
-                  variant="h4" 
-                  sx={{ 
+                <Typography
+                  variant="h4"
+                  sx={{
                     fontWeight: 600,
                     color: 'text.primary',
                     mb: 1
@@ -353,7 +353,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                 {activeSubjectcategory === 0 && ' in all categories'}
                 {activeSubjectcategory > 0 && ` in ${subjectcategories[activeSubjectcategory - 1]?.title}`}
               </Typography>
-              
+
               {activeSubjectcategory > 0 && (
                 <Chip
                   label={subjectcategories[activeSubjectcategory - 1]?.title}
@@ -368,11 +368,11 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
           </Box>
 
           {/* Contents Grid */}
-            {filteredContents.length > 0 ? (
-              <Grid container spacing={3}>
-                {filteredContents.map((content: Content) => (
+          {filteredContents.length > 0 ? (
+            <Grid container spacing={3}>
+              {filteredContents.map((content: Content) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={content.id}>
-                    <ContentCardItem item={content} contenttypeSlug={contenttype} />
+                  <ContentCardItem item={content} contenttypeSlug={contenttype} />
                 </Grid>
               ))}
             </Grid>
@@ -390,7 +390,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                 No contents found
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                {activeSubjectcategory === 0 
+                {activeSubjectcategory === 0
                   ? "There are no contents available in this content type."
                   : `There are no contents available in the ${subjectcategories[activeSubjectcategory - 1]?.title} category.`
                 }
@@ -413,13 +413,27 @@ ContenttypeDetailsPage.getLayout = (page: React.ReactElement) => <MainLayout>{pa
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const { slug } = params!
-  
+
   try {
     // Fetch content type data
     const contenttypeRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/contenttypes`)
     const contenttypesData = await contenttypeRes.json()
-    const contenttypeData = contenttypesData.find((ct: any) => ct.slug === slug)
-    
+    let contenttypeData = contenttypesData.find((ct: any) => ct.slug === slug)
+
+    // Fallback for books if not in DB
+    if (!contenttypeData && slug === 'books') {
+      contenttypeData = {
+        id: 999, // Dummy ID
+        title: 'Books',
+        slug: 'books',
+        description: 'Explore our comprehensive collection of medical textbooks and reference materials.',
+        icon: 'MenuBook', // Using a standard icon name
+        displayOrder: 1,
+        ishomepage: 0,
+        isActive: 1
+      }
+    }
+
     if (!contenttypeData) {
       return {
         notFound: true,
@@ -441,11 +455,11 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     // Fetch subject categories data
     const subjectcategoriesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/subjectcategories`)
     const allSubjectcategories = await subjectcategoriesRes.json()
-    
+
     // Get unique subject categories for this content type
     const uniqueIds = new Set(contents.map((content: any) => content.subjectcategoryId))
     const contentSubjectcategoryIds = Array.from(uniqueIds)
-    const subjectcategories = allSubjectcategories.filter((sc: any) => 
+    const subjectcategories = allSubjectcategories.filter((sc: any) =>
       contentSubjectcategoryIds.includes(sc.id)
     )
 
@@ -471,7 +485,7 @@ function getContenttypeDescription(contenttype: string): string {
     videos: 'Interactive video lectures and tutorials designed to enhance your learning experience. Access high-quality educational content with expert instructors and practical demonstrations.',
     journals: 'Latest research articles and academic publications in medical and healthcare fields. Stay updated with cutting-edge research and clinical studies from renowned medical journals.',
   }
-  
+
   return descriptions[contenttype] || 'Explore our comprehensive collection of educational content in this content type, designed to support your learning journey.'
 }
 
