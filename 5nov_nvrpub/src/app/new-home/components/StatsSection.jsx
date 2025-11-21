@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookOpen, Video, FileText, Briefcase } from 'lucide-react';
 import { mockData } from '../mock';
 
@@ -10,12 +10,36 @@ const iconMap = {
 };
 
 const StatsSection = () => {
+  const [stats, setStats] = useState(mockData.stats);
+
+  useEffect(() => {
+    const fetchBookCount = async () => {
+      try {
+        const response = await fetch('/api/books/count');
+        if (response.ok) {
+          const data = await response.json();
+          setStats(prevStats =>
+            prevStats.map(stat =>
+              stat.label === 'Books'
+                ? { ...stat, count: `${data.count}+` }
+                : stat
+            )
+          );
+        }
+      } catch (error) {
+        console.error('Failed to fetch book count:', error);
+      }
+    };
+
+    fetchBookCount();
+  }, []);
+
   return (
     <section className="relative py-16 -mt-20 z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-[#0A2540] via-[#1E3A8A] to-[#0A2540] rounded-3xl shadow-2xl overflow-hidden">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10">
-            {mockData.stats.map((stat, index) => {
+            {stats.map((stat, index) => {
               const Icon = iconMap[stat.icon];
               return (
                 <div
