@@ -41,6 +41,7 @@ interface BookFormData {
   no_of_pages: number | string
   no_of_volumes: number | string
   featured: boolean
+  status: string
   download_enable: boolean
   rating: number | string
   book_cover_image: string
@@ -91,6 +92,7 @@ const CreateEditBookPage = () => {
     no_of_pages: '',
     no_of_volumes: 1,
     featured: false,
+    status: 'Active',
     download_enable: false,
     rating: '',
     book_cover_image: '',
@@ -148,7 +150,8 @@ const CreateEditBookPage = () => {
           no_of_volumes: data.data.no_of_volumes || 1,
           rating: data.data.rating || '',
           category_id: data.data.category_id || '',
-          subject_ids: data.data.subject_ids || []
+          subject_ids: data.data.subject_ids || [],
+          status: data.data.status || 'Active'
         })
       } else {
         setError(data.message || 'Failed to fetch book')
@@ -437,15 +440,28 @@ const CreateEditBookPage = () => {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.featured}
-                  onChange={(e) => handleInputChange('featured', e.target.checked)}
-                />
-              }
-              label="Featured"
-            />
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.featured}
+                    onChange={(e) => handleInputChange('featured', e.target.checked)}
+                  />
+                }
+                label="Featured"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.status === 'Active'}
+                    onChange={(e) =>
+                      handleInputChange('status', e.target.checked ? 'Active' : 'Inactive')
+                    }
+                  />
+                }
+                label="Active"
+              />
+            </Box>
           </Grid>
 
           <Grid item xs={12} md={4}>
