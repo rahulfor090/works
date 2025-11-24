@@ -21,11 +21,15 @@ const SELECT_FEATURED_BOOKS = `
     b.rating,
     b.created_date,
     b.updated_date,
+    b.updated_date,
     b.subject_ids,
+    b.authors,
     b.status,
-    sc.name AS category_name
+    sc.name AS category_name,
+    s.subject AS subject_name
   FROM books b
   LEFT JOIN subjectcategory sc ON b.category_id = sc.id
+  LEFT JOIN subjects s ON s.id = CAST(SUBSTRING_INDEX(b.subject_ids, ',', 1) AS UNSIGNED)
   WHERE b.featured = 1
     AND (b.status IS NULL OR b.status NOT IN ('Deleted', 'deleted'))
   ORDER BY COALESCE(b.updated_date, b.created_date) DESC
@@ -45,7 +49,9 @@ const adaptForHighlights = (book: NormalizedAdminBook) => ({
   title: book.title,
   subtitle: book.subtitle,
   author: book.author,
+  authors: book.authors,
   category: book.category,
+  subject: book.subject,
   image: book.coverImage,
   overview: book.description,
   rating: book.rating,

@@ -93,15 +93,18 @@ async function syncBooks() {
             cleanChapterCount = bookData.total_chapter;
         }
 
+        const author = bookData.book_author_name || '';
+
         await connection.execute(
           `INSERT INTO books (
-            isbn, book_title, book_subtitle, doi, category_id, subject_ids, society, access_type, book_content_type,
+            isbn, book_title, authors, book_subtitle, doi, category_id, subject_ids, society, access_type, book_content_type,
             edition, book_type, book_bisac, publishing_year, publish_status,
             no_of_chapters, no_of_pages, no_of_volumes, featured, download_enable,
             rating, book_cover_image, book_overview, supplementary_information, status
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')
           ON DUPLICATE KEY UPDATE
             book_title = VALUES(book_title),
+            authors = VALUES(authors),
             book_subtitle = VALUES(book_subtitle),
             doi = VALUES(doi),
             edition = VALUES(edition),
@@ -114,7 +117,7 @@ async function syncBooks() {
             status = 'Active',
             updated_date = NOW()`,
           [
-            isbn, title, subtitle, doi, categoryId, subjectIds, society, accessType, bookContentType,
+            isbn, title, author, subtitle, doi, categoryId, subjectIds, society, accessType, bookContentType,
             edition, bookType, '', publishingYear, publishStatus,
             cleanChapterCount, noOfPages, noOfVolumes, featured, downloadEnable,
             rating, coverImage, overview, supplementaryInfo

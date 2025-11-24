@@ -53,16 +53,16 @@ const ContentCardItem: FC<Props> = ({ item, contenttypeSlug }) => {
               {item.title}
             </Typography>
           </Link>
-          {item.author && (
+          {item.authors && (
             <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary', fontStyle: 'italic' }}>
-              by {item.author}
+              by {item.authors}
             </Typography>
           )}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Rating name="rating-content" value={item.rating} max={5} sx={{ color: '#ffce31', mr: 1 }} readOnly />
-            <Typography component="span" variant="h5">
+            {/* <Typography component="span" variant="h5">
               {item.ratingCount}
-            </Typography>
+            </Typography> */}
           </Box>
         </Box>
 

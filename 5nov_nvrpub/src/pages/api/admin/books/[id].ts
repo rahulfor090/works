@@ -39,9 +39,9 @@ async function getBook(id: string, res: NextApiResponse) {
       return res.status(404).json({ success: false, message: 'Book not found' })
     }
 
-    const book = books[0]
+    const book = books[0] as any
     // Parse comma-separated subject_ids string to array of numbers
-    book.subject_ids = book.subject_ids 
+    book.subject_ids = book.subject_ids
       ? book.subject_ids.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id))
       : []
 
@@ -77,6 +77,7 @@ async function updateBook(id: string, req: NextApiRequest, res: NextApiResponse)
     book_cover_image,
     book_overview,
     supplementary_information,
+    authors,
     status = 'Active'
   } = req.body
 
@@ -86,7 +87,7 @@ async function updateBook(id: string, req: NextApiRequest, res: NextApiResponse)
 
     const [result] = await query<ResultSetHeader>(
       `UPDATE books SET
-        isbn = ?, book_title = ?, book_subtitle = ?, doi = ?, category_id = ?, subject_ids = ?, society = ?,
+        isbn = ?, book_title = ?, authors = ?, book_subtitle = ?, doi = ?, category_id = ?, subject_ids = ?, society = ?,
         access_type = ?, book_content_type = ?, edition = ?, book_type = ?, book_bisac = ?,
         publishing_year = ?, publish_status = ?, no_of_chapters = ?,
         no_of_pages = ?, no_of_volumes = ?, featured = ?, download_enable = ?,
@@ -94,7 +95,7 @@ async function updateBook(id: string, req: NextApiRequest, res: NextApiResponse)
         supplementary_information = ?, status = ?
       WHERE id = ? AND status != "Deleted"`,
       [
-        isbn, book_title, book_subtitle, doi, category_id || null, subjectIdsString, society, access_type, book_content_type,
+        isbn, book_title, authors || null, book_subtitle, doi, category_id || null, subjectIdsString, society, access_type, book_content_type,
         edition, book_type, book_bisac, publishing_year, publish_status,
         no_of_chapters, no_of_pages, no_of_volumes, featured, download_enable,
         rating, book_cover_image, book_overview, supplementary_information, status || 'Active', id

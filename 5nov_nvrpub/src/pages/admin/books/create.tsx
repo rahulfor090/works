@@ -47,6 +47,7 @@ interface BookFormData {
   book_cover_image: string
   book_overview: string
   supplementary_information: string
+  authors: string
 }
 
 interface Category {
@@ -61,7 +62,7 @@ interface Subject {
 
 const CreateEditBookPage = () => {
   useAuth() // Protect this route
-  
+
   const router = useRouter()
   const { id } = router.query
   const isEdit = Boolean(id)
@@ -97,7 +98,8 @@ const CreateEditBookPage = () => {
     rating: '',
     book_cover_image: '',
     book_overview: '',
-    supplementary_information: ''
+    supplementary_information: '',
+    authors: ''
   })
 
   useEffect(() => {
@@ -151,7 +153,8 @@ const CreateEditBookPage = () => {
           rating: data.data.rating || '',
           category_id: data.data.category_id || '',
           subject_ids: data.data.subject_ids || [],
-          status: data.data.status || 'Active'
+          status: data.data.status || 'Active',
+          authors: data.data.authors || ''
         })
       } else {
         setError(data.message || 'Failed to fetch book')
@@ -216,7 +219,7 @@ const CreateEditBookPage = () => {
   const handleSubmit = async (saveAndContinue = false) => {
     // Save current scroll position
     const scrollPosition = window.scrollY || window.pageYOffset
-    
+
     try {
       setLoading(true)
       setError(null)
@@ -237,7 +240,7 @@ const CreateEditBookPage = () => {
         setSuccess(true)
         // Restore scroll position after state update
         setTimeout(() => window.scrollTo(0, scrollPosition), 0)
-        
+
         if (saveAndContinue) {
           setTimeout(() => router.push('/admin/books'), 1500)
         }
@@ -391,6 +394,16 @@ const CreateEditBookPage = () => {
               label="Book Subtitle"
               value={formData.book_subtitle}
               onChange={(e) => handleInputChange('book_subtitle', e.target.value)}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Authors"
+              value={formData.authors}
+              onChange={(e) => handleInputChange('authors', e.target.value)}
+              placeholder="Enter authors"
             />
           </Grid>
 

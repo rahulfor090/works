@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Star, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
 import { Button } from './ui/button'
 
@@ -34,8 +35,8 @@ const NewReleases = () => {
         const uniqueCategories = Array.from(
           new Set(
             fetchedBooks
-              .map((book) => (typeof book?.category === 'string' ? book.category.trim() : ''))
-              .filter((category) => category.length > 0)
+              .map((book) => (typeof book?.subject === 'string' ? book.subject.trim() : ''))
+              .filter((subject) => subject.length > 0)
           )
         )
 
@@ -68,7 +69,7 @@ const NewReleases = () => {
   const filteredBooks =
     activeCategory === DEFAULT_CATEGORY
       ? books
-      : books.filter((book) => book?.category === activeCategory)
+      : books.filter((book) => book?.subject === activeCategory)
 
   return (
     <section className="py-20 bg-white">
@@ -99,11 +100,10 @@ const NewReleases = () => {
               key={category}
               onClick={() => setActiveCategory(category)}
               disabled={loading || books.length === 0}
-              className={`px-6 py-2.5 rounded-full font-medium transition-all duration-300 ${
-                activeCategory === category
-                  ? 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white shadow-lg shadow-[#3B82F6]/25'
-                  : 'bg-gray-100 text-[#64748B] hover:bg-gray-200'
-              } ${loading || books.length === 0 ? 'opacity-60 cursor-not-allowed' : ''}`}
+              className={`px-6 py-2.5 rounded-full font-medium transition-all duration-300 ${activeCategory === category
+                ? 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white shadow-lg shadow-[#3B82F6]/25'
+                : 'bg-gray-100 text-[#64748B] hover:bg-gray-200'
+                } ${loading || books.length === 0 ? 'opacity-60 cursor-not-allowed' : ''}`}
             >
               {category}
             </button>
@@ -118,66 +118,71 @@ const NewReleases = () => {
         ) : filteredBooks.length === 0 ? (
           <div className="text-center text-[#64748B]">Featured books will appear here soon.</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
             {filteredBooks.map((book, index) => {
               const ratingValue = Math.max(0, Math.min(5, Number(book?.rating) || 0))
               const reviewCount = Number(book?.reviews) || 0
               const imageSrc = book?.image || FALLBACK_IMAGE
 
               return (
-                <div
+                <Link
+                  href={`/content/book/${book?.isbn}`}
                   key={book?.id || book?.isbn || index}
-                  className="group cursor-pointer"
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  className="block min-w-[280px] w-[280px] sm:min-w-[300px] sm:w-[300px] snap-start"
                 >
-                  <div className="relative overflow-hidden rounded-2xl shadow-lg group-hover:shadow-2xl transition-all duration-300">
-                    {/* Book Cover */}
-                    <div className="aspect-[3/4] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-                      <img
-                        src={imageSrc}
-                        alt={book?.title || 'Featured book cover'}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        onError={(event) => {
-                          event.currentTarget.src = FALLBACK_IMAGE
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </div>
-
-                    {/* Category Badge */}
-                    <div className="absolute top-3 right-3">
-                      <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-[#0A2540] text-xs font-semibold rounded-full">
-                        {book?.category || DEFAULT_CATEGORY}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Book Info */}
-                  <div className="mt-4 space-y-2">
-                    <h3 className="font-bold text-[#0A2540] line-clamp-2 group-hover:text-[#FF6B6B] transition-colors duration-200">
-                      {book?.title || 'Untitled Book'}
-                    </h3>
-                    <p className="text-sm text-[#64748B]">{book?.author || 'Editorial Team'}</p>
-
-                    {/* Rating */}
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1">
-                        {[...Array(5)].map((_, starIndex) => (
-                          <Star
-                            key={starIndex}
-                            size={14}
-                            className={
-                              starIndex < Math.floor(ratingValue)
-                                ? 'fill-[#FBBF24] text-[#FBBF24]'
-                                : 'text-gray-300'
-                            }
-                          />
-                        ))}
+                  <div
+                    className="group cursor-pointer"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="relative overflow-hidden rounded-2xl shadow-lg group-hover:shadow-2xl transition-all duration-300">
+                      {/* Book Cover */}
+                      <div className="aspect-[3/4] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                        <img
+                          src={imageSrc}
+                          alt={book?.title || 'Featured book cover'}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          onError={(event) => {
+                            event.currentTarget.src = FALLBACK_IMAGE
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       </div>
-                      <span className="text-xs text-[#64748B]">({reviewCount})</span>
+
+                      {/* Category Badge */}
+                      <div className="absolute top-3 right-3">
+                        <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-[#0A2540] text-xs font-semibold rounded-full">
+                          {book?.subject || DEFAULT_CATEGORY}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Book Info */}
+                    <div className="mt-4 space-y-2">
+                      <h3 className="font-bold text-[#0A2540] line-clamp-2 group-hover:text-[#FF6B6B] transition-colors duration-200">
+                        {book?.title || 'Untitled Book'}
+                      </h3>
+                      <p className="text-sm text-[#64748B]">{book?.authors || book?.author || 'Editorial Team'}</p>
+
+                      {/* Rating */}
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, starIndex) => (
+                            <Star
+                              key={starIndex}
+                              size={14}
+                              className={
+                                starIndex < Math.floor(ratingValue)
+                                  ? 'fill-[#FBBF24] text-[#FBBF24]'
+                                  : 'text-gray-300'
+                              }
+                            />
+                          ))}
+                        </div>
+                        {/* <span className="text-xs text-[#64748B]">({reviewCount})</span> */}
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               )
             })}
           </div>

@@ -112,6 +112,7 @@ async function createBook(req: NextApiRequest, res: NextApiResponse) {
     book_cover_image,
     book_overview,
     supplementary_information,
+    authors,
     status = 'Active'
   } = req.body
 
@@ -125,13 +126,13 @@ async function createBook(req: NextApiRequest, res: NextApiResponse) {
 
     const [result] = await query<ResultSetHeader>(
       `INSERT INTO books (
-        isbn, book_title, book_subtitle, doi, category_id, subject_ids, society, access_type, book_content_type,
+        isbn, book_title, authors, book_subtitle, doi, category_id, subject_ids, society, access_type, book_content_type,
         edition, book_type, book_bisac, publishing_year, publish_status,
         no_of_chapters, no_of_pages, no_of_volumes, featured, download_enable,
         rating, book_cover_image, book_overview, supplementary_information, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        isbn, book_title, book_subtitle, doi, category_id || null, subjectIdsString, society, access_type, book_content_type,
+        isbn, book_title, authors || null, book_subtitle, doi, category_id || null, subjectIdsString, society, access_type, book_content_type,
         edition, book_type, book_bisac, publishing_year, publish_status,
         no_of_chapters, no_of_pages, no_of_volumes, featured, download_enable,
         rating, book_cover_image, book_overview, supplementary_information, status || 'Active'
