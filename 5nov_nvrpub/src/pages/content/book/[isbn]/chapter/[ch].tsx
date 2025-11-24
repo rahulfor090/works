@@ -610,6 +610,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   } else if (chStr === 'index') {
     htmlPathPublic = `/books/${isbnStr}/index/index.html`
     htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'index', 'index.html')
+  } else if (chStr.toLowerCase().startsWith('case')) {
+    // Handle cases
+    const caseId = chStr
+    htmlPathPublic = `/books/${isbnStr}/cases/${caseId}.html`
+    htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'cases', `${caseId}.html`)
   } else {
     const m = /^ch(\d+)$/i.exec(chStr)
     const chNum = m ? m[1] : String(chStr)
@@ -676,6 +681,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       } else if (chStr === 'index') {
         const indexMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))
         if (indexMatch) title = indexMatch[1].trim()
+      } else if (chStr.toLowerCase().startsWith('case')) {
+        // Try to find title for case in TOC if present, otherwise default
+        // Cases might not be in TOC, so we might need to rely on default or fetch from JSON if needed.
+        // For now, let's default to "Case" + number if not found.
+        title = chStr.replace(/^case/i, 'Case ')
       } else {
         const chNumForTitle = (/^ch(\d+)$/i.exec(chStr)?.[1]) || chStr
         const m = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch${chNumForTitle}\"[^>]*>([^<]+)<\/a>`, 'i'))

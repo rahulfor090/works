@@ -465,7 +465,30 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           <Typography variant="body2" color="text.secondary">Videos coming soon</Typography>
         )}
         {tab === 2 && (
-          <Typography variant="body2" color="text.secondary">Cases coming soon</Typography>
+          <Box>
+            {sections.find(s => s.title === 'Cases')?.chapters.map((ch, idx) => (
+              <ListItem key={`case-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <NextLink href={ch.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                  <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
+                    {ch.title}
+                  </Typography>
+                </NextLink>
+                {!isLocked && (
+                  <Tooltip title="Unlocked content">
+                    <LockOpenIcon sx={{ fontSize: 18, color: 'success.main' }} />
+                  </Tooltip>
+                )}
+                {isLocked && (
+                  <Tooltip title="Premium content - Login required">
+                    <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  </Tooltip>
+                )}
+              </ListItem>
+            ))}
+            {!sections.find(s => s.title === 'Cases') && (
+              <Typography variant="body2" color="text.secondary">No cases available.</Typography>
+            )}
+          </Box>
         )}
         {tab === 3 && (
           <Typography variant="body2" color="text.secondary">Reviews coming soon</Typography>
@@ -926,10 +949,24 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const appendices = chapters.filter((ch: any) => ch.chapterType === 'appendix')
     const mainChapters = chapters.filter((ch: any) => ch.chapterType === 'chapter' && ch.number != null)
 
+    // Process Cases from JSON
+    const casesData = bookData.cases || []
+    const cases: Chapter[] = casesData.map((c: any, idx: number) => {
+      const caseId = c.case_id || `case${idx + 1}`
+      return {
+        number: null, // Cases don't have a standard chapter number
+        title: c.case_title,
+        slug: `/books/${isbnStr}/cases/${caseId}.html`, // Assuming case file structure
+        id: 1000 + idx, // Arbitrary high ID for sorting/filtering
+        chapterType: 'case'
+      }
+    })
+
     const sections: Section[] = []
     if (prelims.length) sections.push({ title: 'Prelims', chapters: prelims })
     if (mainChapters.length) sections.push({ title: 'Chapters', chapters: mainChapters })
     if (appendices.length) sections.push({ title: 'Appendices', chapters: appendices })
+    if (cases.length) sections.push({ title: 'Cases', chapters: cases })
     if (index.length) sections.push({ title: 'Index', chapters: index })
 
     // Detect book PDF (<isbn>.pdf or book.pdf) if present
@@ -944,7 +981,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       }
     } catch { }
 
-    return { props: { isbn: isbnStr, book, sections, bookPdfUrl, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
+    return { props: { isbn: isbnStr, book, sections, bookPdfUrl, videosCount: 0, casesCount: cases.length, reviewsCount: 0 } }
   } catch (e) {
     console.error('Error loading book metadata:', e)
     return { props: { isbn: isbnStr, book: null, sections: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }

@@ -27,6 +27,12 @@ const nextConfig = {
         destination: '/content/book/:isbn/chapter/index',
         permanent: false,
       },
+      // Cases HTML to viewer
+      {
+        source: '/books/:isbn/cases/:caseId.html',
+        destination: '/content/book/:isbn/chapter/:caseId',
+        permanent: false,
+      },
     ]
   },
   async rewrites() {
@@ -45,6 +51,11 @@ const nextConfig = {
       {
         source: '/books/:isbn/index/index.html',
         destination: '/content/book/:isbn/chapter/index',
+      },
+      // Cases
+      {
+        source: '/books/:isbn/cases/:caseId.html',
+        destination: '/content/book/:isbn/chapter/:caseId',
       },
     ]
   },

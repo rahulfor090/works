@@ -4,6 +4,16 @@ import { query } from '@/utils/db'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     try {
+      const page = parseInt(req.query.page as string) || 1
+      const limit = parseInt(req.query.limit as string) || 10
+      const offset = (page - 1) * limit
+
+      // Get total count
+      const [countResult] = await query(
+        `SELECT COUNT(*) as total FROM chapters WHERE status != 'Deleted'`
+      )
+      const total = (countResult as any)[0]?.total || 0
+
       const result = await query(
         `SELECT 
           c.id,
@@ -25,13 +35,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         FROM chapters c
         LEFT JOIN books b ON c.book_id = b.id
         WHERE c.status != 'Deleted'
-        ORDER BY c.created_date DESC`
+        ORDER BY c.created_date DESC
+        LIMIT ? OFFSET ?`,
+        [limit, offset]
       )
-      
+
       // Handle the result - it might be an array or nested array
       const chapters = Array.isArray(result) ? (Array.isArray(result[0]) ? result[0] : result) : []
-      
-      return res.status(200).json({ success: true, data: chapters })
+
+      return res.status(200).json({
+        success: true,
+        data: chapters,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit)
+        }
+      })
     } catch (error: any) {
       console.error('Error fetching chapters:', error)
       return res.status(500).json({ success: false, message: error.message })

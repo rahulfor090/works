@@ -14,11 +14,14 @@ import {
   Chip,
   Typography,
   CircularProgress,
-  Alert
+  Alert,
+  Snackbar,
+  TablePagination
 } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
+import SyncIcon from '@mui/icons-material/Sync'
 import { useRouter } from 'next/router'
 import { useAuth, usePermissions, hasPermission } from '@/utils/auth'
 
@@ -35,11 +38,20 @@ interface Book {
 const BooksPage = () => {
   useAuth() // Protect this route
   const { permissions, loading: permissionsLoading } = usePermissions()
-  
+
   const router = useRouter()
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [totalCount, setTotalCount] = useState(0)
+  const [syncing, setSyncing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  })
 
   // Check view permission
   const canView = hasPermission(permissions, 'Book', 'view') || hasPermission(permissions, 'ROLE_BOOK', 'view')
@@ -49,20 +61,21 @@ const BooksPage = () => {
 
   useEffect(() => {
     if (!permissionsLoading && canView) {
-      fetchBooks()
+      fetchBooks(page, rowsPerPage)
     } else if (!permissionsLoading && !canView) {
       setLoading(false)
     }
-  }, [permissionsLoading, canView])
+  }, [permissionsLoading, canView, page, rowsPerPage])
 
-  const fetchBooks = async () => {
+  const fetchBooks = async (pageNo: number, limit: number) => {
     try {
       setLoading(true)
-      const response = await fetch('/api/admin/books')
+      const response = await fetch(`/api/admin/books?page=${pageNo + 1}&limit=${limit}`)
       const data = await response.json()
 
       if (data.success) {
         setBooks(data.data)
+        setTotalCount(data.pagination?.total || 0)
       } else {
         setError(data.message || 'Failed to fetch books')
       }
@@ -70,6 +83,47 @@ const BooksPage = () => {
       setError(err.message || 'An error occurred')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
+
+  const handleSync = async () => {
+    try {
+      setSyncing(true)
+      const response = await fetch('/api/admin/books/sync')
+      const data = await response.json()
+
+      if (data.success) {
+        const stats = data.stats
+        setSnackbar({
+          open: true,
+          message: `Sync complete: ${stats.added} added, ${stats.updated} updated, ${stats.deleted} deleted.`,
+          severity: 'success'
+        })
+        fetchBooks(page, rowsPerPage)
+      } else {
+        setSnackbar({
+          open: true,
+          message: data.message || 'Sync failed',
+          severity: 'error'
+        })
+      }
+    } catch (err: any) {
+      setSnackbar({
+        open: true,
+        message: err.message || 'Sync error',
+        severity: 'error'
+      })
+    } finally {
+      setSyncing(false)
     }
   }
 
@@ -87,7 +141,7 @@ const BooksPage = () => {
       const data = await response.json()
 
       if (data.success) {
-        fetchBooks() // Refresh the list
+        fetchBooks(page, rowsPerPage) // Refresh the list
       } else {
         alert(data.message || 'Failed to delete book')
       }
@@ -117,21 +171,34 @@ const BooksPage = () => {
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           Books
         </Typography>
-        {canAdd && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => router.push('/admin/books/create')}
-            sx={{
-              background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-              '&:hover': {
-                background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)',
-              },
-            }}
-          >
-            Create Book
-          </Button>
-        )}
+        <Box>
+          {canAdd && (
+            <Button
+              variant="outlined"
+              startIcon={syncing ? <CircularProgress size={20} /> : <SyncIcon />}
+              onClick={handleSync}
+              disabled={syncing}
+              sx={{ mr: 2 }}
+            >
+              {syncing ? 'Syncing...' : 'Sync Books'}
+            </Button>
+          )}
+          {canAdd && (
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => router.push('/admin/books/create')}
+              sx={{
+                background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #5a6fd8 30%, #6a4190 90%)',
+                },
+              }}
+            >
+              Create Book
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {permissionsLoading || loading ? (
@@ -227,8 +294,26 @@ const BooksPage = () => {
               )}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={totalCount}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </TableContainer>
       )}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </AdminLayout>
   )
 }
