@@ -14,7 +14,7 @@ interface Props {
 const ContentCardItem: FC<Props> = ({ item, contenttypeSlug }) => {
   // Use the passed contenttypeSlug or fallback to item.contenttype
   const slug = contenttypeSlug || item.contenttype
-  
+
   return (
     <Box
       sx={{
@@ -49,18 +49,23 @@ const ContentCardItem: FC<Props> = ({ item, contenttypeSlug }) => {
         </Box>
         <Box sx={{ mb: 2 }}>
           <Link href={slug === 'books' ? `/content/book/${item.isbn || item.id}` : `/contenttypes/${slug}/${item.id}`} style={{ textDecoration: 'none' }}>
-            <Typography variant="h5" sx={{ mb: 2, height: 56, overflow: 'hidden', fontSize: '1.2rem', color: 'text.primary', '&:hover': { color: 'primary.main' } }}>
+            <Typography variant="h5" sx={{ mb: 1, height: 56, overflow: 'hidden', fontSize: '1.2rem', color: 'text.primary', '&:hover': { color: 'primary.main' } }}>
               {item.title}
             </Typography>
           </Link>
+          {item.author && (
+            <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary', fontStyle: 'italic' }}>
+              by {item.author}
+            </Typography>
+          )}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Rating name="rating-content" value={item.rating} max={5} sx={{ color: '#ffce31', mr: 1 }} readOnly />
             <Typography component="span" variant="h5">
-              ({item.ratingCount})
+              {item.ratingCount}
             </Typography>
           </Box>
         </Box>
-       
+
       </Box>
     </Box>
   )

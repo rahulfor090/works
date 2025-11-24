@@ -1,12 +1,24 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Atom, Dna, HeartPulse, Activity, Pill, Stethoscope, Smile, HeartHandshake } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Atom, Dna, HeartPulse, Activity, Pill, Stethoscope, Smile, HeartHandshake, LucideIcon } from 'lucide-react';
 import { mockData } from '@/app/new-home/mock';
 import SiteNavbar from '@/components/layout/SiteNavbar';
 import SiteFooter from '@/components/layout/SiteFooter';
 
-const iconMap = {
+interface Specialty {
+  id: number | string;
+  name: string;
+  description?: string;
+  icon?: string;
+}
+
+interface ColorGradient {
+  from: string;
+  to: string;
+}
+
+const iconMap: Record<string, LucideIcon> = {
   Atom: Atom,
   Dna: Dna,
   HeartPulse: HeartPulse,
@@ -18,8 +30,8 @@ const iconMap = {
 };
 
 const AllSpecialties = () => {
-  const [specialties, setSpecialties] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [specialties, setSpecialties] = useState<Specialty[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchSpecialties = async () => {
@@ -85,7 +97,7 @@ const AllSpecialties = () => {
                 // Default to first icon if no icon specified
                 const iconName = specialty.icon || 'Stethoscope';
                 const Icon = iconMap[iconName] || Stethoscope;
-                const colors = [
+                const colors: ColorGradient[] = [
                   { from: '#3B82F6', to: '#2563EB' },
                   { from: '#FF6B6B', to: '#FF8E53' },
                   { from: '#10B981', to: '#059669' },

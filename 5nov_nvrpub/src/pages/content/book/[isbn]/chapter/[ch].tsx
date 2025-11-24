@@ -78,7 +78,7 @@ const DEFAULT_BOOK_COVER = '/images/courses/JMEDS_Cover.jpeg'
 const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, htmlUrl, pdfUrl, chapters, book }: Props) => {
   const [scale, setScale] = React.useState(1)
   const [bookmarked, setBookmarked] = React.useState<boolean>(false)
-  
+
   const [imageModalOpen, setImageModalOpen] = React.useState(false)
   const [imageModalSrc, setImageModalSrc] = React.useState<string>('')
   const contentRef = React.useRef<HTMLDivElement | null>(null)
@@ -100,25 +100,25 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
   // Check user authentication and premium status
   React.useEffect(() => {
     if (typeof window === 'undefined') return
-    
+
     // Determine if chapter should be locked based on chapter number
     // Unlock: preliminary, index, and chapter 1
     // Lock: chapter 2 and above (unless superuser)
     const isChapterNumeric = /^\d+$/.test(ch)
     const chapterNumber = isChapterNumeric ? Number(ch) : null
-    
+
     // Prelims and Index are always unlocked
     if (ch === 'preliminary' || ch === 'index') {
       setIsLocked(false)
       return
     }
-    
+
     // Chapter 1 is always unlocked
     if (chapterNumber === 1) {
       setIsLocked(false)
       return
     }
-    
+
     // For chapters 2 and above, check user authentication
     if (chapterNumber && chapterNumber >= 2) {
       try {
@@ -211,7 +211,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
     closeOptionsMenu()
   }
   const handleBookmarkMenu = () => { toggleBookmark(); closeOptionsMenu() }
-  
+
   const handleFullscreen = () => {
     setIsFullscreen(prev => {
       const newFullscreen = !prev
@@ -222,14 +222,14 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
   }
 
   const storageKeyBookmark = `bookmark:${isbn}:${ch}`
-  
+
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return
     try {
       const bm = window.localStorage.getItem(storageKeyBookmark)
       setBookmarked(bm === 'true')
-    } catch {}
+    } catch { }
   }, [storageKeyBookmark])
 
   // reading progress based on scroll within the content area
@@ -249,10 +249,10 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
   const toggleBookmark = () => {
     const next = !bookmarked
     setBookmarked(next)
-    try { window.localStorage.setItem(storageKeyBookmark, String(next)) } catch {}
+    try { window.localStorage.setItem(storageKeyBookmark, String(next)) } catch { }
   }
 
-  
+
 
   // Make images clickable to open large versions from /XML/[isbn]/Chapters/large/
   React.useEffect(() => {
@@ -349,243 +349,243 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
           )}
 
           <Grid item xs={12} md={isFullscreen ? 12 : 9}>
-        <Paper variant="outlined" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, p: 1.5 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {prevNext.prev && (
-              <Typography component={NextLink} href={prevNext.prev.slug} sx={{ color: 'black', fontWeight: 600, fontSize: '1.1rem' }}>
-                ‹ {prevNext.prev.title}
-              </Typography>
-            )}
-            {prevNext.prev && prevNext.next && (
-              <Typography sx={{ mx: 1, color: 'text.secondary', fontSize: '1.1rem' }}>|</Typography>
-            )}
-            {prevNext.next && (
-              <Typography component={NextLink} href={prevNext.next.slug} sx={{ color: 'black', fontWeight: 600, fontSize: '1.1rem' }}>
-                {prevNext.next.title} ›
-              </Typography>
-            )}
-          </Box>
+            <Paper variant="outlined" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, p: 1.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {prevNext.prev && (
+                  <Typography component={NextLink} href={prevNext.prev.slug} sx={{ color: 'black', fontWeight: 600, fontSize: '1.1rem' }}>
+                    ‹ {prevNext.prev.title}
+                  </Typography>
+                )}
+                {prevNext.prev && prevNext.next && (
+                  <Typography sx={{ mx: 1, color: 'text.secondary', fontSize: '1.1rem' }}>|</Typography>
+                )}
+                {prevNext.next && (
+                  <Typography component={NextLink} href={prevNext.next.slug} sx={{ color: 'black', fontWeight: 600, fontSize: '1.1rem' }}>
+                    {prevNext.next.title} ›
+                  </Typography>
+                )}
+              </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Tooltip title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}>
-            <span>
-              <IconButton onClick={handleFullscreen}>
-                {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-              </IconButton>
-            </span>
-          </Tooltip>
-          <Tooltip title="Zoom in"><span><IconButton onClick={() => setScale(s => Math.min(2.5, s + 0.1))}><ZoomInIcon /></IconButton></span></Tooltip>
-          <Tooltip title="Zoom out"><span><IconButton onClick={() => setScale(s => Math.max(0.5, s - 0.1))}><ZoomOutIcon /></IconButton></span></Tooltip>
-          <Tooltip title={'Download Book PDF'}>
-              <span>
-                <IconButton
-                  component="a"
-                  href={`/books/${isbn}/${isbn}.pdf`}
-                  download={`${isbn}.pdf`}
-                  aria-label="Download Book PDF"
-                >
-                  <PictureAsPdfIcon />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Tooltip title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}>
+                  <span>
+                    <IconButton onClick={handleFullscreen}>
+                      {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+                    </IconButton>
+                  </span>
+                </Tooltip>
+                <Tooltip title="Zoom in"><span><IconButton onClick={() => setScale(s => Math.min(2.5, s + 0.1))}><ZoomInIcon /></IconButton></span></Tooltip>
+                <Tooltip title="Zoom out"><span><IconButton onClick={() => setScale(s => Math.max(0.5, s - 0.1))}><ZoomOutIcon /></IconButton></span></Tooltip>
+                <Tooltip title={'Download Book PDF'}>
+                  <span>
+                    <IconButton
+                      component="a"
+                      href={`/books/${isbn}/${isbn}.pdf`}
+                      download={`${isbn}.pdf`}
+                      aria-label="Download Book PDF"
+                    >
+                      <PictureAsPdfIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+                <IconButton aria-label="more options" onClick={openOptionsMenu}>
+                  <MoreVertIcon />
                 </IconButton>
-              </span>
-          </Tooltip>
-          <IconButton aria-label="more options" onClick={openOptionsMenu}>
-            <MoreVertIcon />
-          </IconButton>
-          </Box>
-          <Menu anchorEl={optionsAnchorEl} open={menuOpen} onClose={closeOptionsMenu} keepMounted>
-            <MenuItem onClick={handleCite}>
-              <ListItemIcon><FormatQuoteIcon fontSize="small" /></ListItemIcon>
-              <ListItemText>Cite</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleShare}>
-              <ListItemIcon><ShareIcon fontSize="small" /></ListItemIcon>
-              <ListItemText>Share</ListItemText>
-            </MenuItem>
-            <Divider />
-            <MenuItem onClick={handleBookmarkMenu}>
-              <ListItemIcon>{bookmarked ? <BookmarkIcon fontSize="small" /> : <BookmarkBorderIcon fontSize="small" />}</ListItemIcon>
-              <ListItemText>{bookmarked ? 'Remove bookmark' : 'Bookmark'}</ListItemText>
-            </MenuItem>
-            
-          </Menu>
-        </Paper>
+              </Box>
+              <Menu anchorEl={optionsAnchorEl} open={menuOpen} onClose={closeOptionsMenu} keepMounted>
+                <MenuItem onClick={handleCite}>
+                  <ListItemIcon><FormatQuoteIcon fontSize="small" /></ListItemIcon>
+                  <ListItemText>Cite</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleShare}>
+                  <ListItemIcon><ShareIcon fontSize="small" /></ListItemIcon>
+                  <ListItemText>Share</ListItemText>
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleBookmarkMenu}>
+                  <ListItemIcon>{bookmarked ? <BookmarkIcon fontSize="small" /> : <BookmarkBorderIcon fontSize="small" />}</ListItemIcon>
+                  <ListItemText>{bookmarked ? 'Remove bookmark' : 'Bookmark'}</ListItemText>
+                </MenuItem>
 
-        
+              </Menu>
+            </Paper>
 
-        <Paper ref={paperRef} variant="outlined" sx={{ 
-          borderRadius: 2, 
-          overflow: 'hidden', 
-          height: isFullscreen ? 'calc(100vh - 150px)' : '80vh',
-          position: 'relative',
-          borderColor: isFullscreen ? 'white' : 'inherit'
-        }}>
-          {isLocked && (
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(8px)',
-                zIndex: 1000,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 2,
-              }}
+
+
+            <Paper ref={paperRef} variant="outlined" sx={{
+              borderRadius: 2,
+              overflow: 'hidden',
+              height: isFullscreen ? 'calc(100vh - 150px)' : '80vh',
+              position: 'relative',
+              borderColor: isFullscreen ? 'white' : 'inherit'
+            }}>
+              {isLocked && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(8px)',
+                    zIndex: 1000,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 2,
+                  }}
+                >
+                  <LockIcon sx={{ fontSize: 80, color: 'primary.main', opacity: 0.7 }} />
+                  <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                    Premium Content
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: 'text.secondary', textAlign: 'center', maxWidth: 500 }}>
+                    This chapter is locked. Please log in with a premium account to access the full content.
+                  </Typography>
+                  <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+                    <Button
+                      variant="contained"
+                      component={NextLink}
+                      href="/login"
+                      sx={{ textTransform: 'none', px: 4 }}
+                    >
+                      Log In
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      component={NextLink}
+                      href="/signup"
+                      sx={{ textTransform: 'none', px: 4 }}
+                    >
+                      Sign Up
+                    </Button>
+                  </Stack>
+                </Box>
+              )}
+              <Box ref={scrollRef} sx={{
+                overflow: 'auto',
+                height: isFullscreen ? 'calc(100vh - 150px)' : '80vh',
+                filter: isLocked ? 'blur(5px)' : 'none',
+                pointerEvents: isLocked ? 'none' : 'auto'
+              }}>
+                <Box sx={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: `${100 / scale}%`, height: `${100 / scale}%` }}>
+                  <Box sx={{
+                    px: { xs: 2, md: 4 },
+                    py: isFullscreen ? { xs: 1, md: 1.5 } : { xs: 2, md: 3 },
+                    display: 'flex',
+                    justifyContent: 'center',
+                    '& .chapter-html p': { fontSize: '1.05rem', lineHeight: 1.8 },
+                    '& .chapter-html h1, & .chapter-html h2, & .chapter-html h3': { marginTop: 2, marginBottom: 1 },
+                    '& .chapter-html img': { display: 'block', maxWidth: '100%', height: 'auto', borderRadius: 1, boxShadow: 1, my: 2 },
+                    '& .chapter-html a': { textDecoration: 'underline' }
+                  }}>
+                    <Box sx={{
+                      width: '210mm',
+                      minHeight: '297mm',
+                      maxWidth: '100%',
+                      backgroundColor: 'white',
+                      padding: '20mm',
+                      boxShadow: '0 0 10px rgba(0,0,0,0.1)'
+                    }}>
+                      <div
+                        ref={contentRef}
+                        className="chapter-html"
+                        dangerouslySetInnerHTML={{ __html: filteredHtml }}
+                      />
+                    </Box>
+                  </Box>
+                </Box>
+              </Box>
+            </Paper>
+
+            <Fab color="primary" size="small" onClick={() => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })} sx={{ position: 'fixed', bottom: 24, right: 24 }}>
+              <ArrowUpwardIcon />
+            </Fab>
+
+            <Dialog
+              open={imageModalOpen}
+              onClose={() => setImageModalOpen(false)}
+              maxWidth="lg"
+              PaperProps={{ sx: { border: '1px solid #2263a4' } }}
             >
-              <LockIcon sx={{ fontSize: 80, color: 'primary.main', opacity: 0.7 }} />
-              <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                Premium Content
-              </Typography>
-              <Typography variant="body1" sx={{ color: 'text.secondary', textAlign: 'center', maxWidth: 500 }}>
-                This chapter is locked. Please log in with a premium account to access the full content.
-              </Typography>
-              <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+              <DialogContent sx={{ p: 0 }}>
+                {imageModalSrc ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2, backgroundColor: 'transparent', border: '1px solid #2263a4' }}>
+                    <img
+                      src={imageModalSrc}
+                      alt="Chapter image"
+                      style={{ maxWidth: '90vw', maxHeight: '80vh', objectFit: 'contain', border: '1px solid #2263a4' }}
+                    />
+                  </Box>
+                ) : null}
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={citeOpen} onClose={() => setCiteOpen(false)} maxWidth="md" fullWidth>
+              <DialogTitle>Cite This Chapter</DialogTitle>
+              <DialogContent>
+                <Typography variant="body1" sx={{ mb: 2 }}>{citationText}</Typography>
+              </DialogContent>
+              <DialogActions sx={{ px: 3, pb: 3 }}>
                 <Button
                   variant="contained"
-                  component={NextLink}
-                  href="/login"
-                  sx={{ textTransform: 'none', px: 4 }}
+                  color="primary"
+                  component="a"
+                  href={risHref}
+                  download={`citation-${isbn}.ris`}
+                  sx={{ textTransform: 'none' }}
                 >
-                  Log In
+                  Download RIS
                 </Button>
-                <Button
-                  variant="outlined"
-                  component={NextLink}
-                  href="/signup"
-                  sx={{ textTransform: 'none', px: 4 }}
-                >
-                  Sign Up
-                </Button>
-              </Stack>
-            </Box>
-          )}
-          <Box ref={scrollRef} sx={{ 
-            overflow: 'auto', 
-            height: isFullscreen ? 'calc(100vh - 150px)' : '80vh',
-            filter: isLocked ? 'blur(5px)' : 'none', 
-            pointerEvents: isLocked ? 'none' : 'auto'
-          }}>
-          <Box sx={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: `${100/scale}%`, height: `${100/scale}%` }}>
-            <Box sx={{ 
-              px: { xs: 2, md: 4 }, 
-              py: isFullscreen ? { xs: 1, md: 1.5 } : { xs: 2, md: 3 }, 
-              display: 'flex', 
-              justifyContent: 'center',
-              '& .chapter-html p': { fontSize: '1.05rem', lineHeight: 1.8 },
-              '& .chapter-html h1, & .chapter-html h2, & .chapter-html h3': { marginTop: 2, marginBottom: 1 },
-              '& .chapter-html img': { display: 'block', maxWidth: '100%', height: 'auto', borderRadius: 1, boxShadow: 1, my: 2 },
-              '& .chapter-html a': { textDecoration: 'underline' }
-            }}>
-              <Box sx={{ 
-                width: '210mm',
-                minHeight: '297mm',
-                maxWidth: '100%',
-                backgroundColor: 'white',
-                padding: '20mm',
-                boxShadow: '0 0 10px rgba(0,0,0,0.1)'
-              }}>
-                <div
-                  ref={contentRef}
-                  className="chapter-html"
-                  dangerouslySetInnerHTML={{ __html: filteredHtml }}
-                />
-              </Box>
-            </Box>
-          </Box>
-          </Box>
-        </Paper>
+              </DialogActions>
+            </Dialog>
 
-        <Fab color="primary" size="small" onClick={() => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })} sx={{ position: 'fixed', bottom: 24, right: 24 }}>
-          <ArrowUpwardIcon />
-        </Fab>
+            <Dialog open={shareOpen} onClose={() => setShareOpen(false)} maxWidth="md" fullWidth>
+              <DialogTitle>Share This Chapter</DialogTitle>
+              <DialogContent>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  Click <strong>Copy Link</strong> button to copy the content permanent URL.
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  This link can be shared with users that are connected to the institution’s/school’s network and they will automatically have access to the content.
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  To share a link in a Learning Management System (LMS) course (such as Blackboard, Canvas, Moodle, etc.) that will work for remote users as well as those connected to the school’s network:
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  1. Contact <Link href="mailto:customersuccess@mheducation.com">customersuccess@mheducation.com</Link> to confirm that your LMS has been set up correctly in our system.
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  • Provide your school name and the link for your course in the email.
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  2. Click <strong>Copy Link</strong> button to copy the content permanent URL and paste into your course.
+                </Typography>
 
-        <Dialog
-          open={imageModalOpen}
-          onClose={() => setImageModalOpen(false)}
-          maxWidth="lg"
-          PaperProps={{ sx: { border: '1px solid #2263a4' } }}
-        >
-          <DialogContent sx={{ p: 0 }}>
-            {imageModalSrc ? (
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2, backgroundColor: 'transparent', border: '1px solid #2263a4' }}>
-                <img
-                  src={imageModalSrc}
-                  alt="Chapter image"
-                  style={{ maxWidth: '90vw', maxHeight: '80vh', objectFit: 'contain', border: '1px solid #2263a4' }}
-                />
-              </Box>
-            ) : null}
-          </DialogContent>
-        </Dialog>
-
-        <Dialog open={citeOpen} onClose={() => setCiteOpen(false)} maxWidth="md" fullWidth>
-          <DialogTitle>Cite This Chapter</DialogTitle>
-          <DialogContent>
-            <Typography variant="body1" sx={{ mb: 2 }}>{citationText}</Typography>
-          </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 3 }}>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              component="a"
-              href={risHref}
-              download={`citation-${isbn}.ris`}
-              sx={{ textTransform: 'none' }}
-            >
-              Download RIS
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Dialog open={shareOpen} onClose={() => setShareOpen(false)} maxWidth="md" fullWidth>
-          <DialogTitle>Share This Chapter</DialogTitle>
-          <DialogContent>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              Click <strong>Copy Link</strong> button to copy the content permanent URL.
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              This link can be shared with users that are connected to the institution’s/school’s network and they will automatically have access to the content.
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              To share a link in a Learning Management System (LMS) course (such as Blackboard, Canvas, Moodle, etc.) that will work for remote users as well as those connected to the school’s network:
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              1. Contact <Link href="mailto:customersuccess@mheducation.com">customersuccess@mheducation.com</Link> to confirm that your LMS has been set up correctly in our system.
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              • Provide your school name and the link for your course in the email.
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 3 }}>
-              2. Click <strong>Copy Link</strong> button to copy the content permanent URL and paste into your course.
-            </Typography>
-
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>Share on social media</Typography>
-            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-              <IconButton component="a" href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
-                <FacebookIcon />
-              </IconButton>
-              <IconButton component="a" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on X">
-                <TwitterIcon />
-              </IconButton>
-              <IconButton component="a" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">
-                <LinkedInIcon />
-              </IconButton>
-            </Box>
-          </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 3 }}>
-            <Button variant="contained" color="primary" onClick={() => {
-              if (navigator.clipboard && shareUrl) {
-                navigator.clipboard.writeText(shareUrl).then(() => setSnackbar({ open: true, message: 'Link copied' })).catch(() => {})
-              }
-            }}>Copy Link</Button>
-          </DialogActions>
-        </Dialog>
-        <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: '' })} message={snackbar.message} />
+                <Typography variant="subtitle1" sx={{ mb: 1 }}>Share on social media</Typography>
+                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                  <IconButton component="a" href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+                    <FacebookIcon />
+                  </IconButton>
+                  <IconButton component="a" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on X">
+                    <TwitterIcon />
+                  </IconButton>
+                  <IconButton component="a" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">
+                    <LinkedInIcon />
+                  </IconButton>
+                </Box>
+              </DialogContent>
+              <DialogActions sx={{ px: 3, pb: 3 }}>
+                <Button variant="contained" color="primary" onClick={() => {
+                  if (navigator.clipboard && shareUrl) {
+                    navigator.clipboard.writeText(shareUrl).then(() => setSnackbar({ open: true, message: 'Link copied' })).catch(() => { })
+                  }
+                }}>Copy Link</Button>
+              </DialogActions>
+            </Dialog>
+            <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: '' })} message={snackbar.message} />
           </Grid>
         </Grid>
       </Container>
@@ -610,6 +610,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   } else if (chStr === 'index') {
     htmlPathPublic = `/books/${isbnStr}/index/index.html`
     htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'index', 'index.html')
+  } else if (chStr.toLowerCase().startsWith('case')) {
+    // Handle cases
+    const caseId = chStr
+    htmlPathPublic = `/books/${isbnStr}/cases/${caseId}.html`
+    htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'cases', `${caseId}.html`)
   } else {
     const m = /^ch(\d+)$/i.exec(chStr)
     const chNum = m ? m[1] : String(chStr)
@@ -620,17 +625,28 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     if (!fs.existsSync(htmlFsPath)) {
       return { notFound: true }
     }
-  } catch {}
+  } catch { }
 
   // Read HTML content to render inline
   let html = ''
   try {
     html = fs.readFileSync(htmlFsPath, 'utf-8')
-  } catch {}
+  } catch { }
 
   // Rewrite relative image paths from "XML/..." to "/XML/..."
   const rewriteRelativeXmlImagePaths = (s: string) => s.replace(/(<img[^>]+src=)(["'])(?!https?:|\/\/|\/)(XML\/[^"']+)(\2)/gi, (_m, p1, q, p, q2) => `${p1}${q}/${p}${q2}`)
   html = rewriteRelativeXmlImagePaths(html)
+
+  // Rewrite /MediumImage/ and /LargeImage/ paths to /books/{isbn}/chapter/MediumImage/ and /books/{isbn}/chapter/LargeImage/
+  const rewriteImagePaths = (s: string) => {
+    let out = s
+    // Rewrite /MediumImage/ paths
+    out = out.replace(/(<img[^>]+src=)(["'])\/MediumImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/MediumImage/${filename}${q2}`)
+    // Rewrite /LargeImage/ paths
+    out = out.replace(/(<img[^>]+src=)(["'])\/LargeImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/LargeImage/${filename}${q2}`)
+    return out
+  }
+  html = rewriteImagePaths(html)
 
   // Rewrite chapter navigation links to app routes under /content/book/{isbn}/chapter/{...}
   const rewriteChapterLinks = (s: string) => {
@@ -660,18 +676,23 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     if (fs.existsSync(tocPath)) {
       const html = fs.readFileSync(tocPath, 'utf-8')
       if (chStr === 'preliminary') {
-        const prelimMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary\"[^>]*>([^<]+)<\/a>`, 'i'))
+        const prelimMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary(?:/prelims\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))
         if (prelimMatch) title = prelimMatch[1].trim()
       } else if (chStr === 'index') {
-        const indexMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index\"[^>]*>([^<]+)<\/a>`, 'i'))
+        const indexMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))
         if (indexMatch) title = indexMatch[1].trim()
+      } else if (chStr.toLowerCase().startsWith('case')) {
+        // Try to find title for case in TOC if present, otherwise default
+        // Cases might not be in TOC, so we might need to rely on default or fetch from JSON if needed.
+        // For now, let's default to "Case" + number if not found.
+        title = chStr.replace(/^case/i, 'Case ')
       } else {
         const chNumForTitle = (/^ch(\d+)$/i.exec(chStr)?.[1]) || chStr
         const m = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch${chNumForTitle}\"[^>]*>([^<]+)<\/a>`, 'i'))
         if (m) title = m[1].trim()
       }
     }
-  } catch {}
+  } catch { }
 
   // Check for corresponding PDF
   let pdfUrl: string | null = null
@@ -681,7 +702,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     pdfUrl = (chStr === 'preliminary' || chStr === 'index')
       ? null
       : `/books/${isbnStr}/chapter/ch${encodeURIComponent(chNumForPdf)}.pdf`
-  } catch {}
+  } catch { }
 
   // (client-side menu handlers are defined inside the component)
 
@@ -695,7 +716,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const metaRes = await fetch(metaUrl)
     const metaJson = metaRes.ok ? await metaRes.json() : null
     book = metaJson?.book || null
-  } catch {}
+  } catch { }
 
 
   // Build chapters list from TOC for sidebar navigation
@@ -704,7 +725,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const tocPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'toc.html')
     if (fs.existsSync(tocPath)) {
       const html = fs.readFileSync(tocPath, 'utf-8')
-      const prelimMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary\"[^>]*>([^<]+)<\/a>`, 'i'))
+      const prelimMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary(?:/prelims\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))
       if (prelimMatch) chapters.push({ number: null, title: prelimMatch[1].trim(), slug: `/content/book/${isbnStr}/chapter/preliminary` })
       const chapterRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch(\\d+)\"[^>]*>([^<]+)<\/a>`, 'gi')
       let m: RegExpExecArray | null
@@ -713,13 +734,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         const titleCh = (m[2] || `Chapter ${num}`).replace(/\s+/g, ' ').trim()
         chapters.push({ number: Number.isNaN(num) ? null : num, title: titleCh, slug: `/content/book/${isbnStr}/chapter/${m[1]}` })
       }
-      const indexMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index\"[^>]*>([^<]+)<\/a>`, 'i'))
+      const indexMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))
       if (indexMatch) chapters.push({ number: null, title: indexMatch[1].trim(), slug: `/content/book/${isbnStr}/chapter/index` })
     }
-  } catch {}
-  const sorted = chapters.sort((a, b) => (a.number ?? 0) - (b.number ?? 0))
+  } catch { }
 
-  return { props: { isbn: isbnStr, ch: chStr, title, html, htmlUrl: htmlPathPublic, pdfUrl, chapters: sorted, book } }
+
+  return { props: { isbn: isbnStr, ch: chStr, title, html, htmlUrl: htmlPathPublic, pdfUrl, chapters, book } }
 }
 
 ChapterViewerPage.getLayout = (page) => <MainLayout>{page}</MainLayout>

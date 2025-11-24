@@ -84,7 +84,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const [keywordsExpanded, setKeywordsExpanded] = React.useState(false)
   const [searchDialogOpen, setSearchDialogOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState('')
-  
+
   // Form states for Refer to Friend
   const [senderName, setSenderName] = React.useState('')
   const [senderEmail, setSenderEmail] = React.useState('')
@@ -135,13 +135,13 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
     try {
       const v = window.localStorage.getItem(favStorageKey)
       setFavorite(v === 'true')
-    } catch {}
+    } catch { }
   }, [favStorageKey])
 
   const toggleFavorite = () => {
     setFavorite(prev => {
       const next = !prev
-      try { if (typeof window !== 'undefined') window.localStorage.setItem(favStorageKey, String(next)) } catch {}
+      try { if (typeof window !== 'undefined') window.localStorage.setItem(favStorageKey, String(next)) } catch { }
       return next
     })
   }
@@ -223,12 +223,12 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         await navigator.share({ title, url })
         return
       }
-    } catch {}
+    } catch { }
     try {
       await navigator.clipboard.writeText(url)
       // Simple user feedback; avoid adding Snackbar for now
       window.alert('Page link copied to clipboard')
-    } catch {}
+    } catch { }
   }
 
   const handleExpandAll = () => setExpandAll(true)
@@ -247,7 +247,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
     if (!searchQuery.trim()) return []
     const lowerQuery = searchQuery.toLowerCase()
     const results: Array<Chapter & { isKeyword?: boolean }> = []
-    
+
     // Search in chapters
     sections.forEach(sec => {
       sec.chapters.forEach(ch => {
@@ -256,59 +256,23 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         }
       })
     })
-    
+
     // Search in keywords
     if (book?.keywords) {
       const keywords = book.keywords.split(',').map(k => k.trim()).filter(Boolean)
       keywords.forEach(kw => {
         if (kw.toLowerCase().includes(lowerQuery)) {
-          results.push({ 
-            title: kw, 
-            slug: null, 
-            isKeyword: true 
+          results.push({
+            title: kw,
+            slug: null,
+            isKeyword: true
           })
         }
       })
     }
-    
+
     return results
   }, [searchQuery, sections, book])
-
-  // Fallback sections if none parsed
-  const displaySections: Section[] = (sections && sections.length > 0)
-    ? sections
-    : [
-        {
-          title: 'Prelims',
-          chapters: [
-            { number: null, title: 'Prelims', slug: `/content/book/${isbn}/chapter/preliminary` },
-          ],
-        },
-        {
-          title: 'Chapters',
-          chapters: [
-            { number: 1, title: 'Section 1: Unit Conversion Factors and Symbols' },
-            { number: 2, title: 'Section 2: Physical and Chemical Data' },
-            { number: 3, title: 'Section 3: Mathematics' },
-            { number: 4, title: 'Section 4: Thermodynamics' },
-            { number: 5, title: 'Section 5: Heat and Mass Transfer' },
-            { number: 6, title: 'Section 6: Fluid and Particle Dynamics' },
-            { number: 7, title: 'Section 7: Reaction Kinetics' },
-            { number: 8, title: 'Section 8: Process Control' },
-            { number: 9, title: 'Section 9: Process Economics' },
-          ],
-        },
-        {
-          title: 'Appendices',
-          chapters: [],
-        },
-        {
-          title: 'Index',
-          chapters: [
-            { number: null, title: 'Index', slug: `/content/book/${isbn}/chapter/index` },
-          ],
-        },
-      ]
 
   return (
     <>
@@ -316,9 +280,9 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         <title>{title} | Book</title>
       </Head>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-        <Box sx={{ 
-          width: '80%', 
-          height: '2px', 
+        <Box sx={{
+          width: '80%',
+          height: '2px',
           background: (theme) => `linear-gradient(to right, transparent, ${theme.palette.primary.main} 20%, ${theme.palette.primary.main} 80%, transparent)`,
         }} />
       </Box>
@@ -367,11 +331,11 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                         .map(k => k.trim())
                         .filter(Boolean)
                         .map((kw, idx) => (
-                          <Chip 
-                            key={`kw-${idx}`} 
-                            label={kw} 
-                            size="small" 
-                            color="primary" 
+                          <Chip
+                            key={`kw-${idx}`}
+                            label={kw}
+                            size="small"
+                            color="primary"
                             variant="outlined"
                             sx={{ color: 'black', borderWidth: '2px' }}
                           />
@@ -382,9 +346,9 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
               </Box>
             )}
             <Box sx={{ mt: 2 }}>
-              <Box 
+              <Box
                 onClick={() => setSearchDialogOpen(true)}
-                sx={{ 
+                sx={{
                   cursor: 'pointer',
                   border: '1px solid',
                   borderColor: 'divider',
@@ -394,7 +358,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                   display: 'flex',
                   alignItems: 'center',
                   transition: 'all 0.2s',
-                  '&:hover': { 
+                  '&:hover': {
                     borderColor: 'primary.main',
                     backgroundColor: 'action.hover'
                   }
@@ -422,9 +386,9 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
               <Button variant="contained" onClick={toggleExpandCollapse} sx={{ textTransform: 'none' }}>
                 {expandAll ? 'Collapse All' : 'Expand All'}
               </Button>
-              <Button 
-                variant="contained" 
-                disabled={!bookPdfUrl} 
+              <Button
+                variant="contained"
+                disabled={!bookPdfUrl}
                 href={bookPdfUrl || undefined}
                 endIcon={<PictureAsPdfIcon />}
                 sx={{ textTransform: 'none' }}
@@ -435,7 +399,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
 
             {filteredSections.map((sec, sIdx) => (
               <Accordion key={sIdx} disableGutters expanded={expandAll || !!expanded[sIdx]} onChange={() => toggleSection(sIdx)}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}> 
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Typography sx={{ fontWeight: 600 }}>{sec.title}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -445,11 +409,11 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                       // Unlock: Prelims, Index, and Chapter 1
                       // Lock: Chapter 2 and above, and all appendices (unless superuser)
                       const shouldShowLock = isLocked && (
-                        (ch.number != null && ch.number >= 2) || 
+                        (ch.number != null && ch.number >= 2) ||
                         ch.chapterType === 'appendix'
                       )
                       const shouldShowUnlock = !shouldShowLock
-                      
+
                       return (
                         <ListItem key={`${sec.title}-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           {ch.slug ? (
@@ -501,7 +465,30 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           <Typography variant="body2" color="text.secondary">Videos coming soon</Typography>
         )}
         {tab === 2 && (
-          <Typography variant="body2" color="text.secondary">Cases coming soon</Typography>
+          <Box>
+            {sections.find(s => s.title === 'Cases')?.chapters.map((ch, idx) => (
+              <ListItem key={`case-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <NextLink href={ch.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                  <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
+                    {ch.title}
+                  </Typography>
+                </NextLink>
+                {!isLocked && (
+                  <Tooltip title="Unlocked content">
+                    <LockOpenIcon sx={{ fontSize: 18, color: 'success.main' }} />
+                  </Tooltip>
+                )}
+                {isLocked && (
+                  <Tooltip title="Premium content - Login required">
+                    <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  </Tooltip>
+                )}
+              </ListItem>
+            ))}
+            {!sections.find(s => s.title === 'Cases') && (
+              <Typography variant="body2" color="text.secondary">No cases available.</Typography>
+            )}
+          </Box>
         )}
         {tab === 3 && (
           <Typography variant="body2" color="text.secondary">Reviews coming soon</Typography>
@@ -509,8 +496,8 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
       </Container>
 
       {/* Refer to Friend Dialog */}
-      <Dialog 
-        open={referDialogOpen} 
+      <Dialog
+        open={referDialogOpen}
         onClose={handleCloseReferDialog}
         maxWidth="md"
         fullWidth
@@ -604,10 +591,10 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           </Grid>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={handleSubmitRefer}
-            sx={{ 
+            sx={{
               textTransform: 'none'
             }}
           >
@@ -617,8 +604,8 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
       </Dialog>
 
       {/* Recommend to Librarian Dialog */}
-      <Dialog 
-        open={librarianDialogOpen} 
+      <Dialog
+        open={librarianDialogOpen}
         onClose={handleCloseLibrarianDialog}
         maxWidth="md"
         fullWidth
@@ -774,10 +761,10 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           </Grid>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={handleSubmitLibrarian}
-            sx={{ 
+            sx={{
               textTransform: 'none'
             }}
           >
@@ -787,8 +774,8 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
       </Dialog>
 
       {/* Search Dialog */}
-      <Dialog 
-        open={searchDialogOpen} 
+      <Dialog
+        open={searchDialogOpen}
         onClose={() => {
           setSearchDialogOpen(false)
           setSearchQuery('')
@@ -824,7 +811,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                   {searchResults.map((ch, idx) => {
                     const isKeyword = (ch as any).isKeyword
                     return (
-                      <ListItem 
+                      <ListItem
                         key={idx}
                         {...(!isKeyword && ch.slug ? { component: NextLink, href: ch.slug } : {})}
                         sx={{
@@ -864,79 +851,78 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const isbnStr = String(isbn || '')
 
   try {
-    // Build path to metadata.json in public folder
+    // Build path to {isbn}.json in public folder
     const bookDir = path.join(process.cwd(), 'public', 'books', isbnStr)
-    const metadataPath = path.join(bookDir, 'metadata.json')
+    const jsonPath = path.join(bookDir, `${isbnStr}.json`)
 
-    // Check if metadata.json exists
-    if (!fs.existsSync(metadataPath)) {
+    // Check if JSON file exists
+    if (!fs.existsSync(jsonPath)) {
       return { props: { isbn: isbnStr, book: null, sections: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
     }
 
-    // Read and parse metadata.json
-    const metadataContent = fs.readFileSync(metadataPath, 'utf-8')
-    const metadata = JSON.parse(metadataContent)
+    // Read and parse JSON file
+    const jsonContent = fs.readFileSync(jsonPath, 'utf-8')
+    const bookData = JSON.parse(jsonContent)
 
-    // Extract book information from metadata
-    const bookInfo = metadata.Book
-    const chaptersData = metadata.Chapters || []
+    // Extract book information from JSON
+    const chaptersData = bookData.chapters || []
 
-    // Format author name: convert "LastName FirstName" to "FirstName LastName"
-    let authorName = bookInfo['Book-Author-(Last-Name,-First-Name,-Middle-Name)'] || null
-    if (authorName) {
-      const firstName = bookInfo['Author-1-First-Name'] || ''
-      const lastName = bookInfo['Author-1-Last-Name'] || ''
-      if (firstName && lastName) {
-        authorName = `${firstName} ${lastName}`
-      }
-    }
-
-    // Build book object
+    // Build book object with correct field names
     const book: Book = {
-      isbn: bookInfo['Print-ISBN'] || isbnStr,
-      print_isbn: bookInfo['Print-ISBN'] || null,
-      title: bookInfo['Book-Title'] || 'Untitled',
-      author: authorName,
-      coverImage: `/books/${isbnStr}/3D_Cover/${isbnStr}.png`,
-      description: bookInfo['Book-Abstract'] || null,
-      keywords: bookInfo['Book-Keywords'] || null,
+      isbn: bookData.print_isbn || isbnStr,
+      print_isbn: bookData.print_isbn || null,
+      title: bookData.book_title || 'Untitled',
+      author: bookData.book_author_name || null,
+      coverImage: `/books/${isbnStr}/${isbnStr}.png`,
+      description: bookData.book_abstract || null,
+      keywords: bookData.book_keywords || null,
     }
 
     // Build chapters from metadata
     const chapters: Chapter[] = []
-    
+
     // Sort chapters by sequence
     const sortedChapters = [...chaptersData].sort((a, b) => {
-      const seqA = parseInt(a['Chapter-Sequence']) || 0
-      const seqB = parseInt(b['Chapter-Sequence']) || 0
+      const seqA = parseInt(a['chapter-sequence']) || 0
+      const seqB = parseInt(b['chapter-sequence']) || 0
       return seqA - seqB
     })
 
     // Process each chapter
     sortedChapters.forEach((chapterData) => {
-      const chapterNo = chapterData['Chapter-No'] || ''
-      const chapterTitle = chapterData['Chapter-Title'] || 'Untitled'
-      const chapterFileName = chapterData['Chapter-File-Name'] || ''
-      const chapterSequence = parseInt(chapterData['Chapter-Sequence']) || 0
-      
+      const chapterNo = chapterData['chapter-number'] || ''
+      const chapterTitle = chapterData['chapter-title'] || 'Untitled'
+      const chapterFileName = chapterData['chapter-file-name'] || ''
+      const chapterSequence = parseInt(chapterData['chapter-sequence']) || 0
+
       if (!chapterFileName) return // Skip if no filename
-      
+
       let slug: string | null = null
       let chapterType = 'chapter' // default type
-      
-      // Determine the slug and type based on chapter number
+      let filePath: string | null = null
+
+      // Determine the slug, type, and file path based on chapter number
       if (chapterNo === 'Prelims') {
+        filePath = path.join(bookDir, 'preliminary', 'prelims.html')
         slug = `/books/${isbnStr}/preliminary/prelims.html`
         chapterType = 'prelims'
       } else if (chapterNo === 'Index') {
+        filePath = path.join(bookDir, 'index', `${chapterFileName}.html`)
         slug = `/books/${isbnStr}/index/${chapterFileName}.html`
         chapterType = 'index'
       } else if (chapterNo.startsWith('Appendix')) {
+        filePath = path.join(bookDir, 'chapter', `${chapterFileName}.html`)
         slug = `/books/${isbnStr}/chapter/${chapterFileName}.html`
         chapterType = 'appendix'
       } else if (chapterNo.startsWith('Chapter')) {
+        filePath = path.join(bookDir, 'chapter', `${chapterFileName}.html`)
         slug = `/books/${isbnStr}/chapter/${chapterFileName}.html`
         chapterType = 'chapter'
+      }
+
+      // Check if the file actually exists, if not, set slug to null
+      if (filePath && !fs.existsSync(filePath)) {
+        slug = null
       }
 
       // Extract chapter number if it's a regular chapter
@@ -963,11 +949,25 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     const appendices = chapters.filter((ch: any) => ch.chapterType === 'appendix')
     const mainChapters = chapters.filter((ch: any) => ch.chapterType === 'chapter' && ch.number != null)
 
+    // Process Cases from JSON
+    const casesData = bookData.cases || []
+    const cases: Chapter[] = casesData.map((c: any, idx: number) => {
+      const caseId = c.case_id || `case${idx + 1}`
+      return {
+        number: null, // Cases don't have a standard chapter number
+        title: c.case_title,
+        slug: `/books/${isbnStr}/cases/${caseId}.html`, // Assuming case file structure
+        id: 1000 + idx, // Arbitrary high ID for sorting/filtering
+        chapterType: 'case'
+      }
+    })
+
     const sections: Section[] = []
     if (prelims.length) sections.push({ title: 'Prelims', chapters: prelims })
-    if (index.length) sections.push({ title: 'Index', chapters: index })
     if (mainChapters.length) sections.push({ title: 'Chapters', chapters: mainChapters })
     if (appendices.length) sections.push({ title: 'Appendices', chapters: appendices })
+    if (cases.length) sections.push({ title: 'Cases', chapters: cases })
+    if (index.length) sections.push({ title: 'Index', chapters: index })
 
     // Detect book PDF (<isbn>.pdf or book.pdf) if present
     let bookPdfUrl: string | null = null
@@ -979,9 +979,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       } else if (fs.existsSync(bookPdfFs)) {
         bookPdfUrl = `/books/${isbnStr}/book.pdf`
       }
-    } catch {}
+    } catch { }
 
-    return { props: { isbn: isbnStr, book, sections, bookPdfUrl, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
+    return { props: { isbn: isbnStr, book, sections, bookPdfUrl, videosCount: 0, casesCount: cases.length, reviewsCount: 0 } }
   } catch (e) {
     console.error('Error loading book metadata:', e)
     return { props: { isbn: isbnStr, book: null, sections: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }

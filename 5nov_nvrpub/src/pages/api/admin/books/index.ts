@@ -52,13 +52,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 async function getBooks(req: NextApiRequest, res: NextApiResponse) {
   try {
+    const page = parseInt(req.query.page as string) || 1
+    const limit = parseInt(req.query.limit as string) || 10
+    const offset = (page - 1) * limit
+
+    // Get total count
+    const [countResult] = await query<RowDataPacket[]>(
+      `SELECT COUNT(*) as total FROM books WHERE status != 'Deleted'`
+    )
+    const total = (countResult[0] as any).total
+
+    // Get paginated data
     const [books] = await query<Book[]>(
       `SELECT * FROM books
       WHERE status != 'Deleted'
-      ORDER BY created_date DESC`
+      ORDER BY created_date DESC
+      LIMIT ? OFFSET ?`,
+      [limit, offset]
     )
 
-    return res.status(200).json({ success: true, data: books })
+    return res.status(200).json({
+      success: true,
+      data: books,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    })
   } catch (error: any) {
     console.error('Get Books Error:', error)
     return res.status(500).json({ success: false, message: error.message })
@@ -121,11 +143,11 @@ async function createBook(req: NextApiRequest, res: NextApiResponse) {
     return res.status(201).json({ success: true, message: 'Book created successfully', bookId })
   } catch (error: any) {
     console.error('Create Book Error:', error)
-    
+
     if (error.code === 'ER_DUP_ENTRY') {
       return res.status(409).json({ success: false, message: 'ISBN already exists' })
     }
-    
+
     return res.status(500).json({ success: false, message: error.message })
   }
 }
