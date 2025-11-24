@@ -26,6 +26,19 @@ interface BookMetadata {
   Book?: Record<string, string | undefined>
 }
 
+interface LegacyBookMetadata {
+  print_isbn?: string
+  book_title?: string
+  book_author_name?: string
+  book_abstract?: string
+  book_keywords?: string
+  copyright_year?: number
+  'book-author'?: Array<{
+    firstname?: string
+    surname?: string
+  }>
+}
+
 export interface LocalBookRecord {
   id: number
   isbn: string

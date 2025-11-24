@@ -443,8 +443,9 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     // Fetch data depending on content type (books use dedicated table)
     let contents: any[] = []
     if (slug === 'books') {
-      const booksRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/books`)
-      const allBooks = await booksRes.json()
+      const booksRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/books/active`)
+      const booksPayload = await booksRes.json()
+      const allBooks = Array.isArray(booksPayload?.data) ? booksPayload.data : booksPayload
       contents = allBooks
     } else {
       const contentsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/contents`)
@@ -457,7 +458,11 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     const allSubjectcategories = await subjectcategoriesRes.json()
 
     // Get unique subject categories for this content type
-    const uniqueIds = new Set(contents.map((content: any) => content.subjectcategoryId))
+    const uniqueIds = new Set(
+      contents
+        .map((content: any) => Number(content.subjectcategoryId))
+        .filter((id: number) => Number.isFinite(id) && id > 0)
+    )
     const contentSubjectcategoryIds = Array.from(uniqueIds)
     const subjectcategories = allSubjectcategories.filter((sc: any) =>
       contentSubjectcategoryIds.includes(sc.id)

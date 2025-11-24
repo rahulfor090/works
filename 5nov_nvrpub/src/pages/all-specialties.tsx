@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Atom, Dna, HeartPulse, Activity, Pill, Stethoscope, Smile, HeartHandshake, LucideIcon } from 'lucide-react';
 import { mockData } from '@/app/new-home/mock';
-import Navbar from '@/app/new-home/components/Navbar';
-import Footer from '@/app/new-home/components/Footer';
+import SiteNavbar from '@/components/layout/SiteNavbar';
+import SiteFooter from '@/components/layout/SiteFooter';
 
 interface Specialty {
   id: number | string;
@@ -59,7 +59,7 @@ const AllSpecialties = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <SiteNavbar />
       <section className="pt-32 pb-20 bg-gradient-to-br from-[#F0F9FF] via-white to-[#FFF5F5] relative overflow-hidden min-h-screen">
         {/* Background Decoration */}
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#3B82F6] via-[#FF6B6B] to-[#10B981]"></div>
@@ -173,7 +173,7 @@ const AllSpecialties = () => {
           )}
         </div>
       </section>
-      <Footer />
+      <SiteFooter />
     </div>
   );
 };

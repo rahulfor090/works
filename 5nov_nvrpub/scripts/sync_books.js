@@ -76,7 +76,12 @@ async function syncBooks() {
         const featured = false;
         const downloadEnable = false;
         const rating = 0;
-        const coverImage = `/books/${dirName}/cover.jpg`;
+        const coverImagePath = path.join(dirPath, `${dirName}.png`);
+        let coverImage = '/images/courses/JMEDS_Cover.jpeg';
+        if (fs.existsSync(coverImagePath)) {
+            coverImage = `/books/${dirName}/${dirName}.png`;
+        }
+
         const overview = bookData.book_abstract || '';
         const supplementaryInfo = '';
 
@@ -105,6 +110,7 @@ async function syncBooks() {
             no_of_chapters = VALUES(no_of_chapters),
             no_of_pages = VALUES(no_of_pages),
             book_overview = VALUES(book_overview),
+            book_cover_image = VALUES(book_cover_image),
             status = 'Active',
             updated_date = NOW()`,
           [

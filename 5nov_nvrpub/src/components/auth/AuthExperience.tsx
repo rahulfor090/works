@@ -7,9 +7,14 @@ import {
   Alert,
   Box,
   Button,
+  Chip,
+  Checkbox,
   Container,
   Divider,
+  FormControlLabel,
   Grid,
+  IconButton,
+  InputAdornment,
   Link,
   Paper,
   Stack,
@@ -23,6 +28,12 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import VerifiedIcon from '@mui/icons-material/Verified'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined'
+import GoogleIcon from '@mui/icons-material/Google'
+import LinkedInIcon from '@mui/icons-material/LinkedIn'
 
 type AuthMode = 'login' | 'signup'
 
@@ -45,6 +56,10 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
   const [confirmPassword, setConfirmPassword] = React.useState('')
   const [signupError, setSignupError] = React.useState('')
   const [isSigningUp, setIsSigningUp] = React.useState(false)
+  const [rememberMe, setRememberMe] = React.useState(true)
+  const [showLoginPassword, setShowLoginPassword] = React.useState(false)
+  const [showSignupPassword, setShowSignupPassword] = React.useState(false)
+  const [showSignupConfirmPassword, setShowSignupConfirmPassword] = React.useState(false)
 
   const handleLogin = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
@@ -182,15 +197,25 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
     },
   ]
 
-  const metrics = [
-    { label: 'Active mentors', value: '70+', accent: '#768597' },
-    { label: 'Case libraries unlocked', value: '1.3k', accent: '#BCA182' },
+  const socialProviders = [
+    {
+      label: 'Continue with Google',
+      icon: <GoogleIcon fontSize="small" />,
+    },
+    {
+      label: 'Continue with LinkedIn',
+      icon: <LinkedInIcon fontSize="small" />,
+    },
   ]
 
+
+
+  // Updated colors to match Hero.jsx theme
+  // Blue: #3B82F6, Red: #FF6B6B, Green: #10B981
   const floatingOrbs = [
-    { top: '-80px', left: '-50px', size: 260, color: 'rgba(247, 226, 255, 0.45)', float: 32, delay: 0 },
-    { top: '35%', right: '-90px', size: 300, color: 'rgba(255, 233, 209, 0.4)', float: 40, delay: 0.3 },
-    { bottom: '-90px', left: '20%', size: 280, color: 'rgba(193, 235, 255, 0.35)', float: 35, delay: 0.6 },
+    { top: '-80px', left: '-50px', size: 260, color: 'rgba(59, 130, 246, 0.15)', float: 32, delay: 0 }, // Blue
+    { top: '35%', right: '-90px', size: 300, color: 'rgba(255, 107, 107, 0.15)', float: 40, delay: 0.3 }, // Red
+    { bottom: '-90px', left: '20%', size: 280, color: 'rgba(16, 185, 129, 0.15)', float: 35, delay: 0.6 }, // Green
   ]
 
   const accentLines = [
@@ -234,10 +259,11 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
         minHeight: '100vh',
         position: 'relative',
         overflow: 'hidden',
-        background: mode === 'login' ? 'var(--alternate-gradient-hero-warm)' : 'var(--gradient-hero-subtle)',
+        // New gradient from Hero.jsx: from-[#F0F9FF] via-white to-[#FFF5F5]
+        background: 'linear-gradient(to bottom right, #F0F9FF, #FFFFFF, #FFF5F5)',
         display: 'flex',
         alignItems: 'center',
-        py: { xs: 8, md: 0 },
+        py: { xs: 4, md: 0 },
       }}
       onMouseMove={handlePointerMove}
       onMouseLeave={handlePointerLeave}
@@ -247,7 +273,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
           position: 'absolute',
           inset: 0,
           background:
-            'radial-gradient(circle at 12% 18%, rgba(255,255,255,0.5), transparent 40%), radial-gradient(circle at 80% 10%, rgba(255,255,255,0.35), transparent 35%)',
+            'radial-gradient(circle at 12% 18%, rgba(255,255,255,0.8), transparent 40%), radial-gradient(circle at 80% 10%, rgba(255,255,255,0.8), transparent 35%)',
           pointerEvents: 'none',
         }}
       />
@@ -265,8 +291,8 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
             height: orb.size,
             borderRadius: '50%',
             background: orb.color,
-            filter: 'blur(50px)',
-            mixBlendMode: 'soft-light',
+            filter: 'blur(60px)',
+            mixBlendMode: 'multiply',
           }}
           animate={{ y: [0, orb.float, 0], x: [0, orb.float / 2, 0] }}
           transition={{
@@ -283,8 +309,8 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
           position: 'absolute',
           height: 1,
           width: line.width,
-          background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.6), rgba(255,255,255,0))',
-          opacity: 0.6,
+          background: 'linear-gradient(90deg, rgba(148, 163, 184, 0), rgba(148, 163, 184, 0.3), rgba(148, 163, 184, 0))',
+          opacity: 0.4,
         }
 
         if (line.top) baseStyle.top = line.top
@@ -296,7 +322,7 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
           <motion.div
             key={`line-${index}`}
             style={baseStyle}
-            animate={{ scaleX: [0.3, 1, 0.3], opacity: [0.2, 0.6, 0.2] }}
+            animate={{ scaleX: [0.3, 1, 0.3], opacity: [0.1, 0.4, 0.1] }}
             transition={{ duration: 6, repeat: Infinity, delay: line.delay }}
           />
         )
@@ -308,20 +334,22 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
             position: 'relative',
             borderRadius: { xs: 5, md: 6 },
             p: { xs: 1.2, md: 2 },
-            background: 'linear-gradient(120deg, rgba(255,255,255,0.15), rgba(255, 153, 102, 0.15))',
-            boxShadow: '0 50px 120px rgba(109, 73, 55, 0.35)',
+            // Subtle border/glow matching the clean theme
+            background: 'rgba(255,255,255,0.4)',
+            boxShadow: '0 20px 60px -10px rgba(148, 163, 184, 0.1)',
+            border: '1px solid rgba(255,255,255,0.8)',
           }}
         >
           <motion.div
             initial={{ opacity: 0.2, scale: 0.95 }}
-            animate={{ opacity: [0.3, 0.6, 0.3], scale: [0.95, 1.02, 0.95] }}
+            animate={{ opacity: [0.2, 0.4, 0.2], scale: [0.95, 1.02, 0.95] }}
             transition={{ duration: 8, repeat: Infinity }}
             style={{
               position: 'absolute',
               inset: 16,
               borderRadius: 32,
-              background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3), transparent 55%)',
-              filter: 'blur(25px)',
+              background: 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05), transparent 60%)',
+              filter: 'blur(30px)',
               zIndex: 0,
             }}
           />
@@ -333,453 +361,589 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
             elevation={0}
             sx={{
               borderRadius: { xs: 4, md: 5 },
-              background: 'rgba(255,255,255,0.9)',
-              border: '1px solid rgba(255,255,255,0.4)',
-              boxShadow: '0 25px 80px rgba(142, 91, 84, 0.25)',
+              background: 'rgba(255,255,255,0.95)',
+              border: '1px solid rgba(226, 232, 240, 0.8)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.05)',
               overflow: 'hidden',
-              backdropFilter: 'blur(12px)',
+              backdropFilter: 'blur(20px)',
               position: 'relative',
             }}
             style={{
-              transform: `perspective(1600px) rotateX(${cursorTilt.y * 4}deg) rotateY(${cursorTilt.x * -4}deg)`,
+              transform: `perspective(1600px) rotateX(${cursorTilt.y * 2}deg) rotateY(${cursorTilt.x * -2}deg)`,
               transition: 'transform 0.25s ease',
             }}
           >
-            <Box
-              sx={{
-                position: 'absolute',
-                inset: 0,
-                borderRadius: 'inherit',
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.15), rgba(249,232,250,0.25))',
-                opacity: 0.6,
-                pointerEvents: 'none',
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                inset: 0,
-                borderRadius: 'inherit',
-                backgroundImage:
-                  'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35) 0, transparent 40%), radial-gradient(circle at 80% 0%, rgba(255,255,255,0.25) 0, transparent 35%)',
-                pointerEvents: 'none',
-                mixBlendMode: 'soft-light',
-              }}
-            />
             <Grid container sx={{ position: 'relative', zIndex: 1 }}>
-            <Grid
-              item
-              xs={12}
-              md={6}
-              component={motion.div}
-              variants={leftPanelVariants}
-              animate={mode}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-              sx={{
-                px: { xs: 4, sm: 6 },
-                py: { xs: 5, sm: 6, md: 7 },
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(249,232,250,0.9) 100%)',
-              }}
-            >
-              <Box
+              <Grid
+                item
+                xs={12}
+                md={6}
                 component={motion.div}
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.7, delay: 0.1 }}
+                variants={leftPanelVariants}
+                animate={mode}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
+                sx={{
+                  px: { xs: 4, sm: 6 },
+                  py: { xs: 4, sm: 5, md: 5 },
+                  background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
+                }}
               >
-                <Typography
-                  variant="overline"
-                  sx={{
-                    letterSpacing: 4,
-                    color: 'var(--text-secondary)',
-                    fontFamily: 'SF Mono, monospace',
-                  }}
-                >
-                  NRV PUBLICATION
-                </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 600, mt: 2, mb: 2 }}>
-                  {mode === 'login' ? 'Welcome back to your learning cockpit.' : 'Create your NRV Publication account.'}
-                </Typography>
-                <Typography variant="body1" sx={{ color: 'var(--text-secondary)', mb: 4, maxWidth: 420 }}>
-                  {mode === 'login'
-                    ? 'Pick up your curated journeys, deep-dive into clinical insights, and stay ahead with premium content crafted for medical professionals.'
-                    : 'Unlock immersive study plans, benchmark with peers, and stay future-ready with a single login.'}
-                </Typography>
-
-                <Stack spacing={3}>
-                  {(mode === 'login' ? highlights : benefits).map((item, index) => (
-                    <Box
-                      key={item.title}
-                      component={motion.div}
-                      initial={{ opacity: 0, x: -15 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.2 * (index + 1) }}
-                    >
-                      <Stack
-                        direction="row"
-                        spacing={2}
-                        alignItems="flex-start"
-                        sx={{
-                          p: 2,
-                          borderRadius: 3,
-                          background: 'rgba(255,255,255,0.65)',
-                          border: '1px solid rgba(0,0,0,0.04)',
-                          boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            width: 46,
-                            height: 46,
-                            borderRadius: '16px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: mode === 'login' ? 'var(--accent-orange-200)' : 'var(--accent-blue-200)',
-                            color: mode === 'login' ? 'var(--accent-orange-400)' : 'var(--accent-blue-400)',
-                          }}
-                        >
-                          {item.icon}
-                        </Box>
-                        <Box>
-                          <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
-                            {item.title}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {item.description}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Box>
-                  ))}
-                </Stack>
-
-                <Divider sx={{ my: 4, borderColor: 'rgba(0,0,0,0.08)' }} />
-                <Typography variant="body2" color="text.secondary">
-                  Prefer a dedicated link?{' '}
-                  <NextLink href={mode === 'login' ? '/signup' : '/login'} passHref legacyBehavior>
-                    <Link sx={{ fontWeight: 600, color: 'rgb(35,35,35)' }}>
-                      {mode === 'login' ? 'Open sign up' : 'Open sign in'}
-                    </Link>
-                  </NextLink>
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid
-              item
-              xs={12}
-              md={6}
-              component={motion.div}
-              variants={rightPanelVariants}
-              animate={mode}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-              sx={{
-                px: { xs: 4, sm: 6 },
-                py: { xs: 5, sm: 6, md: 7 },
-                background: 'rgba(255,255,255,0.95)',
-                borderLeft: { md: '1px solid rgba(0,0,0,0.05)' },
-              }}
-            >
-              <Box
-                component={motion.div}
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.7, delay: 0.1 }}
-              >
-                <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
-                  {mode === 'login' ? 'Sign in' : 'Create account'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  {mode === 'login'
-                    ? 'Enter your credentials to sync progress across devices.'
-                    : 'Fill in your details to unlock the full NRV Publication experience.'}
-                </Typography>
-
                 <Box
-                  sx={{
-                    position: 'relative',
-                    borderRadius: 999,
-                    background: 'rgba(0,0,0,0.05)',
-                    p: 0.5,
-                    mb: 4,
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                  }}
+                  component={motion.div}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.7, delay: 0.1 }}
                 >
-                  <motion.div
-                    layout
-                    style={{
-                      position: 'absolute',
-                      top: 4,
-                      bottom: 4,
-                      width: 'calc(50% - 8px)',
-                      borderRadius: 999,
-                      background: 'var(--text-primary)',
-                      boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
-                      pointerEvents: 'none',
-                      zIndex: 0,
+                  <Typography
+                    variant="overline"
+                    sx={{
+                      letterSpacing: 3,
+                      color: '#94A3B8', // Slate-400
+                      fontWeight: 600,
+                      fontSize: '0.75rem',
                     }}
-                    animate={{ left: mode === 'login' ? 4 : 'calc(50% + 4px)' }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  />
-                  {toggleOptions.map((option) => (
-                    <Box
-                      key={option.value}
-                      component="button"
-                      onClick={() => setMode(option.value)}
-                      type="button"
-                      style={{
-                        border: 'none',
-                        background: 'transparent',
-                        padding: '0.75rem 1rem',
-                        cursor: 'pointer',
-                        fontSize: '0.95rem',
-                        fontWeight: 600,
-                        letterSpacing: 0.5,
-                        position: 'relative',
-                        zIndex: 1,
-                      }}
-                    >
-                      <Typography
-                        variant="subtitle2"
-                        sx={{
-                          textAlign: 'center',
-                          color: mode === option.value ? '#fff' : 'rgba(0,0,0,0.45)',
-                          transition: 'color 0.3s ease',
-                          fontWeight: mode === option.value ? 700 : 600,
-                        }}
+                  >
+                    NRV PUBLICATION
+                  </Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, mt: 2, mb: 2, color: '#0A2540' }}>
+                    {mode === 'login' ? 'Welcome back.' : 'Start your journey.'}
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: '#64748B', mb: 4, maxWidth: 420, lineHeight: 1.6 }}>
+                    {mode === 'login'
+                      ? 'Access your personalized learning dashboard and continue your progress.'
+                      : 'Join thousands of clinicians mastering their craft with NRV Publication.'}
+                  </Typography>
+
+                  <Stack spacing={2}>
+                    {(mode === 'login' ? highlights : benefits).map((item, index) => (
+                      <Box
+                        key={item.title}
+                        component={motion.div}
+                        initial={{ opacity: 0, x: -15 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 * (index + 1) }}
                       >
-                        {option.label}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-
-                <AnimatePresence mode="wait">
-                  {mode === 'login' ? (
-                    <motion.div
-                      key="login-form"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.35 }}
-                    >
-                      {loginError && (
-                        <Alert severity="error" sx={{ mb: 3 }}>
-                          {loginError}
-                        </Alert>
-                      )}
-                      <Box component="form" onSubmit={handleLogin}>
-                        <Stack spacing={3}>
-                          <TextField
-                            label="Email address"
-                            type="email"
-                            value={loginEmail}
-                            onChange={(e) => setLoginEmail(e.target.value)}
-                            fullWidth
-                            required
-                            disabled={isLoggingIn}
-                            InputLabelProps={{ shrink: true }}
-                          />
-                          <TextField
-                            label="Password"
-                            type="password"
-                            value={loginPassword}
-                            onChange={(e) => setLoginPassword(e.target.value)}
-                            fullWidth
-                            required
-                            disabled={isLoggingIn}
-                            InputLabelProps={{ shrink: true }}
-                          />
-                          <Button
-                            type="submit"
-                            variant="contained"
-                            size="large"
-                            endIcon={<ArrowForwardIcon />}
-                            disabled={isLoggingIn}
-                            sx={{
-                              py: 1.4,
-                              textTransform: 'none',
-                              fontSize: '1rem',
-                              fontWeight: 600,
-                              borderRadius: 3,
-                          color: '#fff',
-                              background: 'var(--text-primary)',
-                              boxShadow: '0 20px 40px rgba(35,35,35,0.18)',
-                              '&:hover': {
-                            color: '#fff',
-                                background: 'var(--text-secondary)',
-                                boxShadow: '0 30px 60px rgba(35,35,35,0.25)',
-                              },
-                            }}
-                            fullWidth
-                          >
-                            {isLoggingIn ? 'Signing in...' : 'Access dashboard'}
-                          </Button>
-                          <Typography variant="caption" color="text.secondary" align="center">
-                            By continuing, you agree to our Terms of Service and Privacy Policy.
-                          </Typography>
-                        </Stack>
-                      </Box>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="signup-form"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.35 }}
-                    >
-                      {signupError && (
-                        <Alert severity="error" sx={{ mb: 3 }}>
-                          {signupError}
-                        </Alert>
-                      )}
-                      <Box component="form" onSubmit={handleSignup}>
-                        <Stack spacing={3}>
-                          <TextField
-                            label="Full name"
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            disabled={isSigningUp}
-                            InputLabelProps={{ shrink: true }}
-                          />
-                          <TextField
-                            label="Email address"
-                            type="email"
-                            value={signupEmail}
-                            onChange={(e) => setSignupEmail(e.target.value)}
-                            required
-                            disabled={isSigningUp}
-                            InputLabelProps={{ shrink: true }}
-                          />
-                          <TextField
-                            label="Password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            disabled={isSigningUp}
-                            helperText="Minimum 6 characters"
-                            InputLabelProps={{ shrink: true }}
-                          />
-                          <TextField
-                            label="Confirm password"
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                            disabled={isSigningUp}
-                            InputLabelProps={{ shrink: true }}
-                          />
-                          <Button
-                            type="submit"
-                            variant="contained"
-                            size="large"
-                            endIcon={<ArrowForwardIcon />}
-                            disabled={isSigningUp}
-                            sx={{
-                              py: 1.4,
-                              textTransform: 'none',
-                              fontSize: '1rem',
-                              fontWeight: 600,
-                              borderRadius: 3,
-                            color: '#fff',
-                              background: 'var(--text-primary)',
-                              boxShadow: '0 20px 40px rgba(35,35,35,0.18)',
-                              '&:hover': {
-                              color: '#fff',
-                                background: 'var(--text-secondary)',
-                                boxShadow: '0 30px 60px rgba(35,35,35,0.25)',
-                              },
-                            }}
-                            fullWidth
-                          >
-                            {isSigningUp ? 'Creating account...' : 'Create account'}
-                          </Button>
-                          <Typography variant="caption" color="text.secondary" align="center">
-                            By creating an account, you agree to our Terms of Service and Privacy Policy.
-                          </Typography>
-                        </Stack>
-                      </Box>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <Stack
-                  direction={{ xs: 'column', sm: 'row' }}
-                  spacing={2}
-                  sx={{ mt: 5 }}
-                >
-                  <Box
-                    sx={{
-                      flex: 1,
-                      p: 2,
-                      borderRadius: 3,
-                      background: 'rgba(255,255,255,0.7)',
-                      border: '1px solid rgba(0,0,0,0.04)',
-                    }}
-                  >
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Average weekly study time
-                    </Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                      6.5 hrs
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      flex: 1,
-                      p: 2,
-                      borderRadius: 3,
-                      background: 'rgba(255,255,255,0.7)',
-                      border: '1px solid rgba(0,0,0,0.04)',
-                    }}
-                  >
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Active cohorts live
-                    </Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                      24+
-                    </Typography>
-                  </Box>
-                </Stack>
-
-                {mode === 'signup' && (
-                  <Grid container spacing={2} sx={{ mt: 2 }}>
-                    {metrics.map((metric) => (
-                      <Grid item xs={12} sm={6} key={metric.label}>
-                        <Box
+                        <Stack
+                          direction="row"
+                          spacing={2}
+                          alignItems="flex-start"
                           sx={{
-                            p: 2.5,
+                            p: 2,
                             borderRadius: 3,
-                            border: '1px dashed rgba(0,0,0,0.15)',
-                            background: 'rgba(255,255,255,0.65)',
+                            background: '#FFFFFF',
+                            border: '1px solid #F1F5F9',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.02)',
+                            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                            '&:hover': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)',
+                            }
                           }}
                         >
-                          <Typography variant="body2" color="text.secondary">
-                            {metric.label}
-                          </Typography>
-                          <Typography variant="h5" sx={{ fontWeight: 700, color: metric.accent }}>
-                            {metric.value}
-                          </Typography>
-                        </Box>
-                      </Grid>
+                          <Box
+                            sx={{
+                              width: 46,
+                              height: 46,
+                              borderRadius: '12px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              background: mode === 'login' ? 'rgba(255, 107, 107, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                              color: mode === 'login' ? '#FF6B6B' : '#3B82F6',
+                            }}
+                          >
+                            {item.icon}
+                          </Box>
+                          <Box>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5, color: '#0A2540' }}>
+                              {item.title}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: '#64748B' }}>
+                              {item.description}
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </Box>
                     ))}
-                  </Grid>
-                )}
-              </Box>
+                  </Stack>
+
+                  <Divider sx={{ my: 4, borderColor: '#E2E8F0' }} />
+                  <Typography variant="body2" sx={{ color: '#64748B' }}>
+                    Prefer a dedicated link?{' '}
+                    <NextLink href={mode === 'login' ? '/signup' : '/login'} passHref legacyBehavior>
+                      <Link sx={{ fontWeight: 600, color: '#0A2540', textDecorationColor: 'rgba(10, 37, 64, 0.2)' }}>
+                        {mode === 'login' ? 'Create an account' : 'Sign in instead'}
+                      </Link>
+                    </NextLink>
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid
+                item
+                xs={12}
+                md={6}
+                component={motion.div}
+                variants={rightPanelVariants}
+                animate={mode}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
+                sx={{
+                  px: { xs: 4, sm: 6 },
+                  py: { xs: 4, sm: 5, md: 5 },
+                  background: '#FFFFFF',
+                  borderLeft: { md: '1px solid #F1F5F9' },
+                }}
+              >
+                <Box
+                  component={motion.div}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.7, delay: 0.1 }}
+                >
+                  <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
+                    <Chip
+                      icon={<ShieldOutlinedIcon fontSize="small" />}
+                      label="256-bit SSL"
+                      sx={{
+                        background: 'rgba(59,130,246,0.1)',
+                        color: '#0A2540',
+                        fontWeight: 600,
+                      }}
+                      size="small"
+                    />
+                    <Typography variant="caption" sx={{ color: '#94A3B8' }}>
+                      Secure cloud session & multi-factor ready
+                    </Typography>
+                  </Stack>
+                  <Typography variant="h5" sx={{ fontWeight: 700, mb: 1, color: '#0A2540' }}>
+                    {mode === 'login' ? 'Sign in' : 'Create account'}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 3, color: '#64748B' }}>
+                    {mode === 'login'
+                      ? 'Enter your credentials to access your account.'
+                      : 'Fill in your details to get started.'}
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      borderRadius: 999,
+                      background: '#F1F5F9',
+                      p: 0.5,
+                      mb: 4,
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(2, 1fr)',
+                    }}
+                  >
+                    <motion.div
+                      layout
+                      style={{
+                        position: 'absolute',
+                        top: 4,
+                        bottom: 4,
+                        width: 'calc(50% - 8px)',
+                        borderRadius: 999,
+                        background: '#FFFFFF',
+                        boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+                        pointerEvents: 'none',
+                        zIndex: 0,
+                      }}
+                      animate={{ left: mode === 'login' ? 4 : 'calc(50% + 4px)' }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    />
+                    {toggleOptions.map((option) => (
+                      <Box
+                        key={option.value}
+                        component="button"
+                        onClick={() => setMode(option.value)}
+                        type="button"
+                        style={{
+                          border: 'none',
+                          background: 'transparent',
+                          padding: '0.75rem 1rem',
+                          cursor: 'pointer',
+                          fontSize: '0.9rem',
+                          fontWeight: 600,
+                          position: 'relative',
+                          zIndex: 1,
+                        }}
+                      >
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            textAlign: 'center',
+                            color: mode === option.value ? '#0A2540' : '#64748B',
+                            transition: 'color 0.3s ease',
+                            fontWeight: mode === option.value ? 700 : 500,
+                          }}
+                        >
+                          {option.label}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+
+                  <AnimatePresence mode="wait">
+                    {mode === 'login' ? (
+                      <motion.div
+                        key="login-form"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.35 }}
+                      >
+                        {loginError && (
+                          <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                            {loginError}
+                          </Alert>
+                        )}
+                        <Box component="form" onSubmit={handleLogin}>
+                          <Stack spacing={2}>
+                            <TextField
+                              label="Email address"
+                              type="email"
+                              value={loginEmail}
+                              onChange={(e) => setLoginEmail(e.target.value)}
+                              fullWidth
+                              required
+                              disabled={isLoggingIn}
+                              InputLabelProps={{ shrink: true }}
+                              InputProps={{
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    <EmailOutlinedIcon sx={{ color: '#94A3B8' }} />
+                                  </InputAdornment>
+                                ),
+                              }}
+                              sx={{
+                                '& .MuiOutlinedInput-root': {
+                                  borderRadius: 3,
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#3B82F6',
+                                  },
+                                },
+                              }}
+                            />
+                            <TextField
+                              label="Password"
+                              type={showLoginPassword ? 'text' : 'password'}
+                              value={loginPassword}
+                              onChange={(e) => setLoginPassword(e.target.value)}
+                              fullWidth
+                              required
+                              disabled={isLoggingIn}
+                              InputLabelProps={{ shrink: true }}
+                              InputProps={{
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    <LockOutlinedIcon sx={{ color: '#94A3B8' }} />
+                                  </InputAdornment>
+                                ),
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      aria-label="Toggle password visibility"
+                                      onClick={() => setShowLoginPassword((prev) => !prev)}
+                                      edge="end"
+                                      size="small"
+                                    >
+                                      {showLoginPassword ? (
+                                        <VisibilityOffIcon fontSize="small" />
+                                      ) : (
+                                        <VisibilityIcon fontSize="small" />
+                                      )}
+                                    </IconButton>
+                                  </InputAdornment>
+                                ),
+                              }}
+                              sx={{
+                                '& .MuiOutlinedInput-root': {
+                                  borderRadius: 3,
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#3B82F6',
+                                  },
+                                },
+                              }}
+                            />
+                            <Stack
+                              direction={{ xs: 'column', sm: 'row' }}
+                              alignItems={{ xs: 'flex-start', sm: 'center' }}
+                              justifyContent="space-between"
+                            >
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={rememberMe}
+                                    onChange={(event) => setRememberMe(event.target.checked)}
+                                    sx={{
+                                      color: '#CBD5F5',
+                                      '&.Mui-checked': { color: '#FF6B6B' },
+                                    }}
+                                  />
+                                }
+                                label="Remember me for 30 days"
+                                sx={{ color: '#64748B', userSelect: 'none' }}
+                              />
+                              <NextLink href="/forgot-password" passHref legacyBehavior>
+                                <Link sx={{ fontWeight: 600, color: '#0A2540' }}>Forgot password?</Link>
+                              </NextLink>
+                            </Stack>
+                            <Button
+                              type="submit"
+                              variant="contained"
+                              size="large"
+                              endIcon={<ArrowForwardIcon />}
+                              disabled={isLoggingIn}
+                              sx={{
+                                py: 1.5,
+                                textTransform: 'none',
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                borderRadius: 3,
+                                color: '#fff',
+                                // Coral/Orange gradient from Hero.jsx
+                                background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                                boxShadow: '0 10px 15px -3px rgba(255, 107, 107, 0.3)',
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                  background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                                  boxShadow: '0 20px 25px -5px rgba(255, 107, 107, 0.4)',
+                                  transform: 'translateY(-1px)',
+                                },
+                              }}
+                              fullWidth
+                            >
+                              {isLoggingIn ? 'Signing in...' : 'Access dashboard'}
+                            </Button>
+                            <Typography variant="caption" sx={{ color: '#94A3B8', textAlign: 'center', display: 'block' }}>
+                              By continuing, you agree to our Terms of Service and Privacy Policy.
+                            </Typography>
+                          </Stack>
+                        </Box>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="signup-form"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.35 }}
+                      >
+                        {signupError && (
+                          <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                            {signupError}
+                          </Alert>
+                        )}
+                        <Box component="form" onSubmit={handleSignup}>
+                          <Stack spacing={2}>
+                            <TextField
+                              label="Full name"
+                              type="text"
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              required
+                              disabled={isSigningUp}
+                              InputLabelProps={{ shrink: true }}
+                              sx={{
+                                '& .MuiOutlinedInput-root': {
+                                  borderRadius: 3,
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#3B82F6',
+                                  },
+                                },
+                              }}
+                            />
+                            <TextField
+                              label="Email address"
+                              type="email"
+                              value={signupEmail}
+                              onChange={(e) => setSignupEmail(e.target.value)}
+                              required
+                              disabled={isSigningUp}
+                              InputLabelProps={{ shrink: true }}
+                              InputProps={{
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    <EmailOutlinedIcon sx={{ color: '#94A3B8' }} />
+                                  </InputAdornment>
+                                ),
+                              }}
+                              sx={{
+                                '& .MuiOutlinedInput-root': {
+                                  borderRadius: 3,
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#3B82F6',
+                                  },
+                                },
+                              }}
+                            />
+                            <TextField
+                              label="Password"
+                              type={showSignupPassword ? 'text' : 'password'}
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              required
+                              disabled={isSigningUp}
+                              helperText="Minimum 6 characters"
+                              InputLabelProps={{ shrink: true }}
+                              InputProps={{
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    <LockOutlinedIcon sx={{ color: '#94A3B8' }} />
+                                  </InputAdornment>
+                                ),
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      aria-label="Toggle password visibility"
+                                      onClick={() => setShowSignupPassword((prev) => !prev)}
+                                      edge="end"
+                                      size="small"
+                                    >
+                                      {showSignupPassword ? (
+                                        <VisibilityOffIcon fontSize="small" />
+                                      ) : (
+                                        <VisibilityIcon fontSize="small" />
+                                      )}
+                                    </IconButton>
+                                  </InputAdornment>
+                                ),
+                              }}
+                              sx={{
+                                '& .MuiOutlinedInput-root': {
+                                  borderRadius: 3,
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#3B82F6',
+                                  },
+                                },
+                              }}
+                            />
+                            <TextField
+                              label="Confirm password"
+                              type={showSignupConfirmPassword ? 'text' : 'password'}
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              required
+                              disabled={isSigningUp}
+                              InputLabelProps={{ shrink: true }}
+                              InputProps={{
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    <LockOutlinedIcon sx={{ color: '#94A3B8' }} />
+                                  </InputAdornment>
+                                ),
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      aria-label="Toggle password visibility"
+                                      onClick={() => setShowSignupConfirmPassword((prev) => !prev)}
+                                      edge="end"
+                                      size="small"
+                                    >
+                                      {showSignupConfirmPassword ? (
+                                        <VisibilityOffIcon fontSize="small" />
+                                      ) : (
+                                        <VisibilityIcon fontSize="small" />
+                                      )}
+                                    </IconButton>
+                                  </InputAdornment>
+                                ),
+                              }}
+                              sx={{
+                                '& .MuiOutlinedInput-root': {
+                                  borderRadius: 3,
+                                  '&.Mui-focused fieldset': {
+                                    borderColor: '#3B82F6',
+                                  },
+                                },
+                              }}
+                            />
+                            <Button
+                              type="submit"
+                              variant="contained"
+                              size="large"
+                              endIcon={<ArrowForwardIcon />}
+                              disabled={isSigningUp}
+                              sx={{
+                                py: 1.5,
+                                textTransform: 'none',
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                borderRadius: 3,
+                                color: '#fff',
+                                // Coral/Orange gradient from Hero.jsx
+                                background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                                boxShadow: '0 10px 15px -3px rgba(255, 107, 107, 0.3)',
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                  background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                                  boxShadow: '0 20px 25px -5px rgba(255, 107, 107, 0.4)',
+                                  transform: 'translateY(-1px)',
+                                },
+                              }}
+                              fullWidth
+                            >
+                              {isSigningUp ? 'Creating account...' : 'Create account'}
+                            </Button>
+                            <Typography variant="caption" sx={{ color: '#94A3B8', textAlign: 'center', display: 'block' }}>
+                              By creating an account, you agree to our Terms of Service and Privacy Policy.
+                            </Typography>
+                          </Stack>
+                        </Box>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <Divider
+                    sx={{
+                      mt: 4,
+                      mb: 3,
+                      borderColor: '#E2E8F0',
+                      '&::before, &::after': { borderColor: '#E2E8F0' },
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ color: '#94A3B8', letterSpacing: 1 }}>
+                      OR CONTINUE WITH
+                    </Typography>
+                  </Divider>
+                  <Stack
+                    direction={{ xs: 'column', sm: 'row' }}
+                    spacing={2}
+                    sx={{ mb: 3 }}
+                  >
+                    {socialProviders.map((provider) => (
+                      <Button
+                        key={provider.label}
+                        variant="outlined"
+                        fullWidth
+                        startIcon={provider.icon}
+                        sx={{
+                          borderRadius: 3,
+                          borderColor: '#E2E8F0',
+                          color: '#0A2540',
+                          fontWeight: 600,
+                          textTransform: 'none',
+                          background: '#fff',
+                          '&:hover': {
+                            borderColor: '#94A3B8',
+                            background: '#F8FAFC',
+                          },
+                        }}
+                      >
+                        {provider.label}
+                      </Button>
+                    ))}
+                  </Stack>
+
+
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
-        </Paper>
-      </Box>
+          </Paper>
+        </Box>
       </Container>
     </Box>
   )
 }
 
 export default AuthExperience
-

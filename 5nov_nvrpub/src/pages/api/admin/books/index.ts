@@ -111,7 +111,8 @@ async function createBook(req: NextApiRequest, res: NextApiResponse) {
     rating,
     book_cover_image,
     book_overview,
-    supplementary_information
+    supplementary_information,
+    status = 'Active'
   } = req.body
 
   if (!isbn || !book_title) {
@@ -127,13 +128,13 @@ async function createBook(req: NextApiRequest, res: NextApiResponse) {
         isbn, book_title, book_subtitle, doi, category_id, subject_ids, society, access_type, book_content_type,
         edition, book_type, book_bisac, publishing_year, publish_status,
         no_of_chapters, no_of_pages, no_of_volumes, featured, download_enable,
-        rating, book_cover_image, book_overview, supplementary_information
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        rating, book_cover_image, book_overview, supplementary_information, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         isbn, book_title, book_subtitle, doi, category_id || null, subjectIdsString, society, access_type, book_content_type,
         edition, book_type, book_bisac, publishing_year, publish_status,
         no_of_chapters, no_of_pages, no_of_volumes, featured, download_enable,
-        rating, book_cover_image, book_overview, supplementary_information
+        rating, book_cover_image, book_overview, supplementary_information, status || 'Active'
       ]
     )
 
