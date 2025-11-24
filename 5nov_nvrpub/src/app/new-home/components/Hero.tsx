@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from './ui/button';
-import { Play } from 'lucide-react';
-import HeroSlider, { heroDefaultSlides, type HeroSlide } from './ui/HeroSlider';
+import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import HeroSlider, { heroDefaultSlides, type HeroSlide, type HeroSliderHandle } from './ui/HeroSlider';
 
 const Hero = (): JSX.Element => {
   const [activeSlide, setActiveSlide] = useState<HeroSlide>(heroDefaultSlides[0]!);
+  const sliderRef = useRef<HeroSliderHandle>(null);
   const primaryStat = activeSlide?.stats;
 
   return (
@@ -18,6 +19,21 @@ const Hero = (): JSX.Element => {
       <div className="absolute top-20 left-10 w-32 h-32 bg-[#3B82F6]/5 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-40 right-20 w-48 h-48 bg-[#FF6B6B]/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-[#10B981]/5 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+
+      <button
+        aria-label="Previous slide"
+        className="hidden lg:flex absolute top-1/2 left-6 -translate-y-1/2 z-30 p-4 rounded-full bg-white/80 text-slate-900 shadow-2xl shadow-blue-900/10 backdrop-blur focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/70"
+        onClick={() => sliderRef.current?.previous()}
+      >
+        <ChevronLeft size={22} />
+      </button>
+      <button
+        aria-label="Next slide"
+        className="hidden lg:flex absolute top-1/2 right-6 -translate-y-1/2 z-30 p-4 rounded-full bg-white/80 text-slate-900 shadow-2xl shadow-blue-900/10 backdrop-blur focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/70"
+        onClick={() => sliderRef.current?.next()}
+      >
+        <ChevronRight size={22} />
+      </button>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -84,7 +100,7 @@ const Hero = (): JSX.Element => {
 
           {/* Right Visual - Hero Slider */}
           <div className="relative lg:h-[600px] flex items-center justify-center w-full">
-            <HeroSlider onSlideChange={setActiveSlide} />
+            <HeroSlider ref={sliderRef} onSlideChange={setActiveSlide} />
           </div>
         </div>
       </div>
