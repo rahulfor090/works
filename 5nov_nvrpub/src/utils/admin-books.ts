@@ -13,6 +13,7 @@ export interface AdminBookRow extends RowDataPacket {
   book_subtitle: string | null
   society: string | null
   author?: string | null
+  authors?: string | null
   access_type: string | null
   book_content_type: string | null
   book_cover_image: string | null
@@ -22,6 +23,7 @@ export interface AdminBookRow extends RowDataPacket {
   subject_ids?: string | null
   category_id?: number | null
   category_name?: string | null
+  subject_name?: string | null
   created_date?: string | Date | null
   updated_date?: string | Date | null
 }
@@ -32,6 +34,7 @@ export interface NormalizedAdminBook {
   title: string
   subtitle: string
   author: string
+  authors?: string
   description: string
   coverImage: string
   rating: number
@@ -41,6 +44,7 @@ export interface NormalizedAdminBook {
   subjectcategoryId: number
   subjectcategoryIds: number[]
   category: string
+  subject: string
   accessType: string
   contentType: string
   status?: string | null
@@ -83,6 +87,7 @@ export const mapAdminBookRow = (book: AdminBookRow): NormalizedAdminBook => {
     title: book.book_title || book.book_subtitle || 'Untitled Book',
     subtitle: book.book_subtitle || '',
     author: book.society || book.author || DEFAULT_BOOK_AUTHOR,
+    authors: book.authors || book.author || undefined,
     description: book.book_overview || '',
     coverImage: resolveCoverImage(book.book_cover_image),
     rating: normalizeNumber(book.rating),
@@ -92,6 +97,7 @@ export const mapAdminBookRow = (book: AdminBookRow): NormalizedAdminBook => {
     subjectcategoryId: subjectcategoryIds[0] || 0,
     subjectcategoryIds,
     category: book.category_name || DEFAULT_BOOK_CATEGORY,
+    subject: book.subject_name || 'General',
     accessType: book.access_type || DEFAULT_ACCESS_TYPE,
     contentType: book.book_content_type || 'Book',
     status: book.status || null,
@@ -108,7 +114,7 @@ function resolveCoverImage(cover?: string | null) {
     return trimmed
   }
   if (trimmed.toLowerCase().startsWith('images/')) {
-    return `/${trimmed.replace(/^\/+/,'')}`
+    return `/${trimmed.replace(/^\/+/, '')}`
   }
   return `${PUBLIC_BOOK_COVER_DIR}${trimmed}`
 }

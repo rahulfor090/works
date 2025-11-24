@@ -140,7 +140,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
     }
   }, [ch])
 
-  const [topTab, setTopTab] = React.useState<number>(0)
+  const [topTab, setTopTab] = React.useState<string>('content')
   const counts = React.useMemo(() => {
     const s = html || ''
     const figures = (s.match(/<figure\b/gi)?.length || 0)
@@ -150,13 +150,13 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
   }, [html])
 
   const filteredHtml = React.useMemo(() => {
-    if (topTab === 1) {
+    if (topTab === 'figures') {
       const figureBlocks = html.match(/<figure[\s\S]*?<\/figure>/gi) || []
       const imgTags = html.match(/<img\b[^>]*>/gi) || []
       const parts = [...figureBlocks, ...imgTags]
       return parts.length ? parts.join('\n') : '<p>No figures or images found.</p>'
     }
-    if (topTab === 2) {
+    if (topTab === 'tables') {
       const tableBlocks = html.match(/<table[\s\S]*?<\/table>/gi) || []
       return tableBlocks.length ? tableBlocks.join('\n') : '<p>No tables found.</p>'
     }
@@ -317,9 +317,13 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
           <Tabs value={topTab} onChange={(_, v) => setTopTab(v)} textColor="primary" indicatorColor="primary">
-            <Tab label="Table of Contents" sx={{ fontWeight: 600 }} />
-            <Tab label={`Figures (${counts.figuresCount})`} sx={{ fontWeight: 600 }} />
-            <Tab label={`Tables (${counts.tablesCount})`} sx={{ fontWeight: 600 }} />
+            <Tab label="Content" value="content" sx={{ fontWeight: 600 }} />
+            {counts.figuresCount > 0 && (
+              <Tab label={`Figures (${counts.figuresCount})`} value="figures" sx={{ fontWeight: 600 }} />
+            )}
+            {counts.tablesCount > 0 && (
+              <Tab label={`Tables (${counts.tablesCount})`} value="tables" sx={{ fontWeight: 600 }} />
+            )}
           </Tabs>
         </Box>
 

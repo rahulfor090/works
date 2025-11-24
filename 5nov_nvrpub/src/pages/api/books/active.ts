@@ -20,6 +20,7 @@ const SELECT_ACTIVE_BOOKS = `
     b.status,
     b.created_date,
     b.updated_date,
+    b.authors,
     sc.name AS category_name
   FROM books b
   LEFT JOIN subjectcategory sc ON b.category_id = sc.id

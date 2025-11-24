@@ -5,6 +5,7 @@ export interface Content {
   coverImage: string
   description: string
   author: string
+  authors?: string
   detailsHtml: string
   rating: number
   displayOrder: number
@@ -12,7 +13,7 @@ export interface Content {
   subjectcategoryId: number
   ishomepage?: number
   createdAt?: string
-  
+
   // Legacy fields for backward compatibility
   cover?: string
   ratingCount?: number
