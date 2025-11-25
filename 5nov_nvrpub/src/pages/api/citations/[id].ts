@@ -7,18 +7,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     if (req.method === 'GET') {
-      const [rows] = await query(`SELECT id, title, url, logo, location, isPublished, createdAt, updatedAt FROM citations WHERE id = ?`, [id])
+      const [rows] = await query(`SELECT id, title, url, logo, location, page_location, isPublished, createdAt, updatedAt FROM citations WHERE id = ?`, [id])
       if (!(rows as any[])[0]) return res.status(404).json({ message: 'Not found' })
       return res.status(200).json((rows as any[])[0])
     }
 
     if (req.method === 'PUT') {
-      const { title, url, logo, location, isPublished } = req.body || {}
+      const { title, url, logo, location, page_location, isPublished } = req.body || {}
       if (!title || !url) return res.status(400).json({ message: 'Missing title or url' })
 
       await query(
-        `UPDATE citations SET title = ?, url = ?, logo = ?, location = ?, isPublished = ?, updatedAt = NOW() WHERE id = ?`,
-        [title, url, logo ?? '', location ?? 'header', isPublished ? 1 : 0, id]
+        `UPDATE citations SET title = ?, url = ?, logo = ?, location = ?, page_location = ?, isPublished = ?, updatedAt = NOW() WHERE id = ?`,
+        [title, url, logo ?? '', location ?? 'header', page_location ?? 'home', isPublished ? 1 : 0, id]
       )
       return res.status(200).json({ ok: true })
     }
