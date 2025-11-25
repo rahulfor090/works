@@ -32,6 +32,10 @@ import {
   Tab,
   Chip,
   TextField,
+  Popover,
+  Slider,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material'
 import ZoomInIcon from '@mui/icons-material/ZoomIn'
 import ZoomOutIcon from '@mui/icons-material/ZoomOut'
@@ -42,6 +46,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import ShareIcon from '@mui/icons-material/Share'
+import SettingsIcon from '@mui/icons-material/Settings'
+import TextFieldsIcon from '@mui/icons-material/TextFields'
+import LightModeIcon from '@mui/icons-material/LightMode'
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import ContrastIcon from '@mui/icons-material/Contrast'
 import { Menu, MenuItem, ListItemIcon } from '@mui/material'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import FacebookIcon from '@mui/icons-material/Facebook'
@@ -50,6 +59,8 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import LockIcon from '@mui/icons-material/Lock'
 import FullscreenIcon from '@mui/icons-material/Fullscreen'
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 
 type Chapter = { number?: number | null; title: string; slug: string }
 
@@ -92,6 +103,84 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
   const [snackbar, setSnackbar] = React.useState<{ open: boolean; message: string }>({ open: false, message: '' })
   const [isFullscreen, setIsFullscreen] = React.useState(false)
   const paperRef = React.useRef<HTMLDivElement | null>(null)
+
+  // Reader Settings
+  const [settingsAnchorEl, setSettingsAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [fontSize, setFontSize] = React.useState<number>(1.15)
+  const [fontFamily, setFontFamily] = React.useState<'serif' | 'sans'>('serif')
+  const [theme, setTheme] = React.useState<'light' | 'sepia' | 'dark'>('light')
+
+  const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => {
+    setSettingsAnchorEl(event.currentTarget)
+  }
+
+  const handleSettingsClose = () => {
+    setSettingsAnchorEl(null)
+  }
+
+  const getThemeColors = () => {
+    switch (theme) {
+      case 'dark':
+        return {
+          bg: '#0f172a',
+          text: '#cbd5e1',
+          heading: '#f8fafc',
+          link: '#38bdf8',
+          border: '#334155',
+          blockquote: '#94a3b8',
+          tableHeader: '#1e293b',
+          tableRowHover: '#334155',
+          uiBg: 'rgba(15, 23, 42, 0.75)',
+          uiText: '#f1f5f9',
+          uiBorder: 'rgba(255, 255, 255, 0.08)',
+          activeItemBg: 'rgba(56, 189, 248, 0.15)',
+          hoverItemBg: 'rgba(255, 255, 255, 0.05)',
+          mainGradient: 'linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%)',
+          shadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          glassBorder: '1px solid rgba(255, 255, 255, 0.05)'
+        }
+      case 'sepia':
+        return {
+          bg: '#f8f5e6',
+          text: '#5c4b37',
+          heading: '#433422',
+          link: '#a05a2c',
+          border: '#e6dbbf',
+          blockquote: '#8c7b6c',
+          tableHeader: '#efead4',
+          tableRowHover: '#e6dbbf',
+          uiBg: 'rgba(253, 251, 247, 0.85)',
+          uiText: '#433422',
+          uiBorder: 'rgba(92, 75, 55, 0.08)',
+          activeItemBg: 'rgba(160, 90, 44, 0.1)',
+          hoverItemBg: 'rgba(67, 52, 34, 0.05)',
+          mainGradient: 'linear-gradient(135deg, #fdfbf7 0%, #f8f5e6 50%, #f1eace 100%)',
+          shadow: '0 25px 50px -12px rgba(67, 52, 34, 0.1)',
+          glassBorder: '1px solid rgba(92, 75, 55, 0.05)'
+        }
+      default:
+        return {
+          bg: '#ffffff',
+          text: '#64748B', // Slate 500
+          heading: '#0A2540', // Dark Blue
+          link: '#3B82F6', // Blue
+          border: '#E2E8F0',
+          blockquote: '#64748B',
+          tableHeader: '#F8FAFC',
+          tableRowHover: '#F8FAFC',
+          uiBg: 'rgba(255, 255, 255, 0.95)',
+          uiText: '#0A2540',
+          uiBorder: '#F1F5F9',
+          activeItemBg: '#F0F9FF',
+          hoverItemBg: '#F8FAFC',
+          mainGradient: 'linear-gradient(to bottom right, #F0F9FF, #ffffff, #FFF5F5)',
+          shadow: '0 10px 30px -10px rgba(10, 37, 64, 0.08)',
+          glassBorder: '1px solid rgba(255, 255, 255, 0.8)'
+        }
+    }
+  }
+
+  const themeColors = getThemeColors()
 
   // User authentication state
   const [user, setUser] = React.useState<{ email?: string; isPremium?: boolean } | null>(null)
@@ -284,7 +373,8 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
         <title>{title} | Chapter Viewer</title>
         <base href={`/`} />
       </Head>
-      <Container sx={{ py: 4, minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
+      <Box sx={{ minHeight: '100vh', background: themeColors.mainGradient, transition: 'background 0.5s ease' }}>
+        <Container maxWidth="xl" sx={{ py: 4 }}>
         <LinearProgress
           variant="determinate"
           value={readProgress}
@@ -292,67 +382,201 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
             position: 'sticky',
             top: 0,
             zIndex: 10,
-            height: 6,
-            borderRadius: 3,
+            height: 4,
+            borderRadius: 2,
             mb: 3,
-            backgroundColor: '#E2E8F0',
+            backgroundColor: 'transparent',
+            backdropFilter: 'blur(4px)',
             '& .MuiLinearProgress-bar': {
-              background: 'linear-gradient(to right, #FF6B6B, #FF8E53)'
+              background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+              borderRadius: 2,
+              boxShadow: '0 0 10px rgba(255, 107, 107, 0.3)'
             }
           }}
         />
         {/* Book info header */}
         {book && (
-          <Grid container spacing={3} alignItems="center" sx={{ mb: 2 }}>
-            <Grid item xs={12} md={2}>
-              <Box component="img" src={book.coverImage || DEFAULT_BOOK_COVER} alt={book.title} sx={{ width: '100%', borderRadius: 1, boxShadow: 1 }} />
-            </Grid>
-            <Grid item xs={12} md={10}>
-              <Typography variant="h5" sx={{ mb: 1, fontWeight: 700, color: '#0A2540' }}>{book.title}</Typography>
-              {book.author && <Typography variant="body2" sx={{ mb: 1, color: '#64748B' }}>{book.author}</Typography>}
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-                <Chip
-                  label="Book"
-                  size="small"
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 2, md: 4 }, mb: 4 }}>
+            {/* Previous Chapter Button */}
+            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+              {prevNext.prev ? (
+                <IconButton
+                  component={NextLink}
+                  href={prevNext.prev.slug}
                   sx={{
-                    background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
-                    color: 'white',
-                    fontWeight: 600,
-                    fontSize: '0.7rem',
-                    height: '24px'
+                    width: 56,
+                    height: 56,
+                    bgcolor: themeColors.uiText,
+                    color: themeColors.bg,
+                    '&:hover': { bgcolor: themeColors.link, color: '#fff' },
+                    transition: 'all 0.2s'
                   }}
-                />
-                <Typography variant="body2" sx={{ color: '#94A3B8', fontFamily: 'SF Mono, monospace' }}>ISBN: {isbn}</Typography>
-              </Stack>
-              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#3B82F6' }}>{title}</Typography>
-              <Box>
-                <TextField fullWidth placeholder={`Search within ${book.title}...`} size="small" />
-              </Box>
-            </Grid>
-          </Grid>
+                >
+                  <ArrowBackIcon fontSize="large" />
+                </IconButton>
+              ) : (
+                <Box sx={{ width: 56 }} />
+              )}
+            </Box>
+
+            <Paper
+              elevation={0}
+              sx={{
+                flex: 1,
+                borderRadius: '2rem',
+                background: themeColors.uiBg,
+                backdropFilter: 'blur(24px)',
+                boxShadow: themeColors.shadow,
+                border: themeColors.glassBorder,
+                overflow: 'hidden',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: `0 30px 60px -10px ${theme === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.15)'}`
+                }
+              }}
+            >
+              <Grid container sx={{ minHeight: { md: '450px' } }}>
+                <Grid item xs={12} md={7} sx={{ p: { xs: 4, md: 8 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                    <Typography variant="h2" sx={{
+                      fontWeight: 300,
+                      fontFamily: '"Georgia", serif',
+                      color: themeColors.heading,
+                      lineHeight: 1.1,
+                      fontSize: { xs: '2.5rem', md: '3.5rem' }
+                    }}>
+                      {book.title}
+                    </Typography>
+                    
+                    {book.author && (
+                      <Typography variant="subtitle1" sx={{
+                        color: themeColors.text,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.15em',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        mb: 2
+                      }}>
+                        {book.author}
+                      </Typography>
+                    )}
+
+                    <Typography variant="body1" sx={{ color: themeColors.text, mb: 4, maxWidth: '90%', lineHeight: 1.6 }}>
+                      ISBN: {isbn}
+                    </Typography>
+
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Button
+                        component={NextLink}
+                        href={`/content/book/${isbn}`}
+                        sx={{
+                          textTransform: 'none',
+                          borderRadius: '100px',
+                          border: `1px solid ${themeColors.uiText}`,
+                          color: themeColors.uiText,
+                          fontWeight: 500,
+                          px: 4,
+                          py: 1.5,
+                          transition: 'all 0.2s',
+                          '&:hover': {
+                            backgroundColor: themeColors.uiText,
+                            color: themeColors.bg
+                          }
+                        }}
+                      >
+                        Back to TOC
+                      </Button>
+                      
+                      <Tooltip title="Copy ISBN">
+                        <IconButton 
+                          onClick={() => {
+                            if (navigator.clipboard) {
+                              navigator.clipboard.writeText(isbn).then(() => setSnackbar({ open: true, message: 'ISBN copied' })).catch(() => null)
+                            }
+                          }}
+                          sx={{ 
+                            color: themeColors.text,
+                            border: `1px solid ${themeColors.border}`,
+                            '&:hover': { borderColor: themeColors.text, color: themeColors.heading }
+                          }}
+                        >
+                          <ContentCopyIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={5} sx={{ position: 'relative', minHeight: { xs: '300px', md: 'auto' } }}>
+                  <Box
+                    component="img"
+                    src={book.coverImage || DEFAULT_BOOK_COVER}
+                    alt={book.title}
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Paper>
+
+            {/* Next Chapter Button */}
+            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+              {prevNext.next ? (
+                <IconButton
+                  component={NextLink}
+                  href={prevNext.next.slug}
+                  sx={{
+                    width: 56,
+                    height: 56,
+                    bgcolor: themeColors.uiText,
+                    color: themeColors.bg,
+                    '&:hover': { bgcolor: themeColors.link, color: '#fff' },
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <ArrowForwardIcon fontSize="large" />
+                </IconButton>
+              ) : (
+                <Box sx={{ width: 56 }} />
+              )}
+            </Box>
+          </Box>
         )}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-          <Button
-            component={NextLink}
-            href={`/content/book/${isbn}`}
-            startIcon={<ArrowBackIcon />}
-            variant="outlined"
-            sx={{
-              textTransform: 'none',
-              borderRadius: '2rem',
-              borderColor: '#E2E8F0',
-              color: '#64748B',
-              fontWeight: 500,
-              '&:hover': {
-                borderColor: '#0A2540',
+        {!book && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+            <Button
+              component={NextLink}
+              href={`/content/book/${isbn}`}
+              startIcon={<ArrowBackIcon />}
+              sx={{
+                textTransform: 'none',
+                borderRadius: '100px',
                 color: '#0A2540',
-                backgroundColor: 'transparent'
-              }
-            }}
-          >
-            Back to TOC
-          </Button>
-        </Box>
+                fontWeight: 600,
+                px: 2.5,
+                py: 0.75,
+                backgroundColor: 'transparent',
+                border: '2px solid #0A2540',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  color: '#ffffff',
+                  backgroundColor: '#0A2540',
+                  borderColor: '#0A2540',
+                  transform: 'translateY(-1px)'
+                }
+              }}
+            >
+              Back to TOC
+            </Button>
+          </Box>
+        )}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#0A2540', letterSpacing: '-0.02em' }}>{title}</Typography>
         </Box>
@@ -381,100 +605,341 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
           </Tabs>
         </Box>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={4}>
           {!isFullscreen && (
             <Grid item xs={12} md={3}>
-              <Box sx={{ position: 'sticky', top: 80, height: '80vh', overflow: 'auto' }}>
-                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>Chapters</Typography>
-                <List dense>
-                  {chapters.map((c, idx) => {
-                    const chNormForActive = String(ch).replace(/^ch/i, '')
-                    const isActive = c.slug.endsWith(`/chapter/${chNormForActive}`)
-                    return (
-                      <ListItemButton
-                        key={idx}
-                        component={NextLink}
-                        href={c.slug}
-                        selected={isActive}
-                      >
-                        <ListItemText primary={c.title} />
-                      </ListItemButton>
-                    )
-                  })}
-                </List>
+              <Box sx={{ position: 'sticky', top: 80, height: 'calc(100vh - 100px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    height: '100%',
+                    borderRadius: '2rem',
+                    background: themeColors.uiBg,
+                    backdropFilter: 'blur(24px)',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxShadow: themeColors.shadow,
+                    border: themeColors.glassBorder,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      boxShadow: `0 30px 60px -10px ${theme === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.15)'}`
+                    }
+                  }}
+                >
+                  <Box sx={{ p: 3, pb: 2 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800, color: themeColors.uiText, letterSpacing: '-0.01em', fontSize: '1.1rem' }}>Table of Contents</Typography>
+                    <Divider sx={{ mt: 2, borderColor: themeColors.uiBorder }} />
+                  </Box>
+                  <List sx={{
+                    overflow: 'auto',
+                    flex: 1,
+                    px: 2,
+                    pb: 2,
+                    '&::-webkit-scrollbar': { width: '4px' },
+                    '&::-webkit-scrollbar-track': { background: 'transparent' },
+                    '&::-webkit-scrollbar-thumb': {
+                      background: themeColors.uiBorder,
+                      borderRadius: '4px',
+                      '&:hover': { background: themeColors.link }
+                    }
+                  }}>
+                    {chapters.map((c, idx) => {
+                      const chNormForActive = String(ch).replace(/^ch/i, '')
+                      const isActive = c.slug.endsWith(`/chapter/${chNormForActive}`)
+                      return (
+                        <ListItemButton
+                          key={idx}
+                          component={NextLink}
+                          href={c.slug}
+                          selected={isActive}
+                          sx={{
+                            borderRadius: '1rem',
+                            mb: 0.5,
+                            py: 1.5,
+                            px: 2,
+                            transition: 'all 0.2s ease',
+                            border: '1px solid transparent',
+                            color: themeColors.uiText,
+                            position: 'relative',
+                            overflow: 'hidden',
+                            '&.Mui-selected': {
+                              backgroundColor: themeColors.activeItemBg,
+                              color: themeColors.link,
+                              '&:hover': { backgroundColor: themeColors.activeItemBg },
+                              '& .MuiListItemText-primary': { fontWeight: 700 },
+                              '&::before': {
+                                content: '""',
+                                position: 'absolute',
+                                left: 0,
+                                top: '10%',
+                                bottom: '10%',
+                                width: '4px',
+                                backgroundColor: themeColors.link,
+                                borderRadius: '0 4px 4px 0'
+                              }
+                            },
+                            '&:hover': {
+                              backgroundColor: themeColors.hoverItemBg,
+                              transform: 'translateX(4px)'
+                            }
+                          }}
+                        >
+                          <ListItemText
+                            primary={c.title}
+                            primaryTypographyProps={{
+                              variant: 'body2',
+                              sx: { fontWeight: isActive ? 700 : 500, lineHeight: 1.5 }
+                            }}
+                          />
+                        </ListItemButton>
+                      )
+                    })}
+                  </List>
+                </Paper>
               </Box>
             </Grid>
           )}
 
           <Grid item xs={12} md={isFullscreen ? 12 : 9}>
             <Paper
-              variant="outlined"
+              elevation={0}
               sx={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                mb: 2,
-                p: 2,
-                borderRadius: '1rem',
-                border: 'none',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
-                backgroundColor: '#ffffff'
+                mb: 3,
+                p: 1.5,
+                pl: 3,
+                pr: 2,
+                borderRadius: '100px',
+                background: themeColors.uiBg,
+                backdropFilter: 'blur(24px)',
+                boxShadow: themeColors.shadow,
+                border: themeColors.glassBorder,
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: `0 20px 40px -5px ${theme === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.15)'}`
+                }
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {prevNext.prev && (
-                  <Typography component={NextLink} href={prevNext.prev.slug} sx={{ color: 'black', fontWeight: 600, fontSize: '1.1rem' }}>
-                    ‹ {prevNext.prev.title}
-                  </Typography>
+                  <Button
+                    component={NextLink}
+                    href={prevNext.prev.slug}
+                    startIcon={<span style={{ fontSize: '1.2rem', lineHeight: 1 }}>‹</span>}
+                    sx={{
+                      textTransform: 'none',
+                      color: themeColors.uiText,
+                      fontWeight: 600,
+                      borderRadius: '100px',
+                      px: 2,
+                      '&:hover': { backgroundColor: themeColors.hoverItemBg, color: themeColors.link }
+                    }}
+                  >
+                    {prevNext.prev.title}
+                  </Button>
                 )}
                 {prevNext.prev && prevNext.next && (
-                  <Typography sx={{ mx: 1, color: 'text.secondary', fontSize: '1.1rem' }}>|</Typography>
+                  <Divider orientation="vertical" flexItem sx={{ mx: 1, height: 20, alignSelf: 'center', borderColor: themeColors.uiBorder }} />
                 )}
                 {prevNext.next && (
-                  <Typography component={NextLink} href={prevNext.next.slug} sx={{ color: 'black', fontWeight: 600, fontSize: '1.1rem' }}>
-                    {prevNext.next.title} ›
-                  </Typography>
+                  <Button
+                    component={NextLink}
+                    href={prevNext.next.slug}
+                    endIcon={<span style={{ fontSize: '1.2rem', lineHeight: 1 }}>›</span>}
+                    sx={{
+                      textTransform: 'none',
+                      color: themeColors.uiText,
+                      fontWeight: 600,
+                      borderRadius: '100px',
+                      px: 2,
+                      '&:hover': { backgroundColor: themeColors.hoverItemBg, color: themeColors.link }
+                    }}
+                  >
+                    {prevNext.next.title}
+                  </Button>
                 )}
               </Box>
 
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Tooltip title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}>
-                  <span>
-                    <IconButton onClick={handleFullscreen}>
-                      {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-                    </IconButton>
-                  </span>
+                <Tooltip title="Reader Settings">
+                  <IconButton onClick={handleSettingsClick} size="small" sx={{ 
+                    color: themeColors.uiText, 
+                    transition: 'all 0.2s',
+                    '&:hover': { color: themeColors.link, backgroundColor: themeColors.hoverItemBg, transform: 'rotate(45deg)' } 
+                  }}>
+                    <SettingsIcon />
+                  </IconButton>
                 </Tooltip>
-                <Tooltip title="Zoom in"><span><IconButton onClick={() => setScale(s => Math.min(2.5, s + 0.1))}><ZoomInIcon /></IconButton></span></Tooltip>
-                <Tooltip title="Zoom out"><span><IconButton onClick={() => setScale(s => Math.max(0.5, s - 0.1))}><ZoomOutIcon /></IconButton></span></Tooltip>
-                <Tooltip title={'Download Book PDF'}>
-                  <span>
-                    <IconButton
-                      component="a"
-                      href={`/books/${isbn}/${isbn}.pdf`}
-                      download={`${isbn}.pdf`}
-                      aria-label="Download Book PDF"
+                <Popover
+                  open={Boolean(settingsAnchorEl)}
+                  anchorEl={settingsAnchorEl}
+                  onClose={handleSettingsClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  PaperProps={{
+                    sx: {
+                      p: 3,
+                      width: 320,
+                      borderRadius: '1.5rem',
+                      boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.2)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      background: theme === 'dark' ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                      backdropFilter: 'blur(20px)'
+                    }
+                  }}
+                >
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 700, color: theme === 'dark' ? '#94a3b8' : '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Font Size</Typography>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <TextFieldsIcon sx={{ fontSize: 16, color: theme === 'dark' ? '#64748b' : '#94A3B8' }} />
+                      <Slider
+                        value={fontSize}
+                        min={0.8}
+                        max={1.8}
+                        step={0.05}
+                        onChange={(_, v) => setFontSize(v as number)}
+                        sx={{
+                          color: theme === 'dark' ? '#38bdf8' : '#0A2540',
+                          '& .MuiSlider-thumb': {
+                            width: 16,
+                            height: 16,
+                            backgroundColor: '#fff',
+                            border: '2px solid currentColor',
+                            '&:hover, &.Mui-focusVisible': {
+                              boxShadow: `0 0 0 4px ${theme === 'dark' ? 'rgba(56, 189, 248, 0.16)' : 'rgba(10, 37, 64, 0.16)'}`,
+                            },
+                          },
+                        }}
+                      />
+                      <TextFieldsIcon sx={{ fontSize: 24, color: theme === 'dark' ? '#e2e8f0' : '#0A2540' }} />
+                    </Stack>
+                  </Box>
+
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 700, color: theme === 'dark' ? '#94a3b8' : '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Font Family</Typography>
+                    <ToggleButtonGroup
+                      value={fontFamily}
+                      exclusive
+                      onChange={(_, v) => v && setFontFamily(v)}
+                      fullWidth
+                      size="small"
+                      sx={{
+                        gap: 1,
+                        '& .MuiToggleButton-root': {
+                          borderRadius: '0.75rem !important',
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                          '&.Mui-selected': {
+                            backgroundColor: theme === 'dark' ? 'rgba(56, 189, 248, 0.15)' : '#EFF6FF',
+                            color: theme === 'dark' ? '#38bdf8' : '#3B82F6',
+                            borderColor: theme === 'dark' ? '#38bdf8' : '#BFDBFE',
+                            '&:hover': { backgroundColor: theme === 'dark' ? 'rgba(56, 189, 248, 0.25)' : '#DBEAFE' }
+                          }
+                        }
+                      }}
                     >
-                      <PictureAsPdfIcon />
-                    </IconButton>
-                  </span>
+                      <ToggleButton value="serif" sx={{ fontFamily: '"Georgia", serif', color: theme === 'dark' ? '#e2e8f0' : '#334155' }}>Serif</ToggleButton>
+                      <ToggleButton value="sans" sx={{ fontFamily: '"Inter", sans-serif', color: theme === 'dark' ? '#e2e8f0' : '#334155' }}>Sans</ToggleButton>
+                    </ToggleButtonGroup>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 700, color: theme === 'dark' ? '#94a3b8' : '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Theme</Typography>
+                    <ToggleButtonGroup
+                      value={theme}
+                      exclusive
+                      onChange={(_, v) => v && setTheme(v)}
+                      fullWidth
+                      size="small"
+                      sx={{
+                        gap: 1,
+                        '& .MuiToggleButton-root': {
+                          borderRadius: '0.75rem !important',
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          border: '1px solid transparent',
+                          '&.Mui-selected': {
+                            borderColor: 'currentColor',
+                            borderWidth: 2,
+                            boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                          }
+                        }
+                      }}
+                    >
+                      <ToggleButton value="light" sx={{ backgroundColor: '#ffffff', color: '#334155', '&:hover': { backgroundColor: '#f8fafc' }, '&.Mui-selected': { backgroundColor: '#ffffff', color: '#0A2540' } }}>
+                        <LightModeIcon sx={{ mr: 1, fontSize: 18 }} /> Light
+                      </ToggleButton>
+                      <ToggleButton value="sepia" sx={{ backgroundColor: '#f4ecd8', color: '#5b4636', '&:hover': { backgroundColor: '#e9dfc6' }, '&.Mui-selected': { backgroundColor: '#f4ecd8', color: '#433422' } }}>
+                        <ContrastIcon sx={{ mr: 1, fontSize: 18 }} /> Sepia
+                      </ToggleButton>
+                      <ToggleButton value="dark" sx={{ backgroundColor: '#1e293b', color: '#e2e8f0', '&:hover': { backgroundColor: '#334155' }, '&.Mui-selected': { backgroundColor: '#1e293b', color: '#f8fafc' } }}>
+                        <DarkModeIcon sx={{ mr: 1, fontSize: 18 }} /> Dark
+                      </ToggleButton>
+                    </ToggleButtonGroup>
+                  </Box>
+                </Popover>
+
+                <Tooltip title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}>
+                  <IconButton onClick={handleFullscreen} size="small" sx={{ color: themeColors.uiText, '&:hover': { color: themeColors.link, backgroundColor: themeColors.hoverItemBg } }}>
+                    {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+                  </IconButton>
                 </Tooltip>
-                <IconButton aria-label="more options" onClick={openOptionsMenu}>
+                <Tooltip title={'Download Book PDF'}>
+                  <IconButton
+                    component="a"
+                    href={`/books/${isbn}/${isbn}.pdf`}
+                    download={`${isbn}.pdf`}
+                    aria-label="Download Book PDF"
+                    size="small"
+                    sx={{ color: themeColors.uiText, '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}
+                  >
+                    <PictureAsPdfIcon />
+                  </IconButton>
+                </Tooltip>
+                <IconButton aria-label="more options" onClick={openOptionsMenu} size="small" sx={{ color: themeColors.uiText, '&:hover': { color: themeColors.link, backgroundColor: themeColors.hoverItemBg } }}>
                   <MoreVertIcon />
                 </IconButton>
               </Box>
-              <Menu anchorEl={optionsAnchorEl} open={menuOpen} onClose={closeOptionsMenu} keepMounted>
-                <MenuItem onClick={handleCite}>
-                  <ListItemIcon><FormatQuoteIcon fontSize="small" /></ListItemIcon>
+              <Menu
+                anchorEl={optionsAnchorEl}
+                open={menuOpen}
+                onClose={closeOptionsMenu}
+                keepMounted
+                PaperProps={{
+                  elevation: 0,
+                  sx: {
+                    borderRadius: '1rem',
+                    boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.2)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: theme === 'dark' ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    mt: 1,
+                    minWidth: 200
+                  }
+                }}
+              >
+                <MenuItem onClick={handleCite} sx={{ borderRadius: 1, mx: 1, my: 0.5, color: themeColors.uiText, '&:hover': { backgroundColor: themeColors.hoverItemBg } }}>
+                  <ListItemIcon><FormatQuoteIcon fontSize="small" sx={{ color: themeColors.uiText }} /></ListItemIcon>
                   <ListItemText>Cite</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={handleShare}>
-                  <ListItemIcon><ShareIcon fontSize="small" /></ListItemIcon>
+                <MenuItem onClick={handleShare} sx={{ borderRadius: 1, mx: 1, my: 0.5, color: themeColors.uiText, '&:hover': { backgroundColor: themeColors.hoverItemBg } }}>
+                  <ListItemIcon><ShareIcon fontSize="small" sx={{ color: themeColors.uiText }} /></ListItemIcon>
                   <ListItemText>Share</ListItemText>
                 </MenuItem>
-                <Divider />
-                <MenuItem onClick={handleBookmarkMenu}>
-                  <ListItemIcon>{bookmarked ? <BookmarkIcon fontSize="small" /> : <BookmarkBorderIcon fontSize="small" />}</ListItemIcon>
+                <Divider sx={{ my: 1, borderColor: themeColors.uiBorder }} />
+                <MenuItem onClick={handleBookmarkMenu} sx={{ borderRadius: 1, mx: 1, my: 0.5, color: themeColors.uiText, '&:hover': { backgroundColor: themeColors.hoverItemBg } }}>
+                  <ListItemIcon>{bookmarked ? <BookmarkIcon fontSize="small" color="primary" /> : <BookmarkBorderIcon fontSize="small" sx={{ color: themeColors.uiText }} />}</ListItemIcon>
                   <ListItemText>{bookmarked ? 'Remove bookmark' : 'Bookmark'}</ListItemText>
                 </MenuItem>
 
@@ -483,14 +948,16 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
 
 
 
-            <Paper ref={paperRef} variant="outlined" sx={{
-              borderRadius: '1.5rem',
+            <Paper ref={paperRef} elevation={0} sx={{
+              borderRadius: '2rem',
               overflow: 'hidden',
               height: isFullscreen ? 'calc(100vh - 150px)' : '80vh',
               position: 'relative',
-              borderColor: isFullscreen ? 'white' : 'transparent',
-              boxShadow: isFullscreen ? 'none' : '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
-              backgroundColor: '#ffffff'
+              boxShadow: isFullscreen ? 'none' : themeColors.shadow,
+              backgroundColor: isFullscreen ? themeColors.bg : themeColors.uiBg,
+              backdropFilter: 'blur(24px)',
+              border: isFullscreen ? 'none' : themeColors.glassBorder,
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
             }}>
               {isLocked && (
                 <Box
@@ -500,21 +967,28 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    backdropFilter: 'blur(8px)',
+                    backgroundColor: theme === 'dark' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(12px)',
                     zIndex: 1000,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 2,
+                    gap: 3,
                   }}
                 >
-                  <LockIcon sx={{ fontSize: 80, color: 'primary.main', opacity: 0.7 }} />
-                  <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                  <Box sx={{ 
+                    p: 4, 
+                    borderRadius: '50%', 
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                    boxShadow: '0 20px 40px rgba(37, 99, 235, 0.3)'
+                  }}>
+                    <LockIcon sx={{ fontSize: 48, color: 'white' }} />
+                  </Box>
+                  <Typography variant="h4" sx={{ fontWeight: 800, color: themeColors.heading, textAlign: 'center' }}>
                     Premium Content
                   </Typography>
-                  <Typography variant="body1" sx={{ color: 'text.secondary', textAlign: 'center', maxWidth: 500 }}>
+                  <Typography variant="body1" sx={{ color: themeColors.text, textAlign: 'center', maxWidth: 400, lineHeight: 1.6 }}>
                     This chapter is locked. Please log in with a premium account to access the full content.
                   </Typography>
                   <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
@@ -522,7 +996,15 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
                       variant="contained"
                       component={NextLink}
                       href="/login"
-                      sx={{ textTransform: 'none', px: 4 }}
+                      sx={{ 
+                        textTransform: 'none', 
+                        px: 4, 
+                        py: 1.5,
+                        borderRadius: '100px',
+                        fontWeight: 700,
+                        background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                        boxShadow: '0 10px 20px rgba(255, 107, 107, 0.2)'
+                      }}
                     >
                       Log In
                     </Button>
@@ -530,7 +1012,16 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
                       variant="outlined"
                       component={NextLink}
                       href="/signup"
-                      sx={{ textTransform: 'none', px: 4 }}
+                      sx={{ 
+                        textTransform: 'none', 
+                        px: 4, 
+                        py: 1.5,
+                        borderRadius: '100px',
+                        fontWeight: 700,
+                        borderColor: '#0A2540',
+                        color: '#0A2540',
+                        '&:hover': { borderColor: '#0A2540', backgroundColor: 'rgba(10, 37, 64, 0.05)' }
+                      }}
                     >
                       Sign Up
                     </Button>
@@ -540,27 +1031,163 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
               <Box ref={scrollRef} sx={{
                 overflow: 'auto',
                 height: isFullscreen ? 'calc(100vh - 150px)' : '80vh',
-                filter: isLocked ? 'blur(5px)' : 'none',
-                pointerEvents: isLocked ? 'none' : 'auto'
+                filter: isLocked ? 'blur(8px)' : 'none',
+                pointerEvents: isLocked ? 'none' : 'auto',
+                scrollBehavior: 'smooth',
+                '&::-webkit-scrollbar': { width: '10px', height: '10px' },
+                '&::-webkit-scrollbar-track': { background: 'transparent' },
+                '&::-webkit-scrollbar-thumb': {
+                  background: themeColors.uiBorder,
+                  borderRadius: '5px',
+                  border: '3px solid transparent',
+                  backgroundClip: 'content-box',
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                  background: themeColors.link,
+                  border: '3px solid transparent',
+                  backgroundClip: 'content-box',
+                }
               }}>
-                <Box sx={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: `${100 / scale}%`, height: `${100 / scale}%` }}>
+                <Box sx={{ transform: `scale(${scale})`, transformOrigin: 'top center', width: `${100 / scale}%`, height: `${100 / scale}%` }}>
                   <Box sx={{
                     px: { xs: 2, md: 4 },
-                    py: isFullscreen ? { xs: 1, md: 1.5 } : { xs: 2, md: 3 },
+                    py: isFullscreen ? { xs: 4, md: 8 } : { xs: 4, md: 8 },
                     display: 'flex',
                     justifyContent: 'center',
-                    '& .chapter-html p': { fontSize: '1.05rem', lineHeight: 1.8 },
-                    '& .chapter-html h1, & .chapter-html h2, & .chapter-html h3': { marginTop: 2, marginBottom: 1 },
-                    '& .chapter-html img': { display: 'block', maxWidth: '100%', height: 'auto', borderRadius: 1, boxShadow: 1, my: 2 },
-                    '& .chapter-html a': { textDecoration: 'underline' }
+                    '& .chapter-html': {
+                      fontFamily: fontFamily === 'serif' ? '"Georgia", "Times New Roman", serif' : '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                      color: themeColors.text,
+                      maxWidth: '1000px',
+                      margin: '0 auto'
+                    },
+                    '& .chapter-html p': {
+                      fontSize: `${fontSize}rem`,
+                      lineHeight: 1.8,
+                      marginBottom: '1.5em',
+                      color: themeColors.text,
+                      textAlign: 'justify'
+                    },
+                    '& .chapter-html h1': {
+                      fontSize: `${fontSize * 2.5}rem`,
+                      fontWeight: 800,
+                      color: themeColors.heading,
+                      marginTop: '2em',
+                      marginBottom: '1em',
+                      letterSpacing: '-0.03em',
+                      lineHeight: 1.1,
+                      textAlign: 'center'
+                    },
+                    '& .chapter-html h2': {
+                      fontSize: `${fontSize * 1.8}rem`,
+                      fontWeight: 700,
+                      color: themeColors.heading,
+                      marginTop: '2em',
+                      marginBottom: '0.75em',
+                      letterSpacing: '-0.02em',
+                      lineHeight: 1.2,
+                      borderBottom: `1px solid ${themeColors.border}`,
+                      paddingBottom: '0.5em'
+                    },
+                    '& .chapter-html h3': {
+                      fontSize: `${fontSize * 1.4}rem`,
+                      fontWeight: 600,
+                      color: themeColors.heading,
+                      marginTop: '1.5em',
+                      marginBottom: '0.75em',
+                      lineHeight: 1.3
+                    },
+                    '& .chapter-html h4': {
+                      fontSize: `${fontSize * 1.1}rem`,
+                      fontWeight: 600,
+                      color: themeColors.heading,
+                      marginTop: '1.5em',
+                      marginBottom: '0.5em'
+                    },
+                    '& .chapter-html img': {
+                      display: 'block',
+                      maxWidth: '100%',
+                      height: 'auto',
+                      borderRadius: '1rem',
+                      boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.15)',
+                      margin: '3em auto',
+                      transition: 'transform 0.3s ease',
+                      '&:hover': { transform: 'scale(1.01)' }
+                    },
+                    '& .chapter-html a': {
+                      color: themeColors.link,
+                      textDecoration: 'none',
+                      borderBottom: `1px solid ${themeColors.link}40`,
+                      transition: 'all 0.2s',
+                      '&:hover': { 
+                        borderBottomColor: themeColors.link,
+                        backgroundColor: `${themeColors.link}10`
+                      }
+                    },
+                    '& .chapter-html ul, & .chapter-html ol': {
+                      marginBottom: '1.5em',
+                      paddingLeft: '2em',
+                      color: themeColors.text
+                    },
+                    '& .chapter-html li': {
+                      marginBottom: '0.75em',
+                      fontSize: `${fontSize}rem`,
+                      lineHeight: 1.7
+                    },
+                    '& .chapter-html blockquote': {
+                      borderLeft: `4px solid ${themeColors.link}`,
+                      padding: '1.5em 2em',
+                      margin: '2em 0',
+                      fontStyle: 'italic',
+                      color: themeColors.blockquote,
+                      backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                      borderRadius: '0 1rem 1rem 0'
+                    },
+                    '& .chapter-html table': {
+                      width: '100%',
+                      borderCollapse: 'separate',
+                      borderSpacing: 0,
+                      margin: '3em 0',
+                      fontSize: `${fontSize * 0.9}rem`,
+                      border: `1px solid ${themeColors.border}`,
+                      borderRadius: '1rem',
+                      overflow: 'hidden',
+                      boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.05)'
+                    },
+                    '& .chapter-html thead': {
+                      backgroundColor: themeColors.tableHeader
+                    },
+                    '& .chapter-html th': {
+                      color: themeColors.heading,
+                      fontWeight: 700,
+                      textAlign: 'left',
+                      padding: '1.25rem',
+                      borderBottom: `1px solid ${themeColors.border}`,
+                      backgroundColor: themeColors.tableHeader
+                    },
+                    '& .chapter-html td': {
+                      padding: '1.25rem',
+                      borderBottom: `1px solid ${themeColors.border}`,
+                      color: themeColors.text,
+                      verticalAlign: 'top',
+                      lineHeight: 1.6
+                    },
+                    '& .chapter-html tr:last-of-type td': {
+                      borderBottom: 'none'
+                    },
+                    '& .chapter-html tr:hover td': {
+                      backgroundColor: themeColors.tableRowHover,
+                      transition: 'background-color 0.2s'
+                    }
                   }}>
                     <Box sx={{
-                      width: '210mm',
-                      minHeight: '297mm',
-                      maxWidth: '100%',
-                      backgroundColor: 'white',
-                      padding: '20mm',
-                      boxShadow: '0 0 10px rgba(0,0,0,0.1)'
+                      width: '100%',
+                      maxWidth: '1200px',
+                      backgroundColor: themeColors.bg,
+                      padding: { xs: '30px', md: '60px' },
+                      boxShadow: themeColors.shadow,
+                      borderRadius: '8px',
+                      transition: 'background-color 0.3s ease, color 0.3s ease',
+                      margin: '0 auto'
                     }}>
                       <div
                         ref={contentRef}
@@ -573,7 +1200,23 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
               </Box>
             </Paper>
 
-            <Fab color="primary" size="small" onClick={() => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })} sx={{ position: 'fixed', bottom: 24, right: 24 }}>
+            <Fab
+              size="medium"
+              onClick={() => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+              sx={{
+                position: 'fixed',
+                bottom: 32,
+                right: 32,
+                background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                color: 'white',
+                boxShadow: '0 10px 25px rgba(255, 107, 107, 0.4)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  transform: 'translateY(-4px) scale(1.05)',
+                  boxShadow: '0 15px 35px rgba(255, 107, 107, 0.5)',
+                }
+              }}
+            >
               <ArrowUpwardIcon />
             </Fab>
 
@@ -581,87 +1224,176 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
               open={imageModalOpen}
               onClose={() => setImageModalOpen(false)}
               maxWidth="lg"
-              PaperProps={{ sx: { border: '1px solid #2263a4' } }}
+              PaperProps={{
+                sx: {
+                  borderRadius: '1.5rem',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                  backgroundColor: 'transparent',
+                  boxShadow: 'none'
+                }
+              }}
             >
-              <DialogContent sx={{ p: 0 }}>
+              <DialogContent sx={{ p: 0, display: 'flex', justifyContent: 'center' }}>
                 {imageModalSrc ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2, backgroundColor: 'transparent', border: '1px solid #2263a4' }}>
+                  <Box sx={{ position: 'relative' }}>
+                    <IconButton
+                      onClick={() => setImageModalOpen(false)}
+                      sx={{
+                        position: 'absolute',
+                        top: 16,
+                        right: 16,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        color: 'white',
+                        '&:hover': { backgroundColor: 'rgba(0,0,0,0.7)' }
+                      }}
+                    >
+                      <FullscreenExitIcon />
+                    </IconButton>
                     <img
                       src={imageModalSrc}
                       alt="Chapter image"
-                      style={{ maxWidth: '90vw', maxHeight: '80vh', objectFit: 'contain', border: '1px solid #2263a4' }}
+                      style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: '0.5rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
                     />
                   </Box>
                 ) : null}
               </DialogContent>
             </Dialog>
 
-            <Dialog open={citeOpen} onClose={() => setCiteOpen(false)} maxWidth="md" fullWidth>
-              <DialogTitle>Cite This Chapter</DialogTitle>
-              <DialogContent>
-                <Typography variant="body1" sx={{ mb: 2 }}>{citationText}</Typography>
+            <Dialog
+              open={citeOpen}
+              onClose={() => setCiteOpen(false)}
+              maxWidth="md"
+              fullWidth
+              PaperProps={{
+                sx: {
+                  borderRadius: '1.5rem',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                }
+              }}
+            >
+              <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Cite This Chapter</Typography>
+              </DialogTitle>
+              <DialogContent sx={{ px: 4, py: 4 }}>
+                <Paper variant="outlined" sx={{ p: 3, backgroundColor: '#F8FAFC', borderRadius: '1rem', border: '1px solid #E2E8F0' }}>
+                  <Typography variant="body1" sx={{ fontFamily: 'Georgia, serif', color: '#334155', lineHeight: 1.6 }}>{citationText}</Typography>
+                </Paper>
               </DialogContent>
-              <DialogActions sx={{ px: 3, pb: 3 }}>
+              <DialogActions sx={{ px: 4, pb: 4, borderTop: '1px solid #E2E8F0', pt: 3 }}>
                 <Button
                   variant="contained"
-                  color="primary"
                   component="a"
                   href={risHref}
                   download={`citation-${isbn}.ris`}
-                  sx={{ textTransform: 'none' }}
+                  sx={{
+                    textTransform: 'none',
+                    borderRadius: '2rem',
+                    background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                    boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
+                    fontWeight: 600,
+                    px: 4,
+                    py: 1,
+                    '&:hover': {
+                      background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                      boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+                    }
+                  }}
                 >
                   Download RIS
                 </Button>
               </DialogActions>
             </Dialog>
 
-            <Dialog open={shareOpen} onClose={() => setShareOpen(false)} maxWidth="md" fullWidth>
-              <DialogTitle>Share This Chapter</DialogTitle>
-              <DialogContent>
-                <Typography variant="body1" sx={{ mb: 2 }}>
+            <Dialog
+              open={shareOpen}
+              onClose={() => setShareOpen(false)}
+              maxWidth="md"
+              fullWidth
+              PaperProps={{
+                sx: {
+                  borderRadius: '1.5rem',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                }
+              }}
+            >
+              <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Share This Chapter</Typography>
+              </DialogTitle>
+              <DialogContent sx={{ px: 4, py: 4 }}>
+                <Typography variant="body1" sx={{ mb: 2, color: '#475569' }}>
                   Click <strong>Copy Link</strong> button to copy the content permanent URL.
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  This link can be shared with users that are connected to the institution’s/school’s network and they will automatically have access to the content.
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  To share a link in a Learning Management System (LMS) course (such as Blackboard, Canvas, Moodle, etc.) that will work for remote users as well as those connected to the school’s network:
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  1. Contact <Link href="mailto:customersuccess@mheducation.com">customersuccess@mheducation.com</Link> to confirm that your LMS has been set up correctly in our system.
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  • Provide your school name and the link for your course in the email.
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 3 }}>
-                  2. Click <strong>Copy Link</strong> button to copy the content permanent URL and paste into your course.
-                </Typography>
+                <Paper variant="outlined" sx={{ p: 2, mb: 3, backgroundColor: '#F0F9FF', borderColor: '#BAE6FD', borderRadius: '0.75rem' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: '#0369A1' }}>
+                    This link can be shared with users that are connected to the institution’s/school’s network and they will automatically have access to the content.
+                  </Typography>
+                </Paper>
 
-                <Typography variant="subtitle1" sx={{ mb: 1 }}>Share on social media</Typography>
+                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: '#0A2540' }}>Share on social media</Typography>
                 <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                  <IconButton component="a" href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+                  <IconButton
+                    component="a"
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Share on Facebook"
+                    sx={{ color: '#1877F2', backgroundColor: '#E7F5FF', '&:hover': { backgroundColor: '#D0EBFF' } }}
+                  >
                     <FacebookIcon />
                   </IconButton>
-                  <IconButton component="a" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on X">
+                  <IconButton
+                    component="a"
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Share on X"
+                    sx={{ color: '#000000', backgroundColor: '#F1F5F9', '&:hover': { backgroundColor: '#E2E8F0' } }}
+                  >
                     <TwitterIcon />
                   </IconButton>
-                  <IconButton component="a" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">
+                  <IconButton
+                    component="a"
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Share on LinkedIn"
+                    sx={{ color: '#0A66C2', backgroundColor: '#E8F4F9', '&:hover': { backgroundColor: '#D0E8F2' } }}
+                  >
                     <LinkedInIcon />
                   </IconButton>
                 </Box>
               </DialogContent>
-              <DialogActions sx={{ px: 3, pb: 3 }}>
-                <Button variant="contained" color="primary" onClick={() => {
-                  if (navigator.clipboard && shareUrl) {
-                    navigator.clipboard.writeText(shareUrl).then(() => setSnackbar({ open: true, message: 'Link copied' })).catch(() => { })
-                  }
-                }}>Copy Link</Button>
+              <DialogActions sx={{ px: 4, pb: 4, borderTop: '1px solid #E2E8F0', pt: 3 }}>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    if (navigator.clipboard && shareUrl) {
+                      navigator.clipboard.writeText(shareUrl).then(() => setSnackbar({ open: true, message: 'Link copied' })).catch(() => null)
+                    }
+                  }}
+                  sx={{
+                    textTransform: 'none',
+                    borderRadius: '2rem',
+                    background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                    boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
+                    fontWeight: 600,
+                    px: 4,
+                    py: 1,
+                    '&:hover': {
+                      background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                      boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+                    }
+                  }}
+                >
+                  Copy Link
+                </Button>
               </DialogActions>
             </Dialog>
             <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: '' })} message={snackbar.message} />
           </Grid>
         </Grid>
-      </Container>
+        </Container>
+      </Box>
     </>
   )
 }
@@ -707,11 +1439,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   } catch { }
 
   // Rewrite relative image paths from "XML/..." to "/XML/..."
-  const rewriteRelativeXmlImagePaths = (s: string) => s.replace(/(<img[^>]+src=)(["'])(?!https?:|\/\/|\/)(XML\/[^"']+)(\2)/gi, (_m, p1, q, p, q2) => `${p1}${q}/${p}${q2}`)
+  const rewriteRelativeXmlImagePaths = (s: string): string => s.replace(/(<img[^>]+src=)(["'])(?!https?:|\/\/|\/)(XML\/[^"']+)(\2)/gi, (_m, p1, q, p, q2) => `${p1}${q}/${p}${q2}`)
   html = rewriteRelativeXmlImagePaths(html)
 
   // Rewrite /MediumImage/ and /LargeImage/ paths to /books/{isbn}/chapter/MediumImage/ and /books/{isbn}/chapter/LargeImage/
-  const rewriteImagePaths = (s: string) => {
+  const rewriteImagePaths = (s: string): string => {
     let out = s
     // Rewrite /MediumImage/ paths
     out = out.replace(/(<img[^>]+src=)(["'])\/MediumImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/MediumImage/${filename}${q2}`)
@@ -722,7 +1454,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   html = rewriteImagePaths(html)
 
   // Rewrite chapter navigation links to app routes under /content/book/{isbn}/chapter/{...}
-  const rewriteChapterLinks = (s: string) => {
+  const rewriteChapterLinks = (s: string): string => {
     let out = s
     // Absolute chapter links like "/{isbn}/chapter/ch4" or "/{isbn}/chapter/ch4.html"
     out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/chapter\\/ch(\\d+)(?:\\.html)?\\2`, 'gi'), (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
@@ -795,7 +1527,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   // Build chapters list from TOC for sidebar navigation
   const chapters: Chapter[] = []
   try {
-    const tocPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'toc.html')
+      const tocPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'toc.html')
     if (fs.existsSync(tocPath)) {
       const html = fs.readFileSync(tocPath, 'utf-8')
       const prelimMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary(?:/prelims\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))

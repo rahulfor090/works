@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 
@@ -18,6 +18,11 @@ export type HeroSlide = {
   accent?: string;
   isActive?: number;
   category?: string;
+};
+
+export type HeroSliderHandle = {
+  next: () => void;
+  previous: () => void;
 };
 
 export const heroDefaultSlides: HeroSlide[] = [
@@ -70,7 +75,7 @@ type HeroSliderProps = {
 
 type RawSlide = Partial<HeroSlide> & { isActive?: number };
 
-const HeroSlider = ({ onSlideChange }: HeroSliderProps): JSX.Element => {
+const HeroSlider = forwardRef<HeroSliderHandle, HeroSliderProps>(({ onSlideChange }, ref): JSX.Element => {
   const [slides, setSlides] = useState<HeroSlide[]>(heroDefaultSlides);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -126,6 +131,11 @@ const HeroSlider = ({ onSlideChange }: HeroSliderProps): JSX.Element => {
     setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
   }, [slides.length]);
 
+  useImperativeHandle(ref, () => ({
+    next: handleNext,
+    previous: handlePrev
+  }));
+
   useEffect(() => {
     if (slides.length <= 1 || isPaused) return;
 
@@ -143,7 +153,7 @@ const HeroSlider = ({ onSlideChange }: HeroSliderProps): JSX.Element => {
   const activeSlide = slides[currentIndex];
 
   const slideVariants = {
-    initial: (dir) => ({
+    initial: (dir: number) => ({
       x: dir > 0 ? 120 : -120,
       opacity: 0,
       scale: 0.96
@@ -157,7 +167,7 @@ const HeroSlider = ({ onSlideChange }: HeroSliderProps): JSX.Element => {
         ease: [0.25, 0.1, 0.25, 1]
       }
     },
-    exit: (dir) => ({
+    exit: (dir: number) => ({
       x: dir > 0 ? -120 : 120,
       opacity: 0,
       scale: 0.96,
@@ -203,21 +213,6 @@ const HeroSlider = ({ onSlideChange }: HeroSliderProps): JSX.Element => {
             />
           </motion.div>
         </AnimatePresence>
-
-        <button
-          aria-label="Previous slide"
-          className="hidden lg:inline-flex absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/80 text-slate-900 shadow-xl shadow-blue-900/10 backdrop-blur focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60"
-          onClick={handlePrev}
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <button
-          aria-label="Next slide"
-          className="hidden lg:inline-flex absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/80 text-slate-900 shadow-xl shadow-blue-900/10 backdrop-blur focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/60"
-          onClick={handleNext}
-        >
-          <ChevronRight size={20} />
-        </button>
 
         <button
           type="button"
@@ -269,7 +264,9 @@ const HeroSlider = ({ onSlideChange }: HeroSliderProps): JSX.Element => {
       </div>
     </div>
   );
-};
+});
+
+HeroSlider.displayName = 'HeroSlider';
 
 export default HeroSlider;
 

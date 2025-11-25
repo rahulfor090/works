@@ -9,8 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let queryStr = `
         SELECT 
           id, 
-          subject as name, 
-          slug, 
+          subject as title, 
           description, 
           sort_order as sortOrder, 
           is_homepage as isHomepage, 
@@ -33,13 +32,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === 'POST') {
-      const { name, slug, description, sortOrder, isHomepage, isSlider } = req.body || {}
-      if (!name || !slug) return res.status(400).json({ message: 'Missing required fields: name and slug' })
+      const { name, description, sortOrder, isHomepage, isSlider } = req.body || {}
+      if (!name) return res.status(400).json({ message: 'Missing required fields: name' })
       
       const [result]: any = await query(`
-        INSERT INTO subjects (subject, slug, description, sort_order, is_homepage, is_slider, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
-      `, [name, slug, description ?? '', sortOrder ?? 0, isHomepage ?? 0, isSlider ?? 0])
+        INSERT INTO subjects (subject, description, sort_order, is_homepage, is_slider, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+      `, [name, description ?? '', sortOrder ?? 0, isHomepage ?? 0, isSlider ?? 0])
       
       return res.status(201).json({ id: result.insertId })
     }

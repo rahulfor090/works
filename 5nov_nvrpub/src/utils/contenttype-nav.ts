@@ -17,6 +17,8 @@ type RawContentType = {
 export const defaultContentTypeNav: ContentTypeNavItem[] = [
   { id: 'books', label: 'Books', path: '/contenttypes/books', order: 1 },
   { id: 'journals', label: 'Journals', path: '/contenttypes/journals', order: 2 },
+  { id: 'mcqs', label: 'MCQs', path: '/contenttypes/mcqs', order: 3 },
+  { id: 'reviews', label: 'Reviews', path: '/contenttypes/reviews', order: 4 },
 ]
 
 const slugify = (value?: string): string =>
@@ -39,8 +41,8 @@ const asBoolean = (value?: boolean | number): boolean => {
   return false
 }
 
-const buildNavItems = (data: RawContentType[]): ContentTypeNavItem[] =>
-  data
+const buildNavItems = (data: RawContentType[]): ContentTypeNavItem[] => {
+  const dbItems = data
     .filter(item => asBoolean(item?.ishomepage) && asBoolean(item?.isActive))
     .sort((a, b) => (a?.displayOrder ?? 0) - (b?.displayOrder ?? 0))
     .map(item => ({
@@ -49,6 +51,23 @@ const buildNavItems = (data: RawContentType[]): ContentTypeNavItem[] =>
       path: `/contenttypes/${item?.slug || slugify(item?.title) || ''}`,
       order: item?.displayOrder ?? 0,
     }))
+
+  // Ensure MCQs and Reviews are always present
+  const staticItems = [
+    { id: 'mcqs', label: 'MCQs', path: '/contenttypes/mcqs', order: 98 },
+    { id: 'reviews', label: 'Reviews', path: '/contenttypes/reviews', order: 99 },
+  ]
+
+  const finalItems = [...dbItems]
+  
+  staticItems.forEach(staticItem => {
+    if (!finalItems.some(item => item.path === staticItem.path)) {
+      finalItems.push(staticItem)
+    }
+  })
+  
+  return finalItems.sort((a, b) => a.order - b.order)
+}
 
 export const fetchContentTypeNav = async (signal?: AbortSignal): Promise<ContentTypeNavItem[]> => {
   const timestamp = Date.now()
