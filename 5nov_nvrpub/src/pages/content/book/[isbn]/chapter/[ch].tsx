@@ -284,8 +284,23 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
         <title>{title} | Chapter Viewer</title>
         <base href={`/`} />
       </Head>
-      <Container sx={{ py: 3 }}>
-        <LinearProgress variant="determinate" value={readProgress} sx={{ position: 'sticky', top: 0, zIndex: 10, height: 6, borderRadius: 3, mb: 2 }} />
+      <Container sx={{ py: 4, minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
+        <LinearProgress
+          variant="determinate"
+          value={readProgress}
+          sx={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            height: 6,
+            borderRadius: 3,
+            mb: 3,
+            backgroundColor: '#E2E8F0',
+            '& .MuiLinearProgress-bar': {
+              background: 'linear-gradient(to right, #FF6B6B, #FF8E53)'
+            }
+          }}
+        />
         {/* Book info header */}
         {book && (
           <Grid container spacing={3} alignItems="center" sx={{ mb: 2 }}>
@@ -293,36 +308,75 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
               <Box component="img" src={book.coverImage || DEFAULT_BOOK_COVER} alt={book.title} sx={{ width: '100%', borderRadius: 1, boxShadow: 1 }} />
             </Grid>
             <Grid item xs={12} md={10}>
-              <Typography variant="h5" sx={{ mb: 0.5, fontWeight: 600 }}>{book.title}</Typography>
-              {book.author && <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{book.author}</Typography>}
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                <Chip label="Book" size="small" />
-                <Typography variant="body2" color="text.secondary">ISBN: {isbn}</Typography>
+              <Typography variant="h5" sx={{ mb: 1, fontWeight: 700, color: '#0A2540' }}>{book.title}</Typography>
+              {book.author && <Typography variant="body2" sx={{ mb: 1, color: '#64748B' }}>{book.author}</Typography>}
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+                <Chip
+                  label="Book"
+                  size="small"
+                  sx={{
+                    background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                    height: '24px'
+                  }}
+                />
+                <Typography variant="body2" sx={{ color: '#94A3B8', fontFamily: 'SF Mono, monospace' }}>ISBN: {isbn}</Typography>
               </Stack>
-              <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>{title}</Typography>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#3B82F6' }}>{title}</Typography>
               <Box>
                 <TextField fullWidth placeholder={`Search within ${book.title}...`} size="small" />
               </Box>
             </Grid>
           </Grid>
         )}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <Button component={NextLink} href={`/content/book/${isbn}`} startIcon={<ArrowBackIcon />} variant="contained" sx={{ textTransform: 'none' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+          <Button
+            component={NextLink}
+            href={`/content/book/${isbn}`}
+            startIcon={<ArrowBackIcon />}
+            variant="outlined"
+            sx={{
+              textTransform: 'none',
+              borderRadius: '2rem',
+              borderColor: '#E2E8F0',
+              color: '#64748B',
+              fontWeight: 500,
+              '&:hover': {
+                borderColor: '#0A2540',
+                color: '#0A2540',
+                backgroundColor: 'transparent'
+              }
+            }}
+          >
             Back to TOC
           </Button>
         </Box>
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>{title}</Typography>
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#0A2540', letterSpacing: '-0.02em' }}>{title}</Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
-          <Tabs value={topTab} onChange={(_, v) => setTopTab(v)} textColor="primary" indicatorColor="primary">
-            <Tab label="Content" value="content" sx={{ fontWeight: 600 }} />
+          <Tabs
+            value={topTab}
+            onChange={(_, v) => setTopTab(v)}
+            sx={{
+              '& .MuiTab-root': {
+                fontWeight: 600,
+                color: '#64748B',
+                textTransform: 'none',
+                '&.Mui-selected': { color: '#0A2540' }
+              },
+              '& .MuiTabs-indicator': { backgroundColor: '#0A2540' }
+            }}
+          >
+            <Tab label="Content" value="content" />
             {counts.figuresCount > 0 && (
-              <Tab label={`Figures (${counts.figuresCount})`} value="figures" sx={{ fontWeight: 600 }} />
+              <Tab label={`Figures (${counts.figuresCount})`} value="figures" />
             )}
             {counts.tablesCount > 0 && (
-              <Tab label={`Tables (${counts.tablesCount})`} value="tables" sx={{ fontWeight: 600 }} />
+              <Tab label={`Tables (${counts.tablesCount})`} value="tables" />
             )}
           </Tabs>
         </Box>
@@ -353,7 +407,20 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
           )}
 
           <Grid item xs={12} md={isFullscreen ? 12 : 9}>
-            <Paper variant="outlined" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, p: 1.5 }}>
+            <Paper
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mb: 2,
+                p: 2,
+                borderRadius: '1rem',
+                border: 'none',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                backgroundColor: '#ffffff'
+              }}
+            >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {prevNext.prev && (
                   <Typography component={NextLink} href={prevNext.prev.slug} sx={{ color: 'black', fontWeight: 600, fontSize: '1.1rem' }}>
@@ -417,11 +484,13 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, h
 
 
             <Paper ref={paperRef} variant="outlined" sx={{
-              borderRadius: 2,
+              borderRadius: '1.5rem',
               overflow: 'hidden',
               height: isFullscreen ? 'calc(100vh - 150px)' : '80vh',
               position: 'relative',
-              borderColor: isFullscreen ? 'white' : 'inherit'
+              borderColor: isFullscreen ? 'white' : 'transparent',
+              boxShadow: isFullscreen ? 'none' : '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
+              backgroundColor: '#ffffff'
             }}>
               {isLocked && (
                 <Box

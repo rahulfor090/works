@@ -283,46 +283,64 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         <Box sx={{
           width: '80%',
           height: '2px',
-          background: (theme) => `linear-gradient(to right, transparent, ${theme.palette.primary.main} 20%, ${theme.palette.primary.main} 80%, transparent)`,
+          background: 'linear-gradient(to right, transparent, #FF6B6B 20%, #FF8E53 80%, transparent)',
+          opacity: 0.4
         }} />
       </Box>
-      <Container sx={{ py: 4 }}>
+      <Container sx={{ py: 6 }}>
         <Grid container spacing={3} alignItems="center" sx={{ mb: 2 }}>
           <Grid item xs={12} md={3.2} sx={{ pr: 3 }}>
             <Box component="img" src={cover} alt={title} sx={{ width: '100%', borderRadius: 1 }} />
           </Grid>
           <Grid item xs={12} md={8.8}>
-            <Typography variant="h4" sx={{ mb: 0.5, fontWeight: 600 }}>{title}</Typography>
-            {author && <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{author}</Typography>}
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Chip label="Book" size="small" />
-              <Typography variant="body2" color="text.secondary">ISBN: {isbn}</Typography>
-              <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+            <Typography variant="h4" sx={{ mb: 1, fontWeight: 700, color: '#0A2540', fontSize: { xs: '2rem', md: '2.5rem' }, letterSpacing: '-0.02em' }}>{title}</Typography>
+            {author && <Typography variant="body1" sx={{ mb: 2, color: '#64748B', fontSize: '1.125rem' }}>{author}</Typography>}
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 3 }}>
+              <Chip
+                label="Book"
+                size="small"
+                sx={{
+                  background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                  color: 'white',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  fontSize: '0.7rem',
+                  height: '24px'
+                }}
+              />
+              <Typography variant="body2" sx={{ color: '#94A3B8', fontFamily: 'SF Mono, monospace' }}>ISBN: {isbn}</Typography>
+              <Divider orientation="vertical" flexItem sx={{ mx: 1, borderColor: '#E2E8F0' }} />
               <Tooltip title="Refer to Friend">
-                <IconButton onClick={handleReferFriend} size="small" color="primary"><PersonAddAlt1Icon fontSize="small" /></IconButton>
+                <IconButton onClick={handleReferFriend} size="small" sx={{ color: '#0A2540', '&:hover': { color: '#3B82F6', backgroundColor: '#F1F5F9' } }}><PersonAddAlt1Icon fontSize="small" /></IconButton>
               </Tooltip>
               <Tooltip title="Recommend to Librarian">
-                <IconButton onClick={handleRecommendLibrarian} size="small" color="primary"><SchoolIcon fontSize="small" /></IconButton>
+                <IconButton onClick={handleRecommendLibrarian} size="small" sx={{ color: '#0A2540', '&:hover': { color: '#3B82F6', backgroundColor: '#F1F5F9' } }}><SchoolIcon fontSize="small" /></IconButton>
               </Tooltip>
               <Tooltip title="Share This Page">
-                <IconButton onClick={handleSharePage} size="small" color="primary"><ShareIcon fontSize="small" /></IconButton>
+                <IconButton onClick={handleSharePage} size="small" sx={{ color: '#0A2540', '&:hover': { color: '#3B82F6', backgroundColor: '#F1F5F9' } }}><ShareIcon fontSize="small" /></IconButton>
               </Tooltip>
               <Tooltip title={favorite ? 'Remove from favourites' : 'Add to favourites'}>
-                <IconButton onClick={toggleFavorite} size="small" color={favorite ? 'primary' : 'default'}>
+                <IconButton onClick={toggleFavorite} size="small" sx={{ color: favorite ? '#EF4444' : '#0A2540', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
                   {favorite ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
                 </IconButton>
               </Tooltip>
             </Stack>
             {book?.description && (
-              <Box sx={{ mt: 1 }}>
-                <Typography variant="body2" color="text.secondary">{book.description}</Typography>
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="body1" sx={{ color: '#64748B', lineHeight: 1.7 }}>{book.description}</Typography>
               </Box>
             )}
             {book?.keywords && (
-              <Box sx={{ mt: 1 }}>
-                <Accordion disableGutters expanded={keywordsExpanded} onChange={() => setKeywordsExpanded(!keywordsExpanded)} sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography sx={{ fontWeight: 600, fontSize: '1.1rem' }}>Keywords</Typography>
+              <Box sx={{ mt: 3 }}>
+                <Accordion disableGutters expanded={keywordsExpanded} onChange={() => setKeywordsExpanded(!keywordsExpanded)}
+                  sx={{
+                    backgroundColor: 'transparent',
+                    boxShadow: 'none',
+                    '&:before': { display: 'none' }
+                  }}>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#0A2540' }} />}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '1.1rem', color: '#0A2540' }}>Keywords</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
@@ -335,9 +353,13 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                             key={`kw-${idx}`}
                             label={kw}
                             size="small"
-                            color="primary"
-                            variant="outlined"
-                            sx={{ color: 'black', borderWidth: '2px' }}
+                            sx={{
+                              color: '#64748B',
+                              borderColor: '#E2E8F0',
+                              backgroundColor: '#F8FAFC',
+                              fontWeight: 500,
+                              '&:hover': { backgroundColor: '#F1F5F9' }
+                            }}
                           />
                         ))}
                     </Box>
@@ -351,16 +373,18 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                 sx={{
                   cursor: 'pointer',
                   border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: '24px',
-                  px: 2,
-                  py: 0.75,
+                  borderColor: '#E2E8F0',
+                  borderRadius: '2rem',
+                  px: 3,
+                  py: 1.5,
                   display: 'flex',
                   alignItems: 'center',
                   transition: 'all 0.2s',
+                  backgroundColor: '#F8FAFC',
                   '&:hover': {
-                    borderColor: 'primary.main',
-                    backgroundColor: 'action.hover'
+                    borderColor: '#3B82F6',
+                    backgroundColor: '#ffffff',
+                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.1)'
                   }
                 }}
               >
@@ -373,17 +397,52 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           </Grid>
         </Grid>
 
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
-          <Tab label="Table of Contents" sx={{ fontWeight: 600 }} />
-          <Tab label={`Videos (${videosCount})`} sx={{ fontWeight: 600 }} />
-          <Tab label={`Cases (${casesCount})`} sx={{ fontWeight: 600 }} />
-          <Tab label={`Reviews (${reviewsCount})`} sx={{ fontWeight: 600 }} />
+        <Tabs
+          value={tab}
+          onChange={(_, v) => setTab(v)}
+          sx={{
+            mb: 4,
+            '& .MuiTab-root': {
+              fontWeight: 600,
+              color: '#64748B',
+              textTransform: 'none',
+              fontSize: '1rem',
+              '&.Mui-selected': {
+                color: '#0A2540'
+              }
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: '#0A2540',
+              height: '3px',
+              borderRadius: '3px 3px 0 0'
+            }
+          }}
+        >
+          <Tab label="Table of Contents" />
+          <Tab label={`Videos (${videosCount})`} />
+
+          <Tab label={`Reviews (${reviewsCount})`} />
         </Tabs>
 
         {tab === 0 && (
           <Box>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-              <Button variant="contained" onClick={toggleExpandCollapse} sx={{ textTransform: 'none' }}>
+            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+              <Button
+                variant="outlined"
+                onClick={toggleExpandCollapse}
+                sx={{
+                  textTransform: 'none',
+                  borderRadius: '2rem',
+                  borderColor: '#E2E8F0',
+                  color: '#0A2540',
+                  fontWeight: 600,
+                  px: 3,
+                  '&:hover': {
+                    borderColor: '#0A2540',
+                    backgroundColor: 'transparent'
+                  }
+                }}
+              >
                 {expandAll ? 'Collapse All' : 'Expand All'}
               </Button>
               <Button
@@ -391,16 +450,40 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                 disabled={!bookPdfUrl}
                 href={bookPdfUrl || undefined}
                 endIcon={<PictureAsPdfIcon />}
-                sx={{ textTransform: 'none' }}
+                sx={{
+                  textTransform: 'none',
+                  borderRadius: '2rem',
+                  background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                  boxShadow: '0 10px 25px rgba(255, 107, 107, 0.25)',
+                  fontWeight: 600,
+                  px: 4,
+                  '&:hover': {
+                    background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                    boxShadow: '0 15px 30px rgba(255, 107, 107, 0.4)',
+                  }
+                }}
               >
                 Download
               </Button>
             </Stack>
 
             {filteredSections.map((sec, sIdx) => (
-              <Accordion key={sIdx} disableGutters expanded={expandAll || !!expanded[sIdx]} onChange={() => toggleSection(sIdx)}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography sx={{ fontWeight: 600 }}>{sec.title}</Typography>
+              <Accordion
+                key={sIdx}
+                disableGutters
+                expanded={expandAll || !!expanded[sIdx]}
+                onChange={() => toggleSection(sIdx)}
+                sx={{
+                  mb: 2,
+                  borderRadius: '1rem !important',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                  border: '1px solid #F1F5F9',
+                  '&:before': { display: 'none' },
+                  overflow: 'hidden'
+                }}
+              >
+                <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#64748B' }} />} sx={{ backgroundColor: '#F8FAFC' }}>
+                  <Typography sx={{ fontWeight: 600, color: '#0A2540' }}>{sec.title}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <List dense>
@@ -419,7 +502,11 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                           {ch.slug ? (
                             <>
                               <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
-                                <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
+                                <Typography sx={{
+                                  color: '#334155',
+                                  transition: 'color 0.2s',
+                                  '&:hover': { color: '#3B82F6' }
+                                }}>
                                   {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
                                 </Typography>
                               </NextLink>
@@ -464,33 +551,8 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         {tab === 1 && (
           <Typography variant="body2" color="text.secondary">Videos coming soon</Typography>
         )}
+
         {tab === 2 && (
-          <Box>
-            {sections.find(s => s.title === 'Cases')?.chapters.map((ch, idx) => (
-              <ListItem key={`case-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <NextLink href={ch.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
-                  <Typography sx={{ '&:hover': { textDecoration: 'underline', color: 'primary.main' } }}>
-                    {ch.title}
-                  </Typography>
-                </NextLink>
-                {!isLocked && (
-                  <Tooltip title="Unlocked content">
-                    <LockOpenIcon sx={{ fontSize: 18, color: 'success.main' }} />
-                  </Tooltip>
-                )}
-                {isLocked && (
-                  <Tooltip title="Premium content - Login required">
-                    <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                  </Tooltip>
-                )}
-              </ListItem>
-            ))}
-            {!sections.find(s => s.title === 'Cases') && (
-              <Typography variant="body2" color="text.secondary">No cases available.</Typography>
-            )}
-          </Box>
-        )}
-        {tab === 3 && (
           <Typography variant="body2" color="text.secondary">Reviews coming soon</Typography>
         )}
       </Container>
@@ -501,16 +563,22 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         onClose={handleCloseReferDialog}
         maxWidth="md"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '1.5rem',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }
+        }}
       >
-        <DialogTitle>
+        <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            Refer to Friend
-            <IconButton onClick={handleCloseReferDialog} size="small">
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Refer to Friend</Typography>
+            <IconButton onClick={handleCloseReferDialog} size="small" sx={{ color: '#94A3B8', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
               <CloseIcon />
             </IconButton>
           </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ px: 4, py: 4 }}>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12} md={6}>
               <Typography variant="body2" sx={{ mb: 1 }}>
@@ -590,12 +658,22 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
+        <DialogActions sx={{ px: 4, pb: 4, borderTop: '1px solid #E2E8F0', pt: 3 }}>
           <Button
             variant="contained"
             onClick={handleSubmitRefer}
             sx={{
-              textTransform: 'none'
+              textTransform: 'none',
+              borderRadius: '2rem',
+              background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+              boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
+              fontWeight: 600,
+              px: 4,
+              py: 1,
+              '&:hover': {
+                background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+              }
             }}
           >
             Submit
@@ -609,16 +687,22 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         onClose={handleCloseLibrarianDialog}
         maxWidth="md"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '1.5rem',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }
+        }}
       >
-        <DialogTitle>
+        <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            Recommend To Librarian
-            <IconButton onClick={handleCloseLibrarianDialog} size="small">
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Recommend To Librarian</Typography>
+            <IconButton onClick={handleCloseLibrarianDialog} size="small" sx={{ color: '#94A3B8', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
               <CloseIcon />
             </IconButton>
           </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ px: 4, py: 4 }}>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             {/* Title and ISBN */}
             <Grid item xs={12} md={6}>
@@ -760,12 +844,22 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
+        <DialogActions sx={{ px: 4, pb: 4, borderTop: '1px solid #E2E8F0', pt: 3 }}>
           <Button
             variant="contained"
             onClick={handleSubmitLibrarian}
             sx={{
-              textTransform: 'none'
+              textTransform: 'none',
+              borderRadius: '2rem',
+              background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+              boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
+              fontWeight: 600,
+              px: 4,
+              py: 1,
+              '&:hover': {
+                background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+              }
             }}
           >
             Submit
@@ -782,19 +876,25 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         }}
         maxWidth="md"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '1.5rem',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }
+        }}
       >
-        <DialogTitle>
+        <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            Search within {title}
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Search within {title}</Typography>
             <IconButton onClick={() => {
               setSearchDialogOpen(false)
               setSearchQuery('')
-            }} size="small">
+            }} size="small" sx={{ color: '#94A3B8', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
               <CloseIcon />
             </IconButton>
           </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ px: 4, py: 4 }}>
           <TextField
             fullWidth
             placeholder="Search chapters..."
@@ -802,7 +902,18 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             autoFocus
-            sx={{ mb: 2 }}
+            sx={{
+              mb: 2,
+              borderRadius: '2rem',
+              backgroundColor: '#ffffff',
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '2rem',
+                paddingRight: '8px',
+                '& fieldset': { borderColor: '#E2E8F0' },
+                '&:hover fieldset': { borderColor: '#0A2540' },
+                '&.Mui-focused fieldset': { borderColor: '#0A2540' },
+              },
+            }}
           />
           {searchQuery.trim() && (
             <Box>
@@ -827,7 +938,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                           {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
                         </Typography>
                         {isKeyword && (
-                          <Chip label="Keyword" size="small" color="primary" variant="outlined" />
+                          <Chip label="Keyword" size="small" sx={{ background: '#FF6B6B', color: 'white', borderColor: '#FF6B6B' }} variant="outlined" />
                         )}
                       </ListItem>
                     )
