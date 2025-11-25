@@ -8,8 +8,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     if (req.method === 'GET') {
       const [rows] = await query(`
-        SELECT id, name, slug, description, contentTypeId, sortOrder, createdAt, ishomepage, isslider 
-        FROM subjectcategory 
+        SELECT 
+          id, 
+          subject as name, 
+          slug, 
+          description, 
+          sort_order as sortOrder, 
+          is_homepage as isHomepage, 
+          is_slider as isSlider,
+          created_at as createdAt, 
+          updated_at as updatedAt
+        FROM subjects 
         WHERE id = ?
       `, [id])
       if (!(rows as any[])[0]) return res.status(404).json({ message: 'Not found' })
@@ -17,17 +26,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (req.method === 'PUT') {
-      const { name, slug, description, contentTypeId, sortOrder, ishomepage, isslider } = req.body || {}
+      const { name, slug, description, sortOrder, isHomepage, isSlider } = req.body || {}
+      if (!name || !slug) return res.status(400).json({ message: 'Missing required fields: name and slug' })
+      
       await query(`
-        UPDATE subjectcategory 
-        SET name = ?, slug = ?, description = ?, contentTypeId = ?, sortOrder = ?, ishomepage = ?, isslider = ? 
+        UPDATE subjects 
+        SET 
+          subject = ?, 
+          slug = ?, 
+          description = ?, 
+          sort_order = ?, 
+          is_homepage = ?, 
+          is_slider = ?,
+          updated_at = NOW() 
         WHERE id = ?
-      `, [name, slug, description, contentTypeId, sortOrder, ishomepage ?? 0, isslider ?? 0, id])
+      `, [name, slug, description ?? '', sortOrder ?? 0, isHomepage ?? 0, isSlider ?? 0, id])
+      
       return res.status(200).json({ ok: true })
     }
 
     if (req.method === 'DELETE') {
-      await query('DELETE FROM subjectcategory WHERE id = ?', [id])
+      await query('DELETE FROM subjects WHERE id = ?', [id])
       return res.status(200).json({ ok: true })
     }
 

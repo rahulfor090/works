@@ -10,43 +10,35 @@ import Paper from '@mui/material/Paper'
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
-import MenuItem from '@mui/material/MenuItem'
-import Select from '@mui/material/Select'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
-import FormHelperText from '@mui/material/FormHelperText'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch from '@mui/material/Switch'
-import Checkbox from '@mui/material/Checkbox'
 import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
+import Switch from '@mui/material/Switch'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
 
 type SubjectCategory = {
   id?: number
   name: string
   slug: string
   description: string
-  contentTypeId: number
   sortOrder: number
+  isHomepage: number
+  isSlider: number
   createdAt?: string
-  ishomepage?: number
-  isslider?: number
+  updatedAt?: string
 }
 
 const AdminSubjectCategories = () => {
   const [subjectCategories, setSubjectCategories] = useState<SubjectCategory[]>([])
-  const [contentTypes, setContentTypes] = useState<{ id: number; title: string }[]>([])
   const [form, setForm] = useState<SubjectCategory>({ 
-    name: '', 
-    slug: '', 
-    description: '', 
-    contentTypeId: 0, 
+    name: '',
+    slug: '',
+    description: '',
     sortOrder: 0,
-    ishomepage: 0,
-    isslider: 0
+    isHomepage: 0,
+    isSlider: 0
   })
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [pendingChanges, setPendingChanges] = useState<Set<number>>(new Set())
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -55,46 +47,26 @@ const AdminSubjectCategories = () => {
 
   const load = async () => {
     try {
-      // Fetch from API endpoint instead of sample data
+      // Fetch from API endpoint
       const response = await fetch('/api/subjectcategories')
       if (response.ok) {
         const data = await response.json()
         setSubjectCategories(data)
       } else {
-        throw new Error('Failed to fetch subject categories')
+        throw new Error('Failed to fetch subjects')
       }
     } catch (error) {
-      console.error('Failed to load subject categories:', error)
+      console.error('Failed to load subjects:', error)
       setSnackbar({
         open: true,
-        message: 'Failed to load subject categories',
+        message: 'Failed to load subjects',
         severity: 'error'
       })
     }
   }
 
-  const loadContentTypes = async () => {
-    try {
-      // Fetch content types from API endpoint
-      const response = await fetch('/api/contenttypes')
-      if (response.ok) {
-        const data = await response.json()
-        const mapped = data.map((ct: any) => ({ 
-          id: ct.id, 
-          title: ct.title 
-        }))
-        setContentTypes(mapped)
-      } else {
-        throw new Error('Failed to fetch content types')
-      }
-    } catch (error) {
-      console.error('Failed to load content types:', error)
-    }
-  }
-
   useEffect(() => { 
     load()
-    loadContentTypes()
   }, [])
 
   const submit = async () => {
@@ -118,10 +90,10 @@ const AdminSubjectCategories = () => {
             severity: 'success'
           })
         } else {
-          throw new Error('Failed to update subject category')
+          throw new Error('Failed to update subject')
         }
       } else {
-        // Add new subject category via API
+        // Add new subject via API
         const response = await fetch('/api/subjectcategories', {
           method: 'POST',
           headers: {
@@ -135,27 +107,28 @@ const AdminSubjectCategories = () => {
           await load()
           setSnackbar({
             open: true,
-            message: 'Subject category created successfully',
+            message: 'Subject created successfully',
             severity: 'success'
           })
         } else {
-          throw new Error('Failed to create subject category')
+          throw new Error('Failed to create subject')
         }
       }
       
       setForm({ 
-        name: '', 
-        slug: '', 
-        description: '', 
-        contentTypeId: 0, 
-        sortOrder: 0 
+        name: '',
+        slug: '',
+        description: '',
+        sortOrder: 0,
+        isHomepage: 0,
+        isSlider: 0
       })
       setEditingId(null)
     } catch (error) {
-      console.error('Error saving subject category:', error)
+      console.error('Error saving subject:', error)
       setSnackbar({
         open: true,
-        message: 'Failed to save subject category',
+        message: 'Failed to save subject',
         severity: 'error'
       })
     }
@@ -164,13 +137,12 @@ const AdminSubjectCategories = () => {
   const edit = (subjectCategory: SubjectCategory) => {
     setEditingId(subjectCategory.id!)
     setForm({ 
-      name: subjectCategory.name, 
-      slug: subjectCategory.slug, 
-      description: subjectCategory.description, 
-      contentTypeId: subjectCategory.contentTypeId, 
+      name: subjectCategory.name,
+      slug: subjectCategory.slug,
+      description: subjectCategory.description,
       sortOrder: subjectCategory.sortOrder,
-      ishomepage: subjectCategory.ishomepage ?? 0,
-      isslider: subjectCategory.isslider ?? 0
+      isHomepage: subjectCategory.isHomepage,
+      isSlider: subjectCategory.isSlider
     })
   }
 
@@ -185,17 +157,17 @@ const AdminSubjectCategories = () => {
         await load()
         setSnackbar({
           open: true,
-          message: 'Subject category deleted successfully',
+          message: 'Subject deleted successfully',
           severity: 'success'
         })
       } else {
-        throw new Error('Failed to delete subject category')
+        throw new Error('Failed to delete subject')
       }
     } catch (error) {
-      console.error('Error deleting subject category:', error)
+      console.error('Error deleting subject:', error)
       setSnackbar({
         open: true,
-        message: 'Failed to delete subject category',
+        message: 'Failed to delete subject',
         severity: 'error'
       })
     }
@@ -203,67 +175,6 @@ const AdminSubjectCategories = () => {
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false })
-  }
-
-  const handleHomepageToggle = async (id: number, currentValue: number) => {
-    const newValue = currentValue ? 0 : 1
-    
-    // Optimistically update UI
-    setSubjectCategories(prev => 
-      prev.map(cat => cat.id === id ? { ...cat, ishomepage: newValue } : cat)
-    )
-    
-    // Mark as pending
-    setPendingChanges(prev => new Set(prev).add(id))
-    
-    try {
-      const category = subjectCategories.find(cat => cat.id === id)
-      if (!category) return
-
-      const response = await fetch(`/api/subjectcategories/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          ...category,
-          ishomepage: newValue 
-        })
-      })
-
-      if (response.ok) {
-        setPendingChanges(prev => {
-          const updated = new Set(prev)
-          updated.delete(id)
-          return updated
-        })
-        setSnackbar({
-          open: true,
-          message: `Homepage visibility ${newValue ? 'enabled' : 'disabled'} successfully`,
-          severity: 'success'
-        })
-      } else {
-        throw new Error('Failed to update')
-      }
-    } catch (error) {
-      // Revert on error
-      setSubjectCategories(prev => 
-        prev.map(cat => cat.id === id ? { ...cat, ishomepage: currentValue } : cat)
-      )
-      setPendingChanges(prev => {
-        const updated = new Set(prev)
-        updated.delete(id)
-        return updated
-      })
-      setSnackbar({
-        open: true,
-        message: 'Failed to update homepage visibility',
-        severity: 'error'
-      })
-    }
-  }
-
-  const getContentTypeName = (id: number) => {
-    const contentType = contentTypes.find(ct => ct.id === id)
-    return contentType ? contentType.title : 'Unknown'
   }
 
   // Auto-generate slug from name
@@ -275,17 +186,17 @@ const AdminSubjectCategories = () => {
   return (
     <Box sx={{ py: 6 }}>
       <Container maxWidth="lg">
-        <Typography variant="h4" sx={{ mb: 3, fontWeight: 700 }}>Manage Subject Categories</Typography>
+        <Typography variant="h4" sx={{ mb: 3, fontWeight: 700 }}>Manage Subjects</Typography>
 
         <Paper sx={{ p: 3, mb: 4 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
-            {editingId ? 'Edit Subject Category' : 'Add New Subject Category'}
+            {editingId ? 'Edit Subject' : 'Add New Subject'}
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <TextField 
                 fullWidth 
-                label="Name" 
+                label="Subject Name" 
                 value={form.name} 
                 onChange={(e) => handleNameChange(e.target.value)} 
                 required
@@ -297,7 +208,7 @@ const AdminSubjectCategories = () => {
                 label="Slug" 
                 value={form.slug} 
                 onChange={(e) => setForm({ ...form, slug: e.target.value })} 
-                helperText="URL-friendly version of the name"
+                helperText="URL-friendly version (auto-generated)"
                 required
               />
             </Grid>
@@ -318,14 +229,15 @@ const AdminSubjectCategories = () => {
                 label="Sort Order" 
                 value={form.sortOrder} 
                 onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })} 
+                helperText="Lower numbers appear first"
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <FormControlLabel
                 control={
                   <Switch
-                    checked={Boolean(form.ishomepage)}
-                    onChange={(e) => setForm({ ...form, ishomepage: e.target.checked ? 1 : 0 })}
+                    checked={Boolean(form.isHomepage)}
+                    onChange={(e) => setForm({ ...form, isHomepage: e.target.checked ? 1 : 0 })}
                   />
                 }
                 label="Show on Homepage"
@@ -335,34 +247,16 @@ const AdminSubjectCategories = () => {
               <FormControlLabel
                 control={
                   <Switch
-                    checked={Boolean(form.isslider)}
-                    onChange={(e) => setForm({ ...form, isslider: e.target.checked ? 1 : 0 })}
+                    checked={Boolean(form.isSlider)}
+                    onChange={(e) => setForm({ ...form, isSlider: e.target.checked ? 1 : 0 })}
                   />
                 }
                 label="Show in Slider"
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Content Type</InputLabel>
-                <Select
-                  value={form.contentTypeId}
-                  onChange={(e) => setForm({ ...form, contentTypeId: e.target.value as number })}
-                  label="Content Type"
-                >
-                  <MenuItem value={0}><em>Select a content type</em></MenuItem>
-                  {contentTypes.map((type) => (
-                    <MenuItem key={type.id} value={type.id}>
-                      {type.title}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <FormHelperText>Select the content type this category belongs to</FormHelperText>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
               <Button variant="contained" onClick={submit} size="large">
-                {editingId ? 'Update Subject Category' : 'Create Subject Category'}
+                {editingId ? 'Update Subject' : 'Create Subject'}
               </Button>
               {editingId && (
                 <Button 
@@ -370,13 +264,12 @@ const AdminSubjectCategories = () => {
                   onClick={() => {
                     setEditingId(null)
                     setForm({ 
-                      name: '', 
-                      slug: '', 
-                      description: '', 
-                      contentTypeId: 0, 
+                      name: '',
+                      slug: '',
+                      description: '',
                       sortOrder: 0,
-                      ishomepage: 0,
-                      isslider: 0
+                      isHomepage: 0,
+                      isSlider: 0
                     })
                   }}
                   sx={{ ml: 2 }}
@@ -390,13 +283,14 @@ const AdminSubjectCategories = () => {
 
         <Paper sx={{ p: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6">Subject Categories List</Typography>
+            <Typography variant="h6">Subjects List</Typography>
             <Typography variant="body2" color="text.secondary">
-              Showing on Home: {subjectCategories.filter(cat => cat.ishomepage === 1).length}
+              On Homepage: {subjectCategories.filter(cat => cat.isHomepage === 1).length} | 
+              In Slider: {subjectCategories.filter(cat => cat.isSlider === 1).length}
             </Typography>
           </Box>
           {subjectCategories.length === 0 ? (
-            <Typography color="text.secondary">No subject categories found. Create your first subject category!</Typography>
+            <Typography color="text.secondary">No subjects found. Create your first subject!</Typography>
           ) : (
             subjectCategories.map((subjectCategory) => (
               <Box 
@@ -414,9 +308,19 @@ const AdminSubjectCategories = () => {
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
                     {subjectCategory.name}
+                    {subjectCategory.isHomepage === 1 && (
+                      <Typography component="span" sx={{ ml: 1, px: 1, py: 0.5, bgcolor: 'primary.main', color: 'white', borderRadius: 1, fontSize: '0.7rem' }}>
+                        Homepage
+                      </Typography>
+                    )}
+                    {subjectCategory.isSlider === 1 && (
+                      <Typography component="span" sx={{ ml: 1, px: 1, py: 0.5, bgcolor: 'secondary.main', color: 'white', borderRadius: 1, fontSize: '0.7rem' }}>
+                        Slider
+                      </Typography>
+                    )}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Slug: {subjectCategory.slug} | Content Type: {getContentTypeName(subjectCategory.contentTypeId)}
+                    Slug: {subjectCategory.slug} | Sort Order: {subjectCategory.sortOrder}
                   </Typography>
                   {subjectCategory.description && (
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
@@ -424,37 +328,21 @@ const AdminSubjectCategories = () => {
                     </Typography>
                   )}
                   <Typography variant="caption" color="text.secondary">
-                    Sort Order: {subjectCategory.sortOrder}
                     {subjectCategory.createdAt && (
-                      <> | Created: {new Date(subjectCategory.createdAt).toLocaleDateString()}</>
+                      <>Created: {new Date(subjectCategory.createdAt).toLocaleDateString()}</>
+                    )}
+                    {subjectCategory.updatedAt && subjectCategory.createdAt !== subjectCategory.updatedAt && (
+                      <> | Updated: {new Date(subjectCategory.updatedAt).toLocaleDateString()}</>
                     )}
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mr: 2 }}>
-                    <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5 }}>
-                      Add to Home
-                    </Typography>
-                    <Checkbox
-                      checked={Boolean(subjectCategory.ishomepage)}
-                      onChange={() => handleHomepageToggle(subjectCategory.id!, subjectCategory.ishomepage ?? 0)}
-                      disabled={pendingChanges.has(subjectCategory.id!)}
-                      color="primary"
-                    />
-                    {pendingChanges.has(subjectCategory.id!) && (
-                      <Typography variant="caption" color="warning.main" sx={{ fontSize: '0.65rem' }}>
-                        Saving...
-                      </Typography>
-                    )}
-                  </Box>
-                  <Box>
-                    <IconButton onClick={() => edit(subjectCategory)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => remove(subjectCategory.id!)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
+                <Box>
+                  <IconButton onClick={() => edit(subjectCategory)} color="primary">
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton color="error" onClick={() => remove(subjectCategory.id!)}>
+                    <DeleteIcon />
+                  </IconButton>
                 </Box>
               </Box>
             ))
@@ -479,6 +367,6 @@ const AdminSubjectCategories = () => {
   )
 }
 
-AdminSubjectCategories.getLayout = (page: React.ReactElement) => <AdminLayout title="Manage Subject Categories" breadcrumbs={[{ label: 'Subject Categories' }]}>{page}</AdminLayout>
+AdminSubjectCategories.getLayout = (page: React.ReactElement) => <AdminLayout title="Manage Subjects" breadcrumbs={[{ label: 'Subjects' }]}>{page}</AdminLayout>
 
 export default AdminSubjectCategories
