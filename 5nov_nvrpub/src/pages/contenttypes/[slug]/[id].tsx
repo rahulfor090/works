@@ -157,14 +157,17 @@ const CourseDetailPage: NextPageWithLayout<BookPageProps> = ({ slug, book, chapt
 
 CourseDetailPage.getLayout = (page: React.ReactElement) => <MainLayout>{page}</MainLayout>
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps = async ({ params, req }) => {
   const slug = params?.slug as string
   const idParam = params?.id as string
   const id = Number(idParam)
+  const protocol = req.headers['x-forwarded-proto'] || 'http'
+  const host = req.headers.host
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`
 
   if (slug === 'books') {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/books/${id}`)
+      const res = await fetch(`${apiUrl}/api/books/${id}`)
       if (!res.ok) {
         return { notFound: true }
       }

@@ -29,28 +29,22 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Collapse,
 } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
 import SchoolIcon from '@mui/icons-material/School'
 import ShareIcon from '@mui/icons-material/Share'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import CloseIcon from '@mui/icons-material/Close'
-import DownloadIcon from '@mui/icons-material/Download'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import SearchIcon from '@mui/icons-material/Search'
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
 
-type Chapter = {
-  id?: number
-  number?: number | null
-  title: string
-  slug?: string | null
-  chapterType?: string
-  videoUrl?: string
-  pdfUrl?: string | null
-}
+type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null; chapterType?: string; videoUrl?: string; keywords?: string | null; pdfUrl?: string | null }
 type Section = { title: string; chapters: Chapter[] }
 type Book = {
   id?: number
@@ -76,7 +70,7 @@ type Props = {
 
 const DEFAULT_BOOK_COVER = '/images/courses/JMEDS_Cover.jpeg'
 
-const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookPdfUrl, videosCount = 0, casesCount = 0, reviewsCount = 0 }: Props) => {
+const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, videosCount = 0, casesCount = 0, reviewsCount = 0 }: Props) => {
   const cover = book?.coverImage || DEFAULT_BOOK_COVER
   const title = book?.title || "Book Title"
   const author = book?.author || 'Unknown Author'
@@ -89,6 +83,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const [librarianDialogOpen, setLibrarianDialogOpen] = React.useState(false)
   const [searchDialogOpen, setSearchDialogOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState('')
+  const [showKeywords, setShowKeywords] = React.useState(true)
 
   // Form states for Refer to Friend
   const [senderName, setSenderName] = React.useState('')
@@ -239,7 +234,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const toggleExpandCollapse = () => setExpandAll(prev => !prev)
   const toggleSection = (idx: number) => setExpanded(prev => ({ ...prev, [idx]: !prev[idx] }))
 
-  const filteredSections = sections
+  const filteredSections = sections.filter(s => s.title !== 'Cases' && s.title !== 'Videos')
 
   // Compute search results
   const searchResults = React.useMemo(() => {
@@ -250,7 +245,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
     // Search in chapters
     sections.forEach(sec => {
       sec.chapters.forEach(ch => {
-        if (ch.title.toLowerCase().includes(lowerQuery)) {
+        if (ch.title.toLowerCase().includes(lowerQuery) || (ch.keywords && ch.keywords.toLowerCase().includes(lowerQuery))) {
           results.push(ch)
         }
       })
@@ -365,59 +360,46 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                   </Typography>
                 )}
 
-                {/* Keywords */}
+                {/* Book Keywords */}
                 {book?.keywords && (
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#0A2540', mb: 1 }}>
-                      Keywords
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                      {(book.keywords || '')
-                        .split(',')
-                        .map((kw) => kw.trim())
-                        .filter(Boolean)
-                        .map((kw) => (
-                          <Chip
-                            key={kw}
-                            label={kw}
-                            size="small"
-                            sx={{
-                              borderRadius: '999px',
-                              backgroundColor: '#EFF6FF',
-                              color: '#1D4ED8',
-                              fontWeight: 500,
-                            }}
+                  <Box sx={{ mt: 3 }}>
+                    <Box 
+                      onClick={() => setShowKeywords(!showKeywords)}
+                      sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        cursor: 'pointer',
+                        mb: 1,
+                        userSelect: 'none',
+                        width: 'fit-content'
+                      }}
+                    >
+                      <Typography variant="subtitle2" sx={{ color: '#0A2540', fontWeight: 600 }}>
+                        Keywords
+                      </Typography>
+                      {showKeywords ? <ExpandLessIcon fontSize="small" sx={{ ml: 0.5, color: '#64748B' }} /> : <ExpandMoreIcon fontSize="small" sx={{ ml: 0.5, color: '#64748B' }} />}
+                    </Box>
+                    <Collapse in={showKeywords}>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {book.keywords.split(',').map((k, i) => (
+                          <Chip 
+                            key={i} 
+                            label={k.trim()} 
+                            size="small" 
+                            sx={{ 
+                              backgroundColor: '#F1F5F9', 
+                              color: '#64748B',
+                              border: '1px solid #E2E8F0'
+                            }} 
                           />
                         ))}
-                    </Box>
+                      </Box>
+                    </Collapse>
                   </Box>
                 )}
 
                 {/* Actions Toolbar */}
                 <Stack direction="row" spacing={2} sx={{ mt: 2 }} alignItems="center">
-                  <Button
-                    variant="contained"
-                    disabled={!bookPdfUrl}
-                    href={bookPdfUrl || undefined}
-                    startIcon={<DownloadIcon />}
-                    sx={{
-                      textTransform: 'none',
-                      borderRadius: '2rem',
-                      background: '#0A2540',
-                      color: 'white',
-                      fontWeight: 600,
-                      px: 4,
-                      py: 1.5,
-                      boxShadow: '0 10px 20px -5px rgba(10, 37, 64, 0.3)',
-                      '&:hover': {
-                        background: '#1e3a5f',
-                        boxShadow: '0 15px 30px -5px rgba(10, 37, 64, 0.4)',
-                      }
-                    }}
-                  >
-                    Download PDF
-                  </Button>
-
                   <Tooltip title="Refer to Friend">
                     <IconButton onClick={handleReferFriend} sx={{ color: '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
                       <PersonAddAlt1Icon />
@@ -499,6 +481,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           }}
         >
           <Tab label="Table of Contents" />
+          <Tab label={`Cases (${casesCount})`} />
           <Tab label={`Videos (${videosCount})`} />
           <Tab label={`Reviews (${reviewsCount})`} />
         </Tabs>
@@ -588,11 +571,12 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                                   mr: 2,
                                   color: '#64748B',
                                   fontWeight: 600,
-                                  fontSize: '0.875rem'
+                                  fontSize: '0.875rem',
+                                  flexShrink: 0
                                 }}>
                                   {ch.number || idx + 1}
                                 </Box>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
+                                <Box sx={{ flex: 1 }}>
                                   <Typography sx={{
                                     color: '#334155',
                                     fontWeight: 500,
@@ -602,19 +586,27 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                                   }}>
                                     {ch.title}
                                   </Typography>
-                                  {ch.pdfUrl && (
-                                    <Tooltip title="Download chapter PDF">
-                                      <IconButton
-                                        size="small"
-                                        component="a"
-                                        href={ch.pdfUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        sx={{ color: '#0A2540' }}
-                                      >
-                                        <DownloadIcon fontSize="small" />
-                                      </IconButton>
-                                    </Tooltip>
+                                  {ch.keywords && (
+                                    <Box sx={{ mt: 1 }}>
+                                      <Typography variant="caption" sx={{ color: '#64748B', fontWeight: 600, display: 'block', mb: 0.5 }}>
+                                        Keywords:
+                                      </Typography>
+                                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                        {ch.keywords.split(',').map((k, i) => (
+                                          <Chip 
+                                            key={i} 
+                                            label={k.trim()} 
+                                            size="small" 
+                                            sx={{ 
+                                              fontSize: '0.7rem', 
+                                              height: '20px', 
+                                              backgroundColor: '#F1F5F9', 
+                                              color: '#64748B' 
+                                            }} 
+                                          />
+                                        ))}
+                                      </Box>
+                                    </Box>
                                   )}
                                 </Box>
                               </NextLink>
@@ -626,6 +618,21 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                               {shouldShowUnlock && (
                                 <Tooltip title="Unlocked content">
                                   <LockOpenIcon sx={{ fontSize: 20, color: '#10B981' }} />
+                                </Tooltip>
+                              )}
+                              {ch.pdfUrl && (
+                                <Tooltip title="Download Chapter PDF">
+                                  <IconButton
+                                    component="a"
+                                    href={ch.pdfUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    size="small"
+                                    sx={{ color: '#EF4444', ml: 1 }}
+                                  >
+                                    <PictureAsPdfIcon />
+                                  </IconButton>
                                 </Tooltip>
                               )}
                             </>
@@ -642,27 +649,39 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                                 mr: 2,
                                 color: '#64748B',
                                 fontWeight: 600,
-                                fontSize: '0.875rem'
+                                fontSize: '0.875rem',
+                                flexShrink: 0
                               }}>
                                 {ch.number || idx + 1}
                               </Box>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
-                                <Typography sx={{ flex: 1, color: '#94A3B8' }}>
+                              <Box sx={{ flex: 1 }}>
+                                <Typography sx={{ color: '#94A3B8' }}>
                                   {ch.title}
                                 </Typography>
-                                {ch.pdfUrl && (
-                                  <Tooltip title="Download chapter PDF">
-                                    <IconButton
-                                      size="small"
-                                      component="a"
-                                      href={ch.pdfUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      sx={{ color: '#0A2540' }}
-                                    >
-                                      <DownloadIcon fontSize="small" />
-                                    </IconButton>
-                                  </Tooltip>
+                                {ch.keywords && (
+                                  <Box sx={{ mt: 1 }}>
+                                    <Typography variant="caption" sx={{ color: '#94A3B8', fontWeight: 600, display: 'block', mb: 0.5 }}>
+                                      Keywords:
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                      {ch.keywords.split(',').map((k, i) => (
+                                        <Chip 
+                                          key={i} 
+                                          label={k.trim()} 
+                                          size="small" 
+                                          sx={{ 
+                                            fontSize: '0.7rem', 
+                                            height: '20px', 
+                                            backgroundColor: '#F1F5F9', 
+                                            color: '#94A3B8',
+                                            borderColor: '#E2E8F0',
+                                            borderStyle: 'solid',
+                                            borderWidth: '1px'
+                                          }} 
+                                        />
+                                      ))}
+                                    </Box>
+                                  </Box>
                                 )}
                               </Box>
                               {shouldShowLock && (
@@ -673,6 +692,21 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                               {shouldShowUnlock && (
                                 <Tooltip title="Unlocked content">
                                   <LockOpenIcon sx={{ fontSize: 20, color: '#10B981' }} />
+                                </Tooltip>
+                              )}
+                              {ch.pdfUrl && (
+                                <Tooltip title="Download Chapter PDF">
+                                  <IconButton
+                                    component="a"
+                                    href={ch.pdfUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    size="small"
+                                    sx={{ color: '#EF4444', ml: 1 }}
+                                  >
+                                    <PictureAsPdfIcon />
+                                  </IconButton>
                                 </Tooltip>
                               )}
                             </>
@@ -688,6 +722,58 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         )}
 
         {tab === 1 && (
+          <Box>
+            {casesCount > 0 ? (
+              <List disablePadding>
+                {sections.find(s => s.title === 'Cases')?.chapters.map((c, idx) => (
+                  <ListItem 
+                    key={idx} 
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 2,
+                      py: 2,
+                      px: 3,
+                      borderBottom: '1px solid #F8FAFC',
+                      '&:last-child': { borderBottom: 'none' },
+                      transition: 'background-color 0.2s',
+                      '&:hover': { backgroundColor: '#F8FAFC' }
+                    }}
+                  >
+                    <NextLink href={c.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ 
+                        width: 40, 
+                        height: 40, 
+                        borderRadius: '50%', 
+                        bgcolor: '#F0F9FF', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        mr: 2,
+                        color: '#0A2540',
+                      }}>
+                        <span style={{ fontSize: '1.2rem' }}>📄</span>
+                      </Box>
+                      <Typography sx={{
+                        color: '#334155',
+                        fontWeight: 500,
+                        fontSize: '1.05rem',
+                        transition: 'color 0.2s',
+                        '&:hover': { color: '#0A2540' }
+                      }}>
+                        {c.title}
+                      </Typography>
+                    </NextLink>
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography variant="body2" color="text.secondary">No cases available for this title.</Typography>
+            )}
+          </Box>
+        )}
+
+        {tab === 2 && (
           <Box>
             {videosCount > 0 ? (
               <List disablePadding>
@@ -739,7 +825,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           </Box>
         )}
 
-        {tab === 2 && (
+        {tab === 3 && (
           <Typography variant="body2" color="text.secondary">Reviews coming soon</Typography>
         )}
       </Container>
@@ -1192,13 +1278,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       const chapterTitle = chapterData['chapter-title'] || 'Untitled'
       const chapterFileName = chapterData['chapter-file-name'] || ''
       const chapterSequence = parseInt(chapterData['chapter-sequence']) || 0
+      const chapterKeywords = chapterData['chapter-keyword'] || null
 
       if (!chapterFileName) return // Skip if no filename
 
       let slug: string | null = null
       let chapterType = 'chapter' // default type
       let filePath: string | null = null
-      let pdfUrl: string | null = null
 
       // Determine the slug, type, and file path based on chapter number
       if (chapterNo === 'Prelims') {
@@ -1224,21 +1310,26 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         slug = null
       }
 
-      // Detect chapter-level PDF if available
-      try {
-        if (chapterType === 'prelims') {
-          const prelimPdfFs = path.join(bookDir, 'preliminary', 'PDF', 'prelims.pdf')
-          if (fs.existsSync(prelimPdfFs)) {
-            pdfUrl = `/books/${isbnStr}/preliminary/PDF/prelims.pdf`
-          }
-        } else if (chapterType === 'chapter' || chapterType === 'appendix') {
-          const chapterPdfFs = path.join(bookDir, 'PDF', `${chapterFileName}.pdf`)
-          if (fs.existsSync(chapterPdfFs)) {
-            pdfUrl = `/books/${isbnStr}/PDF/${chapterFileName}.pdf`
-          }
+      // Check for PDF
+      let pdfUrl: string | null = null
+      if (filePath) {
+        const siblingPdfPath = filePath.replace(/\.html$/, '.pdf')
+        const dir = path.dirname(filePath)
+        const filename = path.basename(siblingPdfPath)
+        const subdirPdfPath = path.join(dir, 'PDF', filename)
+
+        let finalPdfPath: string | null = null
+        
+        if (fs.existsSync(siblingPdfPath)) {
+            finalPdfPath = siblingPdfPath
+        } else if (fs.existsSync(subdirPdfPath)) {
+            finalPdfPath = subdirPdfPath
         }
-      } catch {
-        pdfUrl = null
+
+        if (finalPdfPath) {
+          const relativePath = path.relative(path.join(process.cwd(), 'public'), finalPdfPath)
+          pdfUrl = '/' + relativePath.split(path.sep).join('/')
+        }
       }
 
       // Extract chapter number if it's a regular chapter
@@ -1256,7 +1347,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         slug: slug,
         id: chapterSequence, // Add chapter data for filtering
         chapterType: chapterType, // Store the type
-        pdfUrl,
+        keywords: chapterKeywords,
+        pdfUrl: pdfUrl,
       })
     })
 
@@ -1306,14 +1398,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     try {
       const isbnPdfFs = path.join(bookDir, `${isbnStr}.pdf`)
       const bookPdfFs = path.join(bookDir, 'book.pdf')
-      const prelimPdfFs = path.join(bookDir, 'preliminary', 'PDF', 'prelims.pdf')
       if (fs.existsSync(isbnPdfFs)) {
         bookPdfUrl = `/books/${isbnStr}/${isbnStr}.pdf`
       } else if (fs.existsSync(bookPdfFs)) {
         bookPdfUrl = `/books/${isbnStr}/book.pdf`
-      } else if (fs.existsSync(prelimPdfFs)) {
-        // Fallback to prelims PDF if full-book PDF is not available
-        bookPdfUrl = `/books/${isbnStr}/preliminary/PDF/prelims.pdf`
       }
     } catch { }
 
