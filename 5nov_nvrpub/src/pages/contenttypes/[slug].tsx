@@ -8,17 +8,19 @@ import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
 import Chip from '@mui/material/Chip'
-import Breadcrumbs from '@mui/material/Breadcrumbs'
-import CircularProgress from '@mui/material/CircularProgress'
+import Stack from '@mui/material/Stack'
+import Rating from '@mui/material/Rating'
 import { useTheme, styled } from '@mui/material/styles'
+import { motion } from 'framer-motion'
 import IconButton from '@mui/material/IconButton'
 import ArrowBack from '@mui/icons-material/ArrowBack'
 import ArrowForward from '@mui/icons-material/ArrowForward'
+import MenuBookIcon from '@mui/icons-material/MenuBook'
+import CategoryIcon from '@mui/icons-material/Category'
+import FilterListIcon from '@mui/icons-material/FilterList'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { MainLayout } from '@/components/layout'
-import { ContentCardItem } from '@/components/course'
 import { Content } from '@/interfaces/content'
 
 interface Props {
@@ -28,384 +30,315 @@ interface Props {
   subjectcategories: any[]
 }
 
-const StyledTabs = styled(Tabs)(({ theme }) => ({
-  borderBottom: `1px solid ${theme.palette.divider}`,
-  minHeight: 40,
-  '& .MuiTabs-indicator': {
-    bottom: 0,
-    backgroundColor: theme.palette.primary.main,
+const FALLBACK_IMAGE = '/images/courses/JMEDS_Cover.jpeg'
+
+const StyledCard = styled(motion.div)(({ theme }) => ({
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: '#fff',
+  borderRadius: 24,
+  overflow: 'hidden',
+  border: '1px solid rgba(148,163,184,0.15)',
+  boxShadow: '0 10px 30px rgba(0,0,0,0.02)',
+  transition: 'all 0.3s ease',
+  cursor: 'pointer',
+  '&:hover': {
+    transform: 'translateY(-8px)',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+    '& .cover-overlay': {
+      opacity: 1,
+    },
+    '& .arrow-btn': {
+      background: 'linear-gradient(90deg, #FF6B6B 0%, #FF8E53 100%)',
+      color: '#fff',
+    }
   },
 }))
 
-const StyledTab = styled(Tab)(({ theme }) => ({
-  textTransform: 'none',
-  fontWeight: 500,
-  fontSize: '0.95rem',
-  minHeight: 40,
-  padding: theme.spacing(1, 2),
-  color: theme.palette.text.secondary,
-  '&.Mui-selected': {
-    color: theme.palette.primary.main,
-  },
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-  },
+const GradientText = styled('span')(({ theme }) => ({
+  background: 'linear-gradient(90deg, #FF6B6B 0%, #FF8E53 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
 }))
 
 const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, contenttypeData, contents, subjectcategories }) => {
   const theme = useTheme()
   const [activeSubjectcategory, setActiveSubjectcategory] = useState(0)
 
-  const handleSubjectcategoryChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveSubjectcategory(newValue)
-  }
-
   const getFilteredContents = () => {
     if (activeSubjectcategory === 0) {
-      return contents // Show all contents in contenttype
+      return contents
     }
-
     const selectedSubjectcategory = subjectcategories[activeSubjectcategory - 1]
     return contents.filter((content: Content) => content.subjectcategoryId === selectedSubjectcategory.id)
   }
 
   const contenttypeName = contenttypeData?.title || contenttype.charAt(0).toUpperCase() + contenttype.slice(1)
   const filteredContents = getFilteredContents()
+  const totalContents = contents.length
+  const totalCategories = subjectcategories.length
+
+  const heroStats = [
+    { label: 'Books available', value: totalContents, icon: <MenuBookIcon /> },
+    { label: 'Subject categories', value: totalCategories || '—', icon: <CategoryIcon /> },
+    { label: 'Showing now', value: filteredContents.length, icon: <FilterListIcon /> },
+  ]
 
   return (
-    <>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #F0F9FF 0%, #FFFFFF 50%, #FFF5F5 100%)' }}>
       <Head>
         <title>{contenttypeName} Contents - Jaypee Digital</title>
         <meta name="description" content={`Browse all ${contenttypeName.toLowerCase()} contents available on Jaypee Digital`} />
       </Head>
 
-      <Box
-        sx={{
-          pt: { xs: 6, md: 8 },
-          pb: 8,
-          backgroundColor: 'background.default',
-          minHeight: '100vh',
-        }}
-      >
+      <Box sx={{ pt: { xs: 4, md: 8 }, pb: 8 }}>
+        {/* Hero Section */}
         <Container maxWidth="lg">
-          {/* Breadcrumbs */}
-          <Breadcrumbs sx={{ mb: 4 }}>
-            <Link href="/" style={{ textDecoration: 'none' }}>
-              <Typography color="text.secondary" sx={{ '&:hover': { textDecoration: 'underline' } }}>
-                Home
-              </Typography>
-            </Link>
-            <Link href="/contenttypes" style={{ textDecoration: 'none' }}>
-              <Typography color="text.secondary" sx={{ '&:hover': { textDecoration: 'underline' } }}>
-                Content Types
-              </Typography>
-            </Link>
-            <Typography color="text.primary">{contenttypeName}</Typography>
-          </Breadcrumbs>
+          <Grid container spacing={6} alignItems="center">
+            <Grid item xs={12} md={7}>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+                <Stack spacing={3}>
+                  {/* Breadcrumbs */}
+                  <Stack direction="row" spacing={1} alignItems="center" sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
+                    <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>Home</Link>
+                    <Typography variant="caption">/</Typography>
+                    <Link href="/contenttypes" style={{ textDecoration: 'none', color: 'inherit' }}>Content Types</Link>
+                    <Typography variant="caption">/</Typography>
+                    <Typography color="text.primary" fontWeight={500}>{contenttypeName}</Typography>
+                  </Stack>
 
-          {/* Header */}
-          <Box sx={{ mb: 6 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <Link href="/contenttypes">
-                <IconButton sx={{ mr: 2 }}>
-                  <ArrowBack />
-                </IconButton>
-              </Link>
-              <Box>
-                <Typography
-                  variant="h1"
-                  sx={{
-                    fontSize: { xs: 32, md: 48 },
-                    fontWeight: 700,
-                    color: 'text.primary'
-                  }}
-                >
-                  {contenttypeName} Contents
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: 'text.secondary',
-                    mt: 1
-                  }}
-                >
-                  {contents.length} {contents.length === 1 ? 'Content' : 'Contents'} Available
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Contenttype Description */}
-            <Box
-              sx={{
-                p: 3,
-                backgroundColor: 'background.paper',
-                borderRadius: 2,
-                border: `1px solid ${theme.palette.divider}`,
-              }}
-            >
-              <Typography variant="body1" color="text.secondary">
-                {getContenttypeDescription(contenttype)}
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Subject Categories Slider */}
-          {subjectcategories.length > 0 && (
-            <Box sx={{ mb: 4 }}>
-              <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-                <Box
-                  id="categories-slider"
-                  sx={{
-                    display: 'flex',
-                    gap: 2,
-                    overflowX: 'auto',
-                    scrollBehavior: 'smooth',
-                    pb: 1,
-                    '&::-webkit-scrollbar': {
-                      height: 6,
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      backgroundColor: theme.palette.grey[200],
-                      borderRadius: 3,
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: theme.palette.primary.main,
-                      borderRadius: 3,
-                      '&:hover': {
-                        backgroundColor: theme.palette.primary.dark,
-                      },
-                    },
-                  }}
-                >
-                  {/* All Option */}
-                  <Box
-                    onClick={() => setActiveSubjectcategory(0)}
-                    sx={{
-                      minWidth: 'fit-content',
-                      px: 3,
-                      py: 1.5,
-                      borderRadius: 2,
-                      cursor: 'pointer',
-                      backgroundColor: activeSubjectcategory === 0 ? theme.palette.primary.main : 'transparent',
-                      color: activeSubjectcategory === 0 ? theme.palette.primary.contrastText : theme.palette.text.primary,
-                      border: `1px solid ${activeSubjectcategory === 0 ? theme.palette.primary.main : theme.palette.divider}`,
-                      transition: 'all 0.3s ease',
-                      '&:hover': {
-                        backgroundColor: activeSubjectcategory === 0 ? theme.palette.primary.dark : theme.palette.action.hover,
-                        transform: 'translateY(-2px)',
-                        boxShadow: theme.shadows[4],
-                      },
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body2" sx={{ fontWeight: activeSubjectcategory === 0 ? 600 : 400 }}>
-                        All
-                      </Typography>
-                      <Chip
-                        label={contents.length}
-                        size="small"
-                        sx={{
-                          backgroundColor: activeSubjectcategory === 0 ? 'rgba(255,255,255,0.2)' : theme.palette.primary.main,
-                          color: activeSubjectcategory === 0 ? theme.palette.primary.contrastText : theme.palette.primary.contrastText,
-                          fontSize: '0.75rem',
-                          height: '20px',
-                          minWidth: '20px',
-                        }}
-                      />
-                    </Box>
+                  <Box>
+                    <Typography variant="h2" sx={{ fontWeight: 800, mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' }, lineHeight: 1.1, color: '#0A2540' }}>
+                      {contenttypeName} <GradientText>Collection</GradientText>
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: '1.125rem', maxWidth: 600, lineHeight: 1.6 }}>
+                      {getContenttypeDescription(contenttype)}
+                    </Typography>
                   </Box>
 
-                  {/* Subject Categories */}
-                  {subjectcategories.map((subjectcategory, index) => {
-                    const categoryIndex = index + 1;
-                    const isActive = activeSubjectcategory === categoryIndex;
-                    const contentCount = contents.filter((content: Content) => content.subjectcategoryId === subjectcategory.id).length;
-
-                    return (
+                  <Stack direction="row" spacing={2} sx={{ pt: 2, flexWrap: 'wrap', gap: 2 }}>
+                    {heroStats.map((stat, index) => (
                       <Box
-                        key={subjectcategory.id}
-                        onClick={() => setActiveSubjectcategory(categoryIndex)}
+                        key={stat.label}
                         sx={{
-                          minWidth: 'fit-content',
-                          px: 3,
-                          py: 1.5,
-                          borderRadius: 2,
-                          cursor: 'pointer',
-                          backgroundColor: isActive ? theme.palette.primary.main : 'transparent',
-                          color: isActive ? theme.palette.primary.contrastText : theme.palette.text.primary,
-                          border: `1px solid ${isActive ? theme.palette.primary.main : theme.palette.divider}`,
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            backgroundColor: isActive ? theme.palette.primary.dark : theme.palette.action.hover,
-                            transform: 'translateY(-2px)',
-                            boxShadow: theme.shadows[4],
-                          },
+                          p: 2.5,
+                          borderRadius: 4,
+                          backgroundColor: 'rgba(255,255,255,0.6)',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(255,255,255,0.8)',
+                          boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+                          minWidth: 140,
+                          flex: { xs: '1 1 100%', sm: '0 1 auto' }
                         }}
                       >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body2" sx={{ fontWeight: isActive ? 600 : 400 }}>
-                            {subjectcategory.title}
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1, color: 'text.secondary' }}>
+                          {React.cloneElement(stat.icon as any, { fontSize: 'small' })}
+                          <Typography variant="caption" fontWeight={700} sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                            {stat.label}
                           </Typography>
-                          <Chip
-                            label={contentCount}
-                            size="small"
-                            sx={{
-                              backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : theme.palette.primary.main,
-                              color: theme.palette.primary.contrastText,
-                              fontSize: '0.75rem',
-                              height: '20px',
-                              minWidth: '20px',
-                            }}
-                          />
-                        </Box>
+                        </Stack>
+                        <Typography variant="h4" fontWeight={800} color="text.primary">
+                          {stat.value}
+                        </Typography>
                       </Box>
-                    );
-                  })}
-                </Box>
+                    ))}
+                  </Stack>
+                </Stack>
+              </motion.div>
+            </Grid>
+            
+            {/* Decorative Image/Graphic could go here in the other grid column */}
+          </Grid>
+        </Container>
 
-                {/* Navigation Arrows */}
-                <Box
+        {/* Content Section */}
+        <Container maxWidth="lg" sx={{ mt: 8 }}>
+          {/* Categories Filter */}
+          {subjectcategories.length > 0 && (
+            <Box sx={{ mb: 6 }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+                <Typography variant="h5" fontWeight={700} sx={{ color: '#0A2540' }}>Browse by Category</Typography>
+                <Typography variant="body2" color="text.secondary">{filteredContents.length} results</Typography>
+              </Stack>
+
+              <Stack direction="row" spacing={1.5} sx={{ overflowX: 'auto', pb: 2, '::-webkit-scrollbar': { display: 'none' } }}>
+                <Button
+                  onClick={() => setActiveSubjectcategory(0)}
+                  variant={activeSubjectcategory === 0 ? 'contained' : 'outlined'}
                   sx={{
-                    position: 'absolute',
-                    left: -16,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    zIndex: 1,
+                    borderRadius: '999px',
+                    textTransform: 'none',
+                    px: 3,
+                    py: 1,
+                    whiteSpace: 'nowrap',
+                    boxShadow: activeSubjectcategory === 0 ? '0 8px 20px rgba(255,107,107,0.25)' : 'none',
+                    background: activeSubjectcategory === 0 ? 'linear-gradient(90deg, #FF6B6B 0%, #FF8E53 100%)' : 'transparent',
+                    border: activeSubjectcategory === 0 ? 'none' : `1px solid ${theme.palette.divider}`,
+                    color: activeSubjectcategory === 0 ? '#fff' : 'text.secondary',
                   }}
                 >
-                  <IconButton
-                    onClick={() => {
-                      const slider = document.getElementById('categories-slider');
-                      if (slider) {
-                        slider.scrollBy({ left: -200, behavior: 'smooth' });
-                      }
-                    }}
+                  All Books
+                </Button>
+                {subjectcategories.map((category, index) => (
+                  <Button
+                    key={category.id}
+                    onClick={() => setActiveSubjectcategory(index + 1)}
+                    variant={activeSubjectcategory === index + 1 ? 'contained' : 'outlined'}
                     sx={{
-                      backgroundColor: theme.palette.background.paper,
-                      boxShadow: theme.shadows[2],
-                      '&:hover': {
-                        backgroundColor: theme.palette.action.hover,
-                        boxShadow: theme.shadows[4],
-                      },
+                      borderRadius: '999px',
+                      textTransform: 'none',
+                      px: 3,
+                      py: 1,
+                      whiteSpace: 'nowrap',
+                      boxShadow: activeSubjectcategory === index + 1 ? '0 8px 20px rgba(255,107,107,0.25)' : 'none',
+                      background: activeSubjectcategory === index + 1 ? 'linear-gradient(90deg, #FF6B6B 0%, #FF8E53 100%)' : 'transparent',
+                      border: activeSubjectcategory === index + 1 ? 'none' : `1px solid ${theme.palette.divider}`,
+                      color: activeSubjectcategory === index + 1 ? '#fff' : 'text.secondary',
                     }}
                   >
-                    <ArrowBack />
-                  </IconButton>
-                </Box>
-
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    right: -16,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    zIndex: 1,
-                  }}
-                >
-                  <IconButton
-                    onClick={() => {
-                      const slider = document.getElementById('categories-slider');
-                      if (slider) {
-                        slider.scrollBy({ left: 200, behavior: 'smooth' });
-                      }
-                    }}
-                    sx={{
-                      backgroundColor: theme.palette.background.paper,
-                      boxShadow: theme.shadows[2],
-                      '&:hover': {
-                        backgroundColor: theme.palette.action.hover,
-                        boxShadow: theme.shadows[4],
-                      },
-                    }}
-                  >
-                    <ArrowForward />
-                  </IconButton>
-                </Box>
-              </Box>
+                    {category.title}
+                  </Button>
+                ))}
+              </Stack>
             </Box>
           )}
 
-          {/* Course Count and Category Display */}
-          <Box sx={{ mb: 4 }}>
-            {/* Active Category Name Display */}
-            {activeSubjectcategory > 0 && (
-              <Box sx={{ mb: 3 }}>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontWeight: 600,
-                    color: 'text.primary',
-                    mb: 1
-                  }}
-                >
-                  {subjectcategories[activeSubjectcategory - 1]?.title}
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Browse {subjectcategories[activeSubjectcategory - 1]?.title} content in {contenttypeName}
-                </Typography>
-              </Box>
-            )}
-
-            {/* Content Count */}
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography variant="h6" color="text.secondary">
-                Showing {filteredContents.length} {filteredContents.length === 1 ? 'content' : 'contents'}
-                {activeSubjectcategory === 0 && ' in all categories'}
-                {activeSubjectcategory > 0 && ` in ${subjectcategories[activeSubjectcategory - 1]?.title}`}
-              </Typography>
-
-              {activeSubjectcategory > 0 && (
-                <Chip
-                  label={subjectcategories[activeSubjectcategory - 1]?.title}
-                  color="primary"
-                  variant="outlined"
-                  sx={{
-                    fontWeight: 500,
-                  }}
-                />
-              )}
-            </Box>
-          </Box>
-
-          {/* Contents Grid */}
+          {/* Books Grid */}
           {filteredContents.length > 0 ? (
-            <Grid container spacing={3}>
-              {filteredContents.map((content: Content) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={content.id}>
-                  <ContentCardItem item={content} contenttypeSlug={contenttype} />
-                </Grid>
-              ))}
+            <Grid container spacing={4}>
+              {filteredContents.map((content: Content, index) => {
+                const imageSrc = content.image || content.coverImage || FALLBACK_IMAGE
+                const ratingValue = Math.max(0, Math.min(5, Number(content.rating) || 0))
+
+                return (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={content.id}>
+                    <Link href={`/content/book/${content.isbn}`} style={{ textDecoration: 'none' }}>
+                      <StyledCard
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: index * 0.05 }}
+                      >
+                        <Box sx={{ position: 'relative', pt: '133%', backgroundColor: '#f1f5f9' }}>
+                          <Box
+                            component="img"
+                            src={imageSrc}
+                            alt={content.title}
+                            sx={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                            }}
+                            onError={(e: any) => { e.target.src = FALLBACK_IMAGE }}
+                          />
+                          <Box
+                            className="cover-overlay"
+                            sx={{
+                              position: 'absolute',
+                              inset: 0,
+                              background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)',
+                              opacity: 0,
+                              transition: 'opacity 0.3s ease',
+                            }}
+                          />
+                          <Chip
+                            label={content.subject || 'General'}
+                            size="small"
+                            sx={{
+                              position: 'absolute',
+                              top: 12,
+                              right: 12,
+                              backgroundColor: 'rgba(255,255,255,0.9)',
+                              backdropFilter: 'blur(4px)',
+                              fontWeight: 600,
+                              fontSize: '0.75rem',
+                            }}
+                          />
+                        </Box>
+
+                        <Box sx={{ p: 2.5, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: 700,
+                              fontSize: '1.1rem',
+                              mb: 1,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                              lineHeight: 1.3,
+                              color: '#0A2540',
+                            }}
+                          >
+                            {content.title}
+                          </Typography>
+                          
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: 'text.secondary',
+                              mb: 2,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {content.authors || 'Unknown Author'}
+                          </Typography>
+
+                          <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Rating value={ratingValue} readOnly size="small" sx={{ color: '#FBBF24' }} />
+                            <Box
+                              className="arrow-btn"
+                              sx={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: '50%',
+                                backgroundColor: '#f1f5f9',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.3s ease',
+                                color: 'text.secondary',
+                              }}
+                            >
+                              <ArrowForwardIcon sx={{ fontSize: 16 }} />
+                            </Box>
+                          </Box>
+                        </Box>
+                      </StyledCard>
+                    </Link>
+                  </Grid>
+                )
+              })}
             </Grid>
           ) : (
-            <Box
-              sx={{
-                textAlign: 'center',
-                py: 8,
-                backgroundColor: 'background.paper',
-                borderRadius: 2,
-                border: `1px solid ${theme.palette.divider}`,
-              }}
-            >
-              <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-                No contents found
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                {activeSubjectcategory === 0
-                  ? "There are no contents available in this content type."
-                  : `There are no contents available in the ${subjectcategories[activeSubjectcategory - 1]?.title} category.`
-                }
+            <Box sx={{ textAlign: 'center', py: 10, backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: 8, border: '1px dashed rgba(148,163,184,0.3)' }}>
+              <Box sx={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+                <MenuBookIcon sx={{ fontSize: 32, color: 'text.secondary' }} />
+              </Box>
+              <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>No books found</Typography>
+              <Typography color="text.secondary" sx={{ mb: 3, maxWidth: 400, mx: 'auto' }}>
+                We couldn't find any books in this category. Try selecting a different category or view all books.
               </Typography>
               <Button
-                variant="outlined"
                 onClick={() => setActiveSubjectcategory(0)}
+                variant="outlined"
+                sx={{ borderRadius: '999px', textTransform: 'none' }}
               >
-                View All Contents
+                View All Books
               </Button>
             </Box>
           )}
         </Container>
       </Box>
-    </>
+    </Box>
   )
 }
 
@@ -456,6 +389,18 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     // Fetch subject categories data
     const subjectcategoriesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/subjectcategories`)
     const allSubjectcategories = await subjectcategoriesRes.json()
+
+    if (!Array.isArray(allSubjectcategories)) {
+      console.error('Failed to fetch subject categories:', allSubjectcategories)
+      return {
+        props: {
+          contenttype: slug,
+          contenttypeData,
+          contents,
+          subjectcategories: [],
+        },
+      }
+    }
 
     // Get unique subject categories for this content type
     const uniqueIds = new Set(

@@ -703,8 +703,6 @@ const AuthExperience: React.FC<AuthExperienceProps> = ({ initialMode }) => {
                                 color: '#fff',
                                 // Coral/Orange gradient from Hero.jsx
                                 background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
-                                boxShadow: '0 10px 15px -3px rgba(255, 107, 107, 0.3)',
-                                transition: 'all 0.3s ease',
                                 '&:hover': {
                                   background: 'linear-gradient(to right, #FF5252, #FF7043)',
                                   boxShadow: '0 20px 25px -5px rgba(255, 107, 107, 0.4)',

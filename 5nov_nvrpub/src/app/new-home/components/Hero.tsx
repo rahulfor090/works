@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Button } from './ui/button';
-import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import HeroSlider, { heroDefaultSlides, type HeroSlide, type HeroSliderHandle } from './ui/HeroSlider';
 
 const Hero = (): JSX.Element => {
@@ -20,19 +20,20 @@ const Hero = (): JSX.Element => {
       <div className="absolute bottom-40 right-20 w-48 h-48 bg-[#FF6B6B]/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-[#10B981]/5 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
 
+      {/* Navigation Arrow Buttons */}
       <button
-        aria-label="Previous slide"
-        className="hidden lg:flex absolute top-1/2 left-6 -translate-y-1/2 z-30 p-4 rounded-full bg-white/80 text-slate-900 shadow-2xl shadow-blue-900/10 backdrop-blur focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/70"
         onClick={() => sliderRef.current?.previous()}
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-white/80 hover:bg-white shadow-md hover:shadow-lg transition-all duration-300 group border border-slate-200/50 hidden lg:flex items-center justify-center"
+        aria-label="Previous slide"
       >
-        <ChevronLeft size={22} />
+        <ChevronLeft className="w-5 h-5 text-slate-600 group-hover:text-slate-900 transition-colors" />
       </button>
       <button
-        aria-label="Next slide"
-        className="hidden lg:flex absolute top-1/2 right-6 -translate-y-1/2 z-30 p-4 rounded-full bg-white/80 text-slate-900 shadow-2xl shadow-blue-900/10 backdrop-blur focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/70"
         onClick={() => sliderRef.current?.next()}
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-white/80 hover:bg-white shadow-md hover:shadow-lg transition-all duration-300 group border border-slate-200/50 hidden lg:flex items-center justify-center"
+        aria-label="Next slide"
       >
-        <ChevronRight size={22} />
+        <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-slate-900 transition-colors" />
       </button>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -99,7 +100,7 @@ const Hero = (): JSX.Element => {
           </div>
 
           {/* Right Visual - Hero Slider */}
-          <div className="relative lg:h-[600px] flex items-center justify-center w-full">
+          <div className="relative lg:h-[500px] flex items-center justify-center w-full">
             <HeroSlider ref={sliderRef} onSlideChange={setActiveSlide} />
           </div>
         </div>

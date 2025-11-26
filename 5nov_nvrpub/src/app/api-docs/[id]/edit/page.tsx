@@ -10,6 +10,7 @@ import {
   FormControl,
   InputLabel,
   Select,
+  SelectChangeEvent,
   Typography,
   Paper,
   Snackbar,
@@ -25,7 +26,7 @@ import { fetchApiAuthentication, updateApiAuthentication } from '@/services/apiA
 export default function EditAuthenticationPage() {
   const router = useRouter();
   const params = useParams();
-  const id = parseInt(params.id as string, 10);
+  const id = params?.id ? parseInt(params.id as string, 10) : NaN;
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -77,7 +78,7 @@ export default function EditAuthenticationPage() {
     loadAuthentication();
   }, [id, router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name as string;
     const value = e.target.value;
     
@@ -90,6 +91,16 @@ export default function EditAuthenticationPage() {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
+  };
+
+  const handleSelectChange = (e: SelectChangeEvent) => {
+    const name = e.target.name as string;
+    const value = e.target.value;
+    
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const validateForm = () => {
@@ -173,7 +184,7 @@ export default function EditAuthenticationPage() {
             label="Username"
             name="username"
             value={formData.username}
-            onChange={handleChange}
+            onChange={handleTextFieldChange}
             error={!!errors.username}
             helperText={errors.username}
             required
@@ -186,7 +197,7 @@ export default function EditAuthenticationPage() {
             <Select
               name="auth_method"
               value={formData.auth_method}
-              onChange={handleChange}
+              onChange={handleSelectChange}
               label="Authentication Method"
               disabled={saving}
             >
@@ -200,7 +211,7 @@ export default function EditAuthenticationPage() {
             <Select
               name="status"
               value={formData.status}
-              onChange={handleChange}
+              onChange={handleSelectChange}
               label="Status"
               disabled={saving}
             >

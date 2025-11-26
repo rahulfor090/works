@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const [categories]: any[] = await query('SELECT id, slug FROM categories')
 
     let inserted = 0
-    let failures: Array<{ id: number | string; error: string }> = []
+    const failures: Array<{ id: number | string; error: string }> = []
 
     for (let i = 0; i < popular.length; i++) {
       const c = popular[i]

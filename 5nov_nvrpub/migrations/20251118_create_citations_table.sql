@@ -22,3 +22,5 @@ ALTER TABLE `citations`
 
 
   UPDATE `citations` SET `location` = 'header' WHERE `location` IS NULL OR `location` = '';
+  ALTER table `citations` ADD COLUMN `page_location` VARCHAR(16) NOT NULL DEFAULT 'home';
+  UPDATE `citations` SET `page_location` = 'home' WHERE `page_location` IS NULL OR `page_location` = '';

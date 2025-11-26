@@ -11,7 +11,7 @@ const MainLayout: FC<Props> = ({ children }) => {
   return (
     <Box component="main">
       <SiteNavbar />
-      <Box sx={{ paddingTop: '80px' }}>
+      <Box sx={{ paddingTop: '80px', backgroundColor: '#ffffff', minHeight: '100vh' }}>
         {children}
       </Box>
       <SiteFooter />

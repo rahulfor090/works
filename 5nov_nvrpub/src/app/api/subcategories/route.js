@@ -12,8 +12,8 @@ export async function GET(request) {
       FROM subcategories s
       LEFT JOIN specialties sp ON s.subject_id = sp.id
     `;
-        let params = [];
-        let whereClauses = [];
+        const params = [];
+        const whereClauses = [];
 
         if (subjectId) {
             whereClauses.push('s.subject_id = ?');

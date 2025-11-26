@@ -221,16 +221,6 @@ const HomeContentSlider: FC = () => {
   // Sample content data
   const sampleContents: ContentItem[] = [
     {
-      id: 1,
-      title: 'Clinical Surgery & Operative Techniques',
-      description: 'Comprehensive guide covering surgical principles and advanced techniques.',
-      author: 'Dr. Michael Smith',
-      type: 'book',
-      image: '/images/jaypee-DSJUOG-1761321552656.jpg',
-      rating: 4.8,
-      ratingCount: 156,
-    },
-    {
       id: 2,
       title: 'Advanced Cardiac Imaging Masterclass',
       description: 'Expert-led video series on state-of-the-art cardiac imaging modalities.',
@@ -251,16 +241,6 @@ const HomeContentSlider: FC = () => {
       ratingCount: 89,
     },
     {
-      id: 4,
-      title: 'Pediatric Dentistry Essentials',
-      description: 'Complete reference for pediatric oral health and treatment protocols.',
-      author: 'Dr. Emily Wang',
-      type: 'book',
-      image: '/images/jaypee-DSJUOG-1761321552656.jpg',
-      rating: 4.6,
-      ratingCount: 124,
-    },
-    {
       id: 5,
       title: 'Pathophysiology Video Lectures',
       description: 'Comprehensive video explanations of disease mechanisms and pathways.',
@@ -279,16 +259,6 @@ const HomeContentSlider: FC = () => {
       image: '/images/jaypee-DSJUOG-1761321552656.jpg',
       rating: 4.9,
       ratingCount: 167,
-    },
-    {
-      id: 7,
-      title: 'Orthopedic Surgery Practical Guide',
-      description: 'Step-by-step surgical techniques and clinical management strategies.',
-      author: 'Dr. Robert Martinez',
-      type: 'book',
-      image: '/images/jaypee-DSJUOG-1761321552656.jpg',
-      rating: 4.7,
-      ratingCount: 198,
     },
     {
       id: 8,
@@ -313,17 +283,22 @@ const HomeContentSlider: FC = () => {
         if (response.ok) {
           const data = await response.json()
           if (data && data.length > 0) {
-            const mappedContents: ContentItem[] = data.map((item: any) => ({
-              id: item.id,
-              title: item.title,
-              description: item.description,
-              author: item.author || item.createdBy,
-              type: item.contentTypeId === 1 ? 'book' : item.contentTypeId === 2 ? 'video' : 'journal',
-              image: item.image || '/images/jaypee-DSJUOG-1761321552656.jpg',
-              rating: item.rating || 4.5,
-              ratingCount: item.ratingCount || 0,
-            }))
-            setContents(mappedContents)
+            const mappedContents: ContentItem[] = data
+              .map((item: any) => ({
+                id: item.id,
+                title: item.title,
+                description: item.description,
+                author: item.author || item.createdBy,
+                type: item.contentTypeId === 1 ? 'book' : item.contentTypeId === 2 ? 'video' : 'journal',
+                image: item.image || '/images/jaypee-DSJUOG-1761321552656.jpg',
+                rating: item.rating || 4.5,
+                ratingCount: item.ratingCount || 0,
+              }))
+              .filter((item: ContentItem) => item.type !== 'book') // Filter out books
+
+            if (mappedContents.length > 0) {
+              setContents(mappedContents)
+            }
           }
         }
       } catch (error) {
@@ -442,7 +417,7 @@ const HomeContentSlider: FC = () => {
                 letterSpacing: '-0.02em',
               }}
             >
-              Explore Books, Videos & Journals
+              Explore Videos & Journals
             </Typography>
             <Typography
               variant="body1"
