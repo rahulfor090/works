@@ -73,7 +73,7 @@ const AlertsPage: NextPageWithLayout = () => {
       const storedName = localStorage.getItem(`alerts:user:${parsed.email}:name`)
       if (storedName) setAlertName(storedName)
     } catch {}
-    ;(async () => {
+    (async () => {
       try {
         const res = await fetch('/api/subjectcategories')
         if (res.ok) {

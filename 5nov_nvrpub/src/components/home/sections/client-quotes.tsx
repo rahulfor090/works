@@ -34,9 +34,12 @@ const QuoteIcon = styled(Box)({
   opacity: 0.3,
 })
 
-const QuoteText = styled(Typography)({
+const QuoteText = styled(Typography)(({ theme }) => ({
   fontFamily: headingFontFamily,
-  fontSize: { xs: '18px', md: '20px' },
+  fontSize: '18px',
+  [theme.breakpoints.up('md')]: {
+    fontSize: '20px',
+  },
   lineHeight: 1.8,
   color: '#1C1C1C',
   fontStyle: 'italic',
@@ -46,7 +49,7 @@ const QuoteText = styled(Typography)({
   marginTop: '60px',
   marginBottom: '32px',
   flex: 1,
-})
+}))
 
 const ClientInfo = styled(Box)({
   display: 'flex',

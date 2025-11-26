@@ -29,6 +29,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Snackbar,
+  Alert,
 } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
@@ -60,6 +62,7 @@ type Props = {
   isbn: string
   book: Book | null
   sections: Section[]
+  cases: Chapter[]
   bookPdfUrl: string | null
   videosCount?: number
   casesCount?: number
@@ -68,7 +71,7 @@ type Props = {
 
 const DEFAULT_BOOK_COVER = '/images/courses/JMEDS_Cover.jpeg'
 
-const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookPdfUrl, videosCount = 0, casesCount = 0, reviewsCount = 0 }: Props) => {
+const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases, bookPdfUrl, videosCount = 0, casesCount = 0, reviewsCount = 0 }: Props) => {
   const cover = book?.coverImage || DEFAULT_BOOK_COVER
   const title = book?.title || "Book Title"
   const author = book?.author || 'Unknown Author'
@@ -81,6 +84,8 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const [librarianDialogOpen, setLibrarianDialogOpen] = React.useState(false)
   const [searchDialogOpen, setSearchDialogOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState('')
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false)
+  const [snackbarMessage, setSnackbarMessage] = React.useState('')
 
   // Form states for Refer to Friend
   const [senderName, setSenderName] = React.useState('')
@@ -231,7 +236,49 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const toggleExpandCollapse = () => setExpandAll(prev => !prev)
   const toggleSection = (idx: number) => setExpanded(prev => ({ ...prev, [idx]: !prev[idx] }))
 
-  const filteredSections = sections
+
+  // Function to handle PDF download
+  const handleDownloadPdf = async (chapterSlug: string | null | undefined) => {
+    if (!chapterSlug) return
+
+    // Extract the path components from the slug
+    // Example: /books/9789356969186/chapter/ch1.html -> /books/9789356969186/chapter/PDF/ch1.pdf
+    const slugParts = chapterSlug.split('/')
+    const fileName = slugParts[slugParts.length - 1] // e.g., ch1.html or prelims.html
+    const fileNameWithoutExt = fileName.replace('.html', '') // e.g., ch1 or prelims
+    const folderType = slugParts[slugParts.length - 2] // e.g., chapter, preliminary, index
+
+    // Construct PDF path
+    const pdfPath = `/books/${isbn}/${folderType}/PDF/${fileNameWithoutExt}.pdf`
+
+    // Check if PDF exists before attempting download
+    try {
+      const response = await fetch(pdfPath, { method: 'HEAD' })
+      if (!response.ok) {
+        setSnackbarMessage('No PDF found')
+        setSnackbarOpen(true)
+        return
+      }
+
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement('a')
+      link.href = pdfPath
+      link.download = `${fileNameWithoutExt}.pdf`
+      link.target = '_blank'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } catch (error) {
+      setSnackbarMessage('No PDF found')
+      setSnackbarOpen(true)
+    }
+  }
+
+  const normalizedQuery = query.trim().toLowerCase()
+  const filteredSections = sections.map(sec => ({
+    title: sec.title,
+    chapters: normalizedQuery ? sec.chapters.filter(ch => ch.title.toLowerCase().includes(normalizedQuery)) : sec.chapters,
+  }))
 
   // Compute search results
   const searchResults = React.useMemo(() => {
@@ -463,6 +510,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           }}
         >
           <Tab label="Table of Contents" />
+          <Tab label={`Cases (${casesCount})`} />
           <Tab label={`Videos (${videosCount})`} />
           <Tab label={`Reviews (${reviewsCount})`} />
         </Tabs>
@@ -482,7 +530,10 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
               >
                 {expandAll ? 'Collapse All' : 'Expand All'}
               </Button>
+
             </Box>
+            </Stack>
+
 
             {filteredSections.map((sec, sIdx) => (
               <Accordion
@@ -524,6 +575,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                       const shouldShowUnlock = !shouldShowLock
 
                       return (
+
                         <ListItem 
                           key={`${sec.title}-${idx}`} 
                           sx={{ 
@@ -608,7 +660,23 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                                 </Tooltip>
                               )}
                             </>
+
                           )}
+
+                          {/* Download PDF button on the right */}
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDownloadPdf(ch.slug)}
+                            sx={{
+                              color: '#FF6B6B',
+                              '&:hover': {
+                                backgroundColor: '#FEF2F2',
+                                color: '#FF5252'
+                              }
+                            }}
+                          >
+                            <PictureAsPdfIcon fontSize="small" />
+                          </IconButton>
                         </ListItem>
                       )
                     })}
@@ -621,6 +689,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
 
         {tab === 1 && (
           <Box>
+
             {videosCount > 0 ? (
               <List disablePadding>
                 {sections.find(s => s.title === 'Videos')?.chapters.map((video, idx) => (
@@ -662,16 +731,41 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                         {video.title}
                       </Typography>
                     </NextLink>
+
+            {cases.length > 0 ? (
+              <List>
+                {cases.map((caseItem, idx) => (
+                  <ListItem key={`case-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, p: 2, borderRadius: '0.5rem', border: '1px solid #F1F5F9', '&:hover': { backgroundColor: '#F8FAFC' } }}>
+                    {caseItem.slug ? (
+                      <NextLink href={caseItem.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                        <Typography sx={{
+                          color: '#334155',
+                          transition: 'color 0.2s',
+                          '&:hover': { color: '#3B82F6' }
+                        }}>
+                          {caseItem.title}
+                        </Typography>
+                      </NextLink>
+                    ) : (
+                      <Typography sx={{ flex: 1 }}>
+                        {caseItem.title}
+                      </Typography>
+                    )}
+
                   </ListItem>
                 ))}
               </List>
             ) : (
-              <Typography variant="body2" color="text.secondary">No videos available for this title.</Typography>
+              <Typography variant="body2" color="text.secondary">No cases available</Typography>
             )}
           </Box>
         )}
 
         {tab === 2 && (
+          <Typography variant="body2" color="text.secondary">Videos coming soon</Typography>
+        )}
+
+        {tab === 3 && (
           <Typography variant="body2" color="text.secondary">Reviews coming soon</Typography>
         )}
       </Container>
@@ -1072,6 +1166,22 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   )
 }
@@ -1087,7 +1197,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
     // Check if JSON file exists
     if (!fs.existsSync(jsonPath)) {
-      return { props: { isbn: isbnStr, book: null, sections: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
+      return { props: { isbn: isbnStr, book: null, sections: [], cases: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
     }
 
     // Read and parse JSON file
@@ -1226,10 +1336,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       }
     } catch { }
 
-    return { props: { isbn: isbnStr, book, sections, bookPdfUrl, videosCount: videos.length, casesCount: cases.length, reviewsCount: 0 } }
+    return { props: { isbn: isbnStr, book, sections, cases, bookPdfUrl, videosCount: 0, casesCount: cases.length, reviewsCount: 0 } }
+
   } catch (e) {
     console.error('Error loading book metadata:', e)
-    return { props: { isbn: isbnStr, book: null, sections: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
+    return { props: { isbn: isbnStr, book: null, sections: [], cases: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
   }
 }
 

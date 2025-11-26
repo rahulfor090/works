@@ -13,9 +13,12 @@ const StatCard = styled(motion.div)({
   padding: '40px 20px',
 })
 
-const StatNumber = styled(Typography)({
+const StatNumber = styled(Typography)(({ theme }) => ({
   fontFamily: headingFontFamily,
-  fontSize: { xs: '48px', md: '64px' },
+  fontSize: '48px',
+  [theme.breakpoints.up('md')]: {
+    fontSize: '64px',
+  },
   fontWeight: 700,
   color: '#1C1C1C',
   lineHeight: 1,
@@ -24,7 +27,7 @@ const StatNumber = styled(Typography)({
   backgroundClip: 'text',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
-})
+}))
 
 const StatLabel = styled(Typography)({
   fontSize: '1rem',
