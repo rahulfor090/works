@@ -10,6 +10,7 @@ import {
   FormControl,
   InputLabel,
   Select,
+  SelectChangeEvent,
   Typography,
   Paper,
   Snackbar,
@@ -36,7 +37,7 @@ export default function CreateAuthenticationPage() {
     severity: 'success',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name as string;
     const value = e.target.value;
     
@@ -49,6 +50,16 @@ export default function CreateAuthenticationPage() {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
+  };
+
+  const handleSelectChange = (e: SelectChangeEvent) => {
+    const name = e.target.name as string;
+    const value = e.target.value;
+    
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const validateForm = () => {
@@ -123,7 +134,7 @@ export default function CreateAuthenticationPage() {
             label="Username"
             name="username"
             value={formData.username}
-            onChange={handleChange}
+            onChange={handleTextFieldChange}
             error={!!errors.username}
             helperText={errors.username}
             required
@@ -136,7 +147,7 @@ export default function CreateAuthenticationPage() {
             <Select
               name="auth_method"
               value={formData.auth_method}
-              onChange={handleChange}
+              onChange={handleSelectChange}
               label="Authentication Method"
               disabled={loading}
             >
