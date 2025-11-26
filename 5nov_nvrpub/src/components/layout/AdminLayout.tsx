@@ -224,7 +224,7 @@ const AdminLayout = ({ children, title = 'Admin Dashboard', breadcrumbs = [] }: 
             {sidebarItems.map((item, index) =>
               item.divider ? (
                 <Divider key={'div-' + index} sx={{ my: 1 }} />
-              ) : (
+              ) : item.href ? (
                 <ListItem key={item.href} disablePadding>
                   <ListItemButton
                     component={NextLink}
@@ -236,7 +236,7 @@ const AdminLayout = ({ children, title = 'Admin Dashboard', breadcrumbs = [] }: 
                     <ListItemText primary={item.label} />
                   </ListItemButton>
                 </ListItem>
-              )
+              ) : null
             )}
 
             {/* USERS DROPDOWN */}

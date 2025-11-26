@@ -119,7 +119,7 @@ const AdminCitations = () => {
   }
 
   const handleSubmit = () => {
-    ;(async () => {
+    (async () => {
       try {
         const payload = {
           title: currentCitation.title || '',

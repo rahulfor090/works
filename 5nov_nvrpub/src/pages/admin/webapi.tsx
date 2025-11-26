@@ -9,6 +9,7 @@ import {
   Typography,
   TextField,
   Select,
+  SelectChangeEvent,
   MenuItem,
   Button,
   Chip,
@@ -133,7 +134,7 @@ const WebApiPage = () => {
     setCreateDialogOpen(true)
   }
 
-  const handleCreateFormChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleCreateFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name as string
     const value = e.target.value
     
@@ -146,6 +147,16 @@ const WebApiPage = () => {
     if (createErrors[name]) {
       setCreateErrors((prev) => ({ ...prev, [name]: '' }))
     }
+  }
+
+  const handleCreateSelectChange = (e: SelectChangeEvent) => {
+    const name = e.target.name as string
+    const value = e.target.value
+    
+    setCreateFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
   }
 
   const validateCreateForm = () => {
@@ -249,7 +260,7 @@ const WebApiPage = () => {
     }
   }
 
-  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name as string
     const value = e.target.value
     
@@ -262,6 +273,16 @@ const WebApiPage = () => {
     if (editErrors[name]) {
       setEditErrors((prev) => ({ ...prev, [name]: '' }))
     }
+  }
+
+  const handleEditSelectChange = (e: SelectChangeEvent) => {
+    const name = e.target.name as string
+    const value = e.target.value
+    
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
   }
 
   const validateEditForm = () => {
@@ -489,7 +510,7 @@ const WebApiPage = () => {
               <Select
                 name="auth_method"
                 value={createFormData.auth_method}
-                onChange={handleCreateFormChange}
+                onChange={handleCreateSelectChange}
                 label="Authentication Method"
                 disabled={createLoading}
               >
@@ -550,7 +571,7 @@ const WebApiPage = () => {
                 <Select
                   name="auth_method"
                   value={editFormData.auth_method}
-                  onChange={handleEditFormChange}
+                  onChange={handleEditSelectChange}
                   label="Authentication Method"
                   disabled={editSaving}
                 >
@@ -564,7 +585,7 @@ const WebApiPage = () => {
                 <Select
                   name="status"
                   value={editFormData.status}
-                  onChange={handleEditFormChange}
+                  onChange={handleEditSelectChange}
                   label="Status"
                   disabled={editSaving}
                 >

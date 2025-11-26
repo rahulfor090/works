@@ -29,7 +29,7 @@ import { ApiAuthentication } from '@/types/api';
 export default function ViewAuthenticationPage() {
   const router = useRouter();
   const params = useParams();
-  const id = parseInt(params.id as string, 10);
+  const id = params?.id ? parseInt(params.id as string, 10) : NaN;
   
   const [loading, setLoading] = useState(true);
   const [authentication, setAuthentication] = useState<ApiAuthentication | null>(null);

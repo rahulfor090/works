@@ -143,7 +143,7 @@ const HeroSlider = ({ onSlideChange }: HeroSliderProps): JSX.Element => {
   const activeSlide = slides[currentIndex];
 
   const slideVariants = {
-    initial: (dir) => ({
+    initial: (dir: number) => ({
       x: dir > 0 ? 120 : -120,
       opacity: 0,
       scale: 0.96
@@ -157,7 +157,7 @@ const HeroSlider = ({ onSlideChange }: HeroSliderProps): JSX.Element => {
         ease: [0.25, 0.1, 0.25, 1]
       }
     },
-    exit: (dir) => ({
+    exit: (dir: number) => ({
       x: dir > 0 ? -120 : 120,
       opacity: 0,
       scale: 0.96,

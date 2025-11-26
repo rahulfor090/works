@@ -9,9 +9,12 @@ import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 import { headingFontFamily } from '@/config/theme/typography'
 
-const CTAContainer = styled(motion.div)({
+const CTAContainer = styled(motion.div)(({ theme }) => ({
   backgroundColor: '#1C1C1C',
-  padding: { xs: '60px 40px', md: '80px 60px' },
+  padding: '60px 40px',
+  [theme.breakpoints.up('md')]: {
+    padding: '80px 60px',
+  },
   position: 'relative',
   overflow: 'hidden',
   '&::before': {
@@ -24,7 +27,7 @@ const CTAContainer = styled(motion.div)({
     background: 'linear-gradient(135deg, rgba(238, 193, 183, 0.1) 0%, rgba(216, 177, 121, 0.1) 100%)',
     pointerEvents: 'none',
   },
-})
+}))
 
 const StyledButton = styled(Button)({
   fontFamily: headingFontFamily,
@@ -91,12 +94,11 @@ const HomeCTA: FC = () => {
               Join thousands of medical professionals and students who trust Jaypee Digital for their learning needs.
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/contenttypes" passHref>
-                <StyledButton component="a">Explore Collections</StyledButton>
+              <Link href="/contenttypes" passHref legacyBehavior>
+                <StyledButton>Explore Collections</StyledButton>
               </Link>
-              <Link href="/admin/login" passHref>
+              <Link href="/admin/login" passHref legacyBehavior>
                 <StyledButton
-                  component="a"
                   sx={{
                     backgroundColor: 'transparent',
                     borderColor: '#EEC1B7',
