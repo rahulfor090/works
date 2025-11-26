@@ -24,3 +24,13 @@ ALTER TABLE `citations`
   UPDATE `citations` SET `location` = 'header' WHERE `location` IS NULL OR `location` = '';
   ALTER table `citations` ADD COLUMN `page_location` VARCHAR(16) NOT NULL DEFAULT 'home';
   UPDATE `citations` SET `page_location` = 'home' WHERE `page_location` IS NULL OR `page_location` = '';
+  -- Migration: add location column to citations
+-- Date: 2025-11-19
+
+ALTER TABLE `citations`
+  ADD COLUMN `location` VARCHAR(16) NOT NULL DEFAULT 'header';
+
+-- Set a default location for existing rows if any
+UPDATE `citations` SET `location` = 'header' WHERE `location` IS NULL OR `location` = '';
+
+-- End of migration

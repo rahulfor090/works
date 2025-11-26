@@ -50,6 +50,7 @@ const AdminCitations = () => {
   const [editing, setEditing] = useState(false)
   const [currentCitation, setCurrentCitation] = useState<Partial<Citation>>({})
   const [uploadFile, setUploadFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string>('')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [searchTerm, setSearchTerm] = useState('')
@@ -76,7 +77,7 @@ const AdminCitations = () => {
         })) : [])
       } catch (err) {
         console.error(err)
-        showSnackbar('Failed to load citations', 'error')
+        showSnackbar('Failed to load ads', 'error')
       }
     }
 
@@ -120,6 +121,7 @@ const AdminCitations = () => {
   const handleOpenCreate = () => {
     setCurrentCitation({ title: '', url: '', logo: '', location: 'header', page_location: 'home', isPublished: true })
     setUploadFile(null)
+    setPreviewUrl('')
     setEditing(false)
     setOpen(true)
   }
@@ -127,21 +129,35 @@ const AdminCitations = () => {
   const handleEdit = (c: Citation) => {
     setCurrentCitation(c)
     setUploadFile(null)
+    setPreviewUrl(c.logo || '')
     setEditing(true)
     setOpen(true)
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setUploadFile(file)
+      // Create preview URL
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleDelete = (id: number) => {
-    if (!confirm('Are you sure you want to delete this citation?')) return
+    if (!confirm('Are you sure you want to delete this ad?')) return
     ;(async () => {
       try {
         const res = await fetch(`/api/citations/${id}`, { method: 'DELETE' })
         if (!res.ok) throw new Error('Delete failed')
         setCitations(prev => prev.filter(p => p.id !== id))
-        showSnackbar('Citation deleted successfully', 'success')
+        showSnackbar('Ad deleted successfully', 'success')
       } catch (err) {
         console.error(err)
-        showSnackbar('Failed to delete citation', 'error')
+        showSnackbar('Failed to delete ad', 'error')
       }
     })()
   }
@@ -164,10 +180,10 @@ const AdminCitations = () => {
         })
         if (!res.ok) throw new Error('Update failed')
         setCitations(prev => prev.map(c => c.id === citation.id ? { ...c, isPublished: updatedStatus } : c))
-        showSnackbar(`Citation ${updatedStatus ? 'activated' : 'deactivated'} successfully`, 'success')
+        showSnackbar(`Ad ${updatedStatus ? 'activated' : 'deactivated'} successfully`, 'success')
       } catch (err) {
         console.error(err)
-        showSnackbar('Failed to update citation status', 'error')
+        showSnackbar('Failed to update ad status', 'error')
       }
     })()
   }
@@ -175,10 +191,28 @@ const AdminCitations = () => {
   const handleSubmit = () => {
     (async () => {
       try {
+        let logoUrl = currentCitation.logo || ''
+
+        // Upload file if a new one is selected
+        if (uploadFile) {
+          const formData = new FormData()
+          formData.append('file', uploadFile)
+
+          const uploadRes = await fetch('/api/upload/citation-logo', {
+            method: 'POST',
+            body: formData
+          })
+
+          if (!uploadRes.ok) throw new Error('File upload failed')
+          
+          const uploadData = await uploadRes.json()
+          logoUrl = uploadData.url
+        }
+
         const payload = {
           title: currentCitation.title || '',
           url: currentCitation.url || '',
-          logo: uploadFile ? uploadFile.name : (currentCitation.logo || ''),
+          logo: logoUrl,
           location: currentCitation.location || 'header',
           page_location: currentCitation.page_location || 'home',
           isPublished: currentCitation.isPublished ?? true
@@ -192,7 +226,7 @@ const AdminCitations = () => {
           })
           if (!res.ok) throw new Error('Update failed')
           setCitations(prev => prev.map(p => (p.id === currentCitation.id ? { ...(p as any), ...payload, id: currentCitation.id } as Citation : p)))
-          showSnackbar('Citation updated successfully', 'success')
+          showSnackbar('Ad updated successfully', 'success')
         } else {
           const res = await fetch('/api/citations', {
             method: 'POST',
@@ -203,14 +237,15 @@ const AdminCitations = () => {
           const data = await res.json()
           const newC: Citation = { id: Number(data.id), title: payload.title, url: payload.url, logo: payload.logo, location: payload.location, page_location: payload.page_location, isPublished: payload.isPublished }
           setCitations(prev => [newC, ...prev])
-          showSnackbar('Citation created successfully', 'success')
+          showSnackbar('Ad created successfully', 'success')
         }
       } catch (err) {
         console.error(err)
-        showSnackbar('Failed to save citation', 'error')
+        showSnackbar('Failed to save ad', 'error')
       } finally {
         setOpen(false)
         setUploadFile(null)
+        setPreviewUrl('')
       }
     })()
   }
@@ -219,19 +254,19 @@ const AdminCitations = () => {
     <Box sx={{ py: 6 }}>
       <Container maxWidth="lg">
         <Typography variant="h4" sx={{ mb: 3, fontWeight: 700 }}>
-          Citation Management
+          Ads Management
         </Typography>
 
         <Paper sx={{ p: 3, mb: 4 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
-            Search Citations
+            Search Ads
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Citation"
-                placeholder="User"
+                label="Ad Name"
+                placeholder="Search by ad name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => {
@@ -345,7 +380,7 @@ const AdminCitations = () => {
             </Box>
 
             <Button onClick={handleOpenCreate} startIcon={<Add />} variant="contained">
-              Create Citation
+              Create Ad
             </Button>
           </Box>
 
@@ -356,10 +391,11 @@ const AdminCitations = () => {
                   <TableCell padding="checkbox">
                     <Checkbox disabled />
                   </TableCell>
-                  <TableCell>Citation</TableCell>
+                  <TableCell>Ad Name</TableCell>
                   <TableCell>URL</TableCell>
                   <TableCell align="center">Location</TableCell>
                   <TableCell align="center">Page</TableCell>
+                  <TableCell align="center">Image</TableCell>
                   <TableCell align="center">Status</TableCell>
                   <TableCell align="center">Action</TableCell>
                 </TableRow>
@@ -367,9 +403,9 @@ const AdminCitations = () => {
               <TableBody>
                 {paginated.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={7} align="center">
+                    <TableCell colSpan={8} align="center">
                       <Typography variant="body2" color="text.secondary">
-                        No citations match the filters.
+                        No ads match the filters.
                       </Typography>
                     </TableCell>
                   </TableRow>
@@ -390,6 +426,32 @@ const AdminCitations = () => {
                     <TableCell align="center">{c.location || '-'}</TableCell>
                     <TableCell align="center">
                       <Chip label={c.page_location || 'home'} size="small" />
+                    </TableCell>
+                    <TableCell align="center">
+                      {c.logo ? (
+                        <Box
+                          component="img"
+                          src={c.logo}
+                          alt={c.title}
+                          sx={{
+                            width: 60,
+                            height: 40,
+                            objectFit: 'contain',
+                            borderRadius: 1,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            cursor: 'pointer',
+                            '&:hover': {
+                              boxShadow: 2
+                            }
+                          }}
+                          onClick={() => window.open(c.logo, '_blank')}
+                        />
+                      ) : (
+                        <Typography variant="caption" color="text.secondary">
+                          No image
+                        </Typography>
+                      )}
                     </TableCell>
                     <TableCell align="center">
                       <Chip
@@ -434,7 +496,7 @@ const AdminCitations = () => {
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
         <DialogTitle sx={{ pr: 6 }}>
-          {editing ? 'Edit Citation' : 'Create Citation'}
+          {editing ? 'Edit Ad' : 'Create Ad'}
           <IconButton aria-label="close" onClick={() => setOpen(false)} sx={{ position: 'absolute', right: 12, top: 12 }}>
             <Close />
           </IconButton>
@@ -446,13 +508,13 @@ const AdminCitations = () => {
               <TableBody>
                 <TableRow>
                   <TableCell sx={{ width: '30%', fontWeight: 600 }}>
-                    Citation Type *
+                    Ad Name *
                   </TableCell>
                   <TableCell>
                     <TextField
                       fullWidth
                       variant="standard"
-                      placeholder="Citation Name"
+                      placeholder="Ad Name"
                       value={currentCitation.title || ''}
                       onChange={(e) => setCurrentCitation({...currentCitation, title: e.target.value})}
                     />
@@ -512,10 +574,39 @@ const AdminCitations = () => {
                 <TableRow>
                   <TableCell sx={{ fontWeight: 600 }}>Upload File</TableCell>
                   <TableCell>
-                    <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => setUploadFile(e.target.files?.[0] || null)} />
-                    <Typography variant="caption" sx={{ mt: 1, display: 'block' }}>
-                      Allowed formats: .jpg, .jpeg or .png
-                    </Typography>
+                    <Box>
+                      <input 
+                        type="file" 
+                        accept=".jpg,.jpeg,.png" 
+                        onChange={handleFileChange}
+                        style={{ marginBottom: '8px' }}
+                      />
+                      <Typography variant="caption" sx={{ display: 'block', color: 'text.secondary', mb: 1 }}>
+                        Allowed formats: .jpg, .jpeg or .png (Max 5MB)
+                      </Typography>
+                      {previewUrl && (
+                        <Box sx={{ mt: 2 }}>
+                          <Typography variant="caption" sx={{ display: 'block', mb: 1, fontWeight: 600 }}>
+                            Preview:
+                          </Typography>
+                          <Box
+                            component="img"
+                            src={previewUrl}
+                            alt="Preview"
+                            sx={{
+                              maxWidth: 200,
+                              maxHeight: 100,
+                              objectFit: 'contain',
+                              border: '1px solid',
+                              borderColor: 'divider',
+                              borderRadius: 1,
+                              p: 1,
+                              bgcolor: 'grey.50'
+                            }}
+                          />
+                        </Box>
+                      )}
+                    </Box>
                   </TableCell>
                 </TableRow>
 
@@ -560,7 +651,7 @@ const AdminCitations = () => {
 
 AdminCitations.getLayout = function getLayout(page: React.ReactElement) {
   return (
-    <AdminLayout title="Citation Management" breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Citation' }]}>
+    <AdminLayout title="Ads Management" breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Ads' }]}>
       {page}
     </AdminLayout>
   )
