@@ -43,6 +43,7 @@ import DownloadIcon from '@mui/icons-material/Download'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import SearchIcon from '@mui/icons-material/Search'
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
 
 type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null; chapterType?: string; videoUrl?: string }
 type Section = { title: string; chapters: Chapter[] }
@@ -274,7 +275,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
     }
   }
 
-  const normalizedQuery = query.trim().toLowerCase()
+  const normalizedQuery = searchQuery.trim().toLowerCase()
   const filteredSections = sections.map(sec => ({
     title: sec.title,
     chapters: normalizedQuery ? sec.chapters.filter(ch => ch.title.toLowerCase().includes(normalizedQuery)) : sec.chapters,
@@ -317,9 +318,9 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
       <Head>
         <title>{title} | Book</title>
       </Head>
-      
+
       {/* Hero Section */}
-      <Box sx={{ 
+      <Box sx={{
         background: 'linear-gradient(180deg, #F0F9FF 0%, #FFF 100%)',
         pt: { xs: 4, md: 8 },
         pb: { xs: 6, md: 10 },
@@ -331,18 +332,18 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
             {/* Left: Cover Image */}
             <Grid item xs={12} md={4} lg={3.5}>
               <Box sx={{ position: 'relative', mx: 'auto', maxWidth: '300px' }}>
-                <Box 
-                  component="img" 
-                  src={cover} 
-                  alt={title} 
-                  sx={{ 
-                    width: '100%', 
+                <Box
+                  component="img"
+                  src={cover}
+                  alt={title}
+                  sx={{
+                    width: '100%',
                     borderRadius: '1.5rem',
                     boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
                     transform: 'rotate(-2deg)',
                     transition: 'transform 0.3s ease',
                     '&:hover': { transform: 'rotate(0deg) scale(1.02)' }
-                  }} 
+                  }}
                 />
               </Box>
             </Grid>
@@ -352,9 +353,9 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {/* Badges */}
                 <Stack direction="row" spacing={1}>
-                  <Chip 
-                    label="Book" 
-                    sx={{ 
+                  <Chip
+                    label="Book"
+                    sx={{
                       background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
                       color: 'white',
                       fontWeight: 700,
@@ -363,14 +364,14 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
                       fontSize: '0.75rem',
                       height: '28px',
                       boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)'
-                    }} 
+                    }}
                   />
                 </Stack>
 
                 {/* Title */}
-                <Typography variant="h1" sx={{ 
-                  fontFamily: '"Georgia", serif', 
-                  fontWeight: 700, 
+                <Typography variant="h1" sx={{
+                  fontFamily: '"Georgia", serif',
+                  fontWeight: 700,
                   color: '#0A2540',
                   fontSize: { xs: '2.5rem', md: '3.5rem' },
                   lineHeight: 1.1
@@ -530,10 +531,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
               >
                 {expandAll ? 'Collapse All' : 'Expand All'}
               </Button>
-
             </Box>
-            </Stack>
-
 
             {filteredSections.map((sec, sIdx) => (
               <Accordion
@@ -554,9 +552,9 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
                   }
                 }}
               >
-                <AccordionSummary 
-                  expandIcon={<ExpandMoreIcon sx={{ color: '#64748B' }} />} 
-                  sx={{ 
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon sx={{ color: '#64748B' }} />}
+                  sx={{
                     backgroundColor: '#fff',
                     borderBottom: (expandAll || !!expanded[sIdx]) ? '1px solid #F1F5F9' : 'none',
                     px: 3,
@@ -575,12 +573,11 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
                       const shouldShowUnlock = !shouldShowLock
 
                       return (
-
-                        <ListItem 
-                          key={`${sec.title}-${idx}`} 
-                          sx={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                        <ListItem
+                          key={`${sec.title}-${idx}`}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
                             gap: 2,
                             py: 2,
                             px: 3,
@@ -593,13 +590,13 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
                           {ch.slug ? (
                             <>
                               <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
-                                <Box sx={{ 
-                                  width: 32, 
-                                  height: 32, 
-                                  borderRadius: '50%', 
-                                  bgcolor: '#F1F5F9', 
-                                  display: 'flex', 
-                                  alignItems: 'center', 
+                                <Box sx={{
+                                  width: 32,
+                                  height: 32,
+                                  borderRadius: '50%',
+                                  bgcolor: '#F1F5F9',
+                                  display: 'flex',
+                                  alignItems: 'center',
                                   justifyContent: 'center',
                                   mr: 2,
                                   color: '#64748B',
@@ -631,13 +628,13 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
                             </>
                           ) : (
                             <>
-                              <Box sx={{ 
-                                width: 32, 
-                                height: 32, 
-                                borderRadius: '50%', 
-                                bgcolor: '#F1F5F9', 
-                                display: 'flex', 
-                                alignItems: 'center', 
+                              <Box sx={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: '50%',
+                                bgcolor: '#F1F5F9',
+                                display: 'flex',
+                                alignItems: 'center',
                                 justifyContent: 'center',
                                 mr: 2,
                                 color: '#64748B',
@@ -660,7 +657,6 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
                                 </Tooltip>
                               )}
                             </>
-
                           )}
 
                           {/* Download PDF button on the right */}
@@ -689,49 +685,6 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
 
         {tab === 1 && (
           <Box>
-
-            {videosCount > 0 ? (
-              <List disablePadding>
-                {sections.find(s => s.title === 'Videos')?.chapters.map((video, idx) => (
-                  <ListItem 
-                    key={idx} 
-                    sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: 2,
-                      py: 2,
-                      px: 3,
-                      borderBottom: '1px solid #F8FAFC',
-                      '&:last-child': { borderBottom: 'none' },
-                      transition: 'background-color 0.2s',
-                      '&:hover': { backgroundColor: '#F8FAFC' }
-                    }}
-                  >
-                    <NextLink href={video.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
-                      <Box sx={{ 
-                        width: 40, 
-                        height: 40, 
-                        borderRadius: '50%', 
-                        bgcolor: '#F0F9FF', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        mr: 2,
-                        color: '#0A2540',
-                      }}>
-                        <span style={{ fontSize: '1.2rem' }}>▶</span>
-                      </Box>
-                      <Typography sx={{
-                        color: '#334155',
-                        fontWeight: 500,
-                        fontSize: '1.05rem',
-                        transition: 'color 0.2s',
-                        '&:hover': { color: '#0A2540' }
-                      }}>
-                        {video.title}
-                      </Typography>
-                    </NextLink>
-
             {cases.length > 0 ? (
               <List>
                 {cases.map((caseItem, idx) => (
@@ -751,7 +704,6 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
                         {caseItem.title}
                       </Typography>
                     )}
-
                   </ListItem>
                 ))}
               </List>
@@ -762,7 +714,55 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
         )}
 
         {tab === 2 && (
-          <Typography variant="body2" color="text.secondary">Videos coming soon</Typography>
+          <Box>
+            {videosCount > 0 ? (
+              <List disablePadding>
+                {sections.find(s => s.title === 'Videos')?.chapters.map((video, idx) => (
+                  <ListItem
+                    key={idx}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2,
+                      py: 2,
+                      px: 3,
+                      borderBottom: '1px solid #F8FAFC',
+                      '&:last-child': { borderBottom: 'none' },
+                      transition: 'background-color 0.2s',
+                      '&:hover': { backgroundColor: '#F8FAFC' }
+                    }}
+                  >
+                    <NextLink href={video.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        bgcolor: '#F0F9FF',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mr: 2,
+                        color: '#0A2540',
+                      }}>
+                        <span style={{ fontSize: '1.2rem' }}>▶</span>
+                      </Box>
+                      <Typography sx={{
+                        color: '#334155',
+                        fontWeight: 500,
+                        fontSize: '1.05rem',
+                        transition: 'color 0.2s',
+                        '&:hover': { color: '#0A2540' }
+                      }}>
+                        {video.title}
+                      </Typography>
+                    </NextLink>
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography variant="body2" color="text.secondary">No videos available</Typography>
+            )}
+          </Box>
         )}
 
         {tab === 3 && (
@@ -1336,7 +1336,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       }
     } catch { }
 
-    return { props: { isbn: isbnStr, book, sections, cases, bookPdfUrl, videosCount: 0, casesCount: cases.length, reviewsCount: 0 } }
+    return { props: { isbn: isbnStr, book, sections, cases, bookPdfUrl, videosCount: videos.length, casesCount: cases.length, reviewsCount: 0 } }
 
   } catch (e) {
     console.error('Error loading book metadata:', e)

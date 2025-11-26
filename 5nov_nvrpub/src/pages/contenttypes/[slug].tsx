@@ -20,6 +20,8 @@ import MenuBookIcon from '@mui/icons-material/MenuBook'
 import CategoryIcon from '@mui/icons-material/Category'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import YouTubeIcon from '@mui/icons-material/YouTube'
 import { MainLayout } from '@/components/layout'
 import { Content } from '@/interfaces/content'
 
@@ -62,6 +64,120 @@ const GradientText = styled('span')(({ theme }) => ({
   WebkitTextFillColor: 'transparent',
 }))
 
+const VideoCard = ({ video, index }: { video: any, index: number }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const getYoutubeId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const videoId = getYoutubeId(video.url);
+  const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : FALLBACK_IMAGE;
+
+  return (
+    <StyledCard
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
+    >
+      <Box sx={{ position: 'relative', pt: '56.25%', backgroundColor: '#000' }}>
+        {isPlaying && videoId ? (
+          <iframe
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              border: 0
+            }}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <>
+            <Box
+              component="img"
+              src={thumbnailUrl}
+              alt={video.title}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+              onError={(e: any) => { e.target.src = FALLBACK_IMAGE }}
+            />
+            <Box
+              className="cover-overlay"
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(0,0,0,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background 0.3s ease',
+                '&:hover': {
+                  background: 'rgba(0,0,0,0.5)',
+                }
+              }}
+              onClick={() => setIsPlaying(true)}
+            >
+              <Box
+                sx={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(255,255,255,0.9)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                  transition: 'transform 0.2s ease',
+                  '&:hover': {
+                    transform: 'scale(1.1)',
+                  }
+                }}
+              >
+                <PlayArrowIcon sx={{ fontSize: 32, color: '#FF6B6B', ml: 0.5 }} />
+              </Box>
+            </Box>
+          </>
+        )}
+      </Box>
+
+      <Box sx={{ p: 2.5, flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 700,
+            fontSize: '1.1rem',
+            mb: 1,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            lineHeight: 1.3,
+            color: '#0A2540',
+          }}
+        >
+          {video.title}
+        </Typography>
+
+
+      </Box>
+    </StyledCard>
+  );
+};
+
 const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, contenttypeData, contents, subjectcategories }) => {
   const theme = useTheme()
   const [activeSubjectcategory, setActiveSubjectcategory] = useState(0)
@@ -80,7 +196,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
   const totalCategories = subjectcategories.length
 
   const heroStats = [
-    { label: 'Books available', value: totalContents, icon: <MenuBookIcon /> },
+    { label: `${contenttype === 'videos' ? 'Videos' : 'Books'} available`, value: totalContents, icon: <MenuBookIcon /> },
     { label: 'Subject categories', value: totalCategories || '—', icon: <CategoryIcon /> },
     { label: 'Showing now', value: filteredContents.length, icon: <FilterListIcon /> },
   ]
@@ -147,7 +263,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                 </Stack>
               </motion.div>
             </Grid>
-            
+
             {/* Decorative Image/Graphic could go here in the other grid column */}
           </Grid>
         </Container>
@@ -178,7 +294,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                     color: activeSubjectcategory === 0 ? '#fff' : 'text.secondary',
                   }}
                 >
-                  All Books
+                  All {contenttype === 'videos' ? 'Videos' : 'Books'}
                 </Button>
                 {subjectcategories.map((category, index) => (
                   <Button
@@ -204,10 +320,18 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
             </Box>
           )}
 
-          {/* Books Grid */}
+          {/* Content Grid */}
           {filteredContents.length > 0 ? (
             <Grid container spacing={4}>
-              {filteredContents.map((content: Content, index) => {
+              {filteredContents.map((content: any, index) => {
+                if (contenttype === 'videos') {
+                  return (
+                    <Grid item xs={12} sm={6} md={4} key={index}>
+                      <VideoCard video={content} index={index} />
+                    </Grid>
+                  )
+                }
+
                 const imageSrc = content.image || content.coverImage || FALLBACK_IMAGE
                 const ratingValue = Math.max(0, Math.min(5, Number(content.rating) || 0))
 
@@ -278,7 +402,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                           >
                             {content.title}
                           </Typography>
-                          
+
                           <Typography
                             variant="body2"
                             sx={{
@@ -323,16 +447,16 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
               <Box sx={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
                 <MenuBookIcon sx={{ fontSize: 32, color: 'text.secondary' }} />
               </Box>
-              <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>No books found</Typography>
+              <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>No items found</Typography>
               <Typography color="text.secondary" sx={{ mb: 3, maxWidth: 400, mx: 'auto' }}>
-                We couldn't find any books in this category. Try selecting a different category or view all books.
+                We couldn't find any items in this category. Try selecting a different category or view all.
               </Typography>
               <Button
                 onClick={() => setActiveSubjectcategory(0)}
                 variant="outlined"
                 sx={{ borderRadius: '999px', textTransform: 'none' }}
               >
-                View All Books
+                View All
               </Button>
             </Box>
           )}
@@ -353,17 +477,30 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     const contenttypesData = await contenttypeRes.json()
     let contenttypeData = contenttypesData.find((ct: any) => ct.slug === slug)
 
-    // Fallback for books if not in DB
-    if (!contenttypeData && slug === 'books') {
-      contenttypeData = {
-        id: 999, // Dummy ID
-        title: 'Books',
-        slug: 'books',
-        description: 'Explore our comprehensive collection of medical textbooks and reference materials.',
-        icon: 'MenuBook', // Using a standard icon name
-        displayOrder: 1,
-        ishomepage: 0,
-        isActive: 1
+    // Fallback for books/videos if not in DB
+    if (!contenttypeData) {
+      if (slug === 'books') {
+        contenttypeData = {
+          id: 999,
+          title: 'Books',
+          slug: 'books',
+          description: 'Explore our comprehensive collection of medical textbooks and reference materials.',
+          icon: 'MenuBook',
+          displayOrder: 1,
+          ishomepage: 0,
+          isActive: 1
+        }
+      } else if (slug === 'videos') {
+        contenttypeData = {
+          id: 998,
+          title: 'Videos',
+          slug: 'videos',
+          description: 'Interactive video lectures and tutorials designed to enhance your learning experience.',
+          icon: 'PlayCircle',
+          displayOrder: 2,
+          ishomepage: 0,
+          isActive: 1
+        }
       }
     }
 
@@ -373,13 +510,35 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       }
     }
 
-    // Fetch data depending on content type (books use dedicated table)
+    // Fetch data depending on content type
     let contents: any[] = []
     if (slug === 'books') {
       const booksRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/books/active`)
       const booksPayload = await booksRes.json()
       const allBooks = Array.isArray(booksPayload?.data) ? booksPayload.data : booksPayload
       contents = allBooks
+    } else if (slug === 'videos') {
+      // Hardcoded videos as requested
+      contents = [
+        {
+          id: 1,
+          title: 'Anuv Jain X Lost Stories - Arz Kiya Hai (Official Video) | Coke Studio Bharat',
+          url: 'https://youtu.be/bP8ATWCvqzw?si=g4IQyqgymXdjOQda',
+          subjectcategoryId: 0 // General
+        },
+        {
+          id: 2,
+          title: 'Kaifi Khalil - Kahani Suno 2.0 [Official Music Video]',
+          url: 'https://youtu.be/_XBVWlI8TsQ?si=eAiRUnlZ_P9MjmRZ',
+          subjectcategoryId: 0 // General
+        },
+        {
+          id: 3,
+          title: 'HASEEN - TALWIINDER, NDS, RIPPY (Official Visualizer)',
+          url: 'https://youtu.be/IltsOcCj1Ak?si=k-bqCL5EbAD7GTYs',
+          subjectcategoryId: 0 // General
+        }
+      ]
     } else {
       const contentsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/contents`)
       const allContents = await contentsRes.json()
@@ -387,31 +546,23 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     }
 
     // Fetch subject categories data
-    const subjectcategoriesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/subjectcategories`)
-    const allSubjectcategories = await subjectcategoriesRes.json()
+    let subjectcategories = []
+    if (slug !== 'videos') {
+      const subjectcategoriesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/subjectcategories`)
+      const allSubjectcategories = await subjectcategoriesRes.json()
 
-    if (!Array.isArray(allSubjectcategories)) {
-      console.error('Failed to fetch subject categories:', allSubjectcategories)
-      return {
-        props: {
-          contenttype: slug,
-          contenttypeData,
-          contents,
-          subjectcategories: [],
-        },
+      if (Array.isArray(allSubjectcategories)) {
+        const uniqueIds = new Set(
+          contents
+            .map((content: any) => Number(content.subjectcategoryId))
+            .filter((id: number) => Number.isFinite(id) && id > 0)
+        )
+        const contentSubjectcategoryIds = Array.from(uniqueIds)
+        subjectcategories = allSubjectcategories.filter((sc: any) =>
+          contentSubjectcategoryIds.includes(sc.id)
+        )
       }
     }
-
-    // Get unique subject categories for this content type
-    const uniqueIds = new Set(
-      contents
-        .map((content: any) => Number(content.subjectcategoryId))
-        .filter((id: number) => Number.isFinite(id) && id > 0)
-    )
-    const contentSubjectcategoryIds = Array.from(uniqueIds)
-    const subjectcategories = allSubjectcategories.filter((sc: any) =>
-      contentSubjectcategoryIds.includes(sc.id)
-    )
 
     return {
       props: {
@@ -425,6 +576,12 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     console.error('Error fetching data:', error)
     return {
       notFound: true,
+      props: {
+        contenttype: slug,
+        contenttypeData: null,
+        contents: [],
+        subjectcategories: []
+      }
     }
   }
 }
