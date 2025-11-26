@@ -344,12 +344,15 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
 
 ContenttypeDetailsPage.getLayout = (page: React.ReactElement) => <MainLayout>{page}</MainLayout>
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps = async ({ params, req }) => {
   const { slug } = params!
+  const protocol = req.headers['x-forwarded-proto'] || 'http'
+  const host = req.headers.host
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`
 
   try {
     // Fetch content type data
-    const contenttypeRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/contenttypes`)
+    const contenttypeRes = await fetch(`${apiUrl}/api/contenttypes`)
     const contenttypesData = await contenttypeRes.json()
     let contenttypeData = contenttypesData.find((ct: any) => ct.slug === slug)
 
@@ -376,18 +379,18 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     // Fetch data depending on content type (books use dedicated table)
     let contents: any[] = []
     if (slug === 'books') {
-      const booksRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/books/active`)
+      const booksRes = await fetch(`${apiUrl}/api/books/active`)
       const booksPayload = await booksRes.json()
       const allBooks = Array.isArray(booksPayload?.data) ? booksPayload.data : booksPayload
       contents = allBooks
     } else {
-      const contentsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/contents`)
+      const contentsRes = await fetch(`${apiUrl}/api/contents`)
       const allContents = await contentsRes.json()
       contents = allContents.filter((content: any) => content.contentTypeId === contenttypeData.id)
     }
 
     // Fetch subject categories data
-    const subjectcategoriesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/subjectcategories`)
+    const subjectcategoriesRes = await fetch(`${apiUrl}/api/subjectcategories`)
     const allSubjectcategories = await subjectcategoriesRes.json()
 
     if (!Array.isArray(allSubjectcategories)) {
