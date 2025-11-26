@@ -11,6 +11,7 @@ export interface Content {
   displayOrder: number
   contentTypeId: number
   subjectcategoryId: number
+  subject?: string
   ishomepage?: number
   createdAt?: string
 
@@ -30,4 +31,5 @@ export interface Content {
   status?: string
   order?: number
   categoryId?: number
+  [key: string]: any; // Add an index signature to allow arbitrary properties
 }
