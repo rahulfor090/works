@@ -41,14 +41,14 @@ const ContentCardItem: FC<Props> = ({ item, contenttypeSlug }) => {
             mb: 2,
           }}
         >
-          <Link href={slug === 'books' ? `/content/book/${item.isbn || item.id}` : `/contenttypes/${slug}/${item.id}`}>
+          <Link href={slug === 'books' ? `/content/book/${item.isbn || item.id}` : slug === 'journals' ? `/content/journal/${item.id}` : `/contenttypes/${slug}/${item.id}`}>
             <Box sx={{ display: 'inline-block' }}>
               <Image src={item.coverImage || item.cover || '/images/courses/JMEDS_Cover.jpeg'} width={234} height={326} alt={'Content ' + item.id} />
             </Box>
           </Link>
         </Box>
         <Box sx={{ mb: 2 }}>
-          <Link href={slug === 'books' ? `/content/book/${item.isbn || item.id}` : `/contenttypes/${slug}/${item.id}`} style={{ textDecoration: 'none' }}>
+          <Link href={slug === 'books' ? `/content/book/${item.isbn || item.id}` : slug === 'journals' ? `/content/journal/${item.id}` : `/contenttypes/${slug}/${item.id}`} style={{ textDecoration: 'none' }}>
             <Typography variant="h5" sx={{ mb: 1, height: 56, overflow: 'hidden', fontSize: '1.2rem', color: 'text.primary', '&:hover': { color: 'primary.main' } }}>
               {item.title}
             </Typography>
