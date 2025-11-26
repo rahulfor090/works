@@ -191,7 +191,7 @@ const HeroSlider = forwardRef<HeroSliderHandle, HeroSliderProps>(({ onSlideChang
   return (
     <div className="relative w-full">
       <div
-        className="relative w-full aspect-[4/5] max-h-[520px] rounded-[32px] bg-white/5 backdrop-blur-2xl shadow-[0_25px_90px_rgba(15,23,42,0.3)] border border-white/10 overflow-hidden"
+        className="relative w-full aspect-[4/5] max-h-[420px] rounded-[32px] overflow-hidden"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
@@ -213,54 +213,6 @@ const HeroSlider = forwardRef<HeroSliderHandle, HeroSliderProps>(({ onSlideChang
             />
           </motion.div>
         </AnimatePresence>
-
-        <button
-          type="button"
-          aria-label={isPaused ? 'Resume slider' : 'Pause slider'}
-          className="absolute top-6 right-6 p-2 rounded-full bg-black/40 text-white hover:bg-black/60 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
-          onClick={() => setIsPaused((prev) => !prev)}
-        >
-          {isPaused ? <Play size={16} /> : <Pause size={16} />}
-        </button>
-      </div>
-
-      <div className="mt-6 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          {slides.map((slide, index) => (
-            <button
-              key={slide.id ?? index}
-              className="flex-1 h-1.5 rounded-full overflow-hidden bg-slate-200"
-              onClick={() => {
-                setDirection(index > currentIndex ? 1 : -1);
-                setCurrentIndex(index);
-              }}
-              aria-label={`Go to slide ${index + 1}`}
-            >
-              <span
-                className={`block h-full bg-gradient-to-r ${slide.accent ?? 'from-slate-900 to-slate-700'}`}
-                style={{
-                  width: index === currentIndex ? '100%' : '0%',
-                  transition: index === currentIndex ? 'width 6s linear' : 'width 0.4s ease'
-                }}
-              />
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center justify-between text-sm text-slate-500">
-          <span className="font-medium text-slate-900">
-            0{currentIndex + 1} / 0{slides.length}
-          </span>
-          <div className="flex gap-2">
-            {slides.map((slide, index) => (
-              <span
-                key={`dot-${slide.id ?? index}`}
-                className={`w-2 h-2 rounded-full transition ${
-                  index === currentIndex ? 'bg-slate-900' : 'bg-slate-300'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

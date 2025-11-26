@@ -99,7 +99,7 @@ const Hero = (): JSX.Element => {
           </div>
 
           {/* Right Visual - Hero Slider */}
-          <div className="relative lg:h-[600px] flex items-center justify-center w-full">
+          <div className="relative lg:h-[500px] flex items-center justify-center w-full">
             <HeroSlider ref={sliderRef} onSlideChange={setActiveSlide} />
           </div>
         </div>

@@ -5,6 +5,7 @@ import SiteNavbar from '@/components/layout/SiteNavbar';
 import Hero from './components/Hero';
 import StatsSection from './components/StatsSection';
 import NewReleases from './components/NewReleases';
+
 import Specialties from './components/Specialties';
 import Testimonials from './components/Testimonials';
 import MostViewed from './components/MostViewed';
@@ -18,6 +19,7 @@ const HomePage = (): JSX.Element => {
       <Hero />
       <StatsSection />
       <NewReleases />
+
       <Specialties />
       <Testimonials />
       <MostViewed />

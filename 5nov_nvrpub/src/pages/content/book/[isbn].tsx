@@ -38,12 +38,11 @@ import FavoriteIcon from '@mui/icons-material/Favorite'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import CloseIcon from '@mui/icons-material/Close'
 import DownloadIcon from '@mui/icons-material/Download'
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
 import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import SearchIcon from '@mui/icons-material/Search'
 
-type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null; chapterType?: string }
+type Chapter = { id?: number; number?: number | null; title: string; slug?: string | null; chapterType?: string; videoUrl?: string }
 type Section = { title: string; chapters: Chapter[] }
 type Book = {
   id?: number
@@ -75,13 +74,11 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
   const author = book?.author || 'Unknown Author'
 
   const [tab, setTab] = React.useState(0)
-  const [query, setQuery] = React.useState('')
   const [expandAll, setExpandAll] = React.useState(false)
   const [expanded, setExpanded] = React.useState<Record<number, boolean>>({})
   const [favorite, setFavorite] = React.useState<boolean>(false)
   const [referDialogOpen, setReferDialogOpen] = React.useState(false)
   const [librarianDialogOpen, setLibrarianDialogOpen] = React.useState(false)
-  const [keywordsExpanded, setKeywordsExpanded] = React.useState(false)
   const [searchDialogOpen, setSearchDialogOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState('')
 
@@ -231,16 +228,10 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
     } catch { }
   }
 
-  const handleExpandAll = () => setExpandAll(true)
-  const handleCollapseAll = () => setExpandAll(false)
   const toggleExpandCollapse = () => setExpandAll(prev => !prev)
   const toggleSection = (idx: number) => setExpanded(prev => ({ ...prev, [idx]: !prev[idx] }))
 
-  const normalizedQuery = query.trim().toLowerCase()
-  const filteredSections = sections.map(sec => ({
-    title: sec.title,
-    chapters: normalizedQuery ? sec.chapters.filter(ch => ch.title.toLowerCase().includes(normalizedQuery)) : sec.chapters,
-  }))
+  const filteredSections = sections
 
   // Compute search results
   const searchResults = React.useMemo(() => {
@@ -279,134 +270,187 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
       <Head>
         <title>{title} | Book</title>
       </Head>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-        <Box sx={{
-          width: '80%',
-          height: '2px',
-          background: 'linear-gradient(to right, transparent, #FF6B6B 20%, #FF8E53 80%, transparent)',
-          opacity: 0.4
-        }} />
-      </Box>
-      <Container sx={{ py: 6 }}>
-        <Grid container spacing={3} alignItems="center" sx={{ mb: 2 }}>
-          <Grid item xs={12} md={3.2} sx={{ pr: 3 }}>
-            <Box component="img" src={cover} alt={title} sx={{ width: '100%', borderRadius: 1 }} />
-          </Grid>
-          <Grid item xs={12} md={8.8}>
-            <Typography variant="h4" sx={{ mb: 1, fontWeight: 700, color: '#0A2540', fontSize: { xs: '2rem', md: '2.5rem' }, letterSpacing: '-0.02em' }}>{title}</Typography>
-            {author && <Typography variant="body1" sx={{ mb: 2, color: '#64748B', fontSize: '1.125rem' }}>{author}</Typography>}
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 3 }}>
-              <Chip
-                label="Book"
-                size="small"
-                sx={{
-                  background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
-                  color: 'white',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  fontSize: '0.7rem',
-                  height: '24px'
-                }}
-              />
-              <Typography variant="body2" sx={{ color: '#94A3B8', fontFamily: 'SF Mono, monospace' }}>ISBN: {isbn}</Typography>
-              <Divider orientation="vertical" flexItem sx={{ mx: 1, borderColor: '#E2E8F0' }} />
-              <Tooltip title="Refer to Friend">
-                <IconButton onClick={handleReferFriend} size="small" sx={{ color: '#0A2540', '&:hover': { color: '#3B82F6', backgroundColor: '#F1F5F9' } }}><PersonAddAlt1Icon fontSize="small" /></IconButton>
-              </Tooltip>
-              <Tooltip title="Recommend to Librarian">
-                <IconButton onClick={handleRecommendLibrarian} size="small" sx={{ color: '#0A2540', '&:hover': { color: '#3B82F6', backgroundColor: '#F1F5F9' } }}><SchoolIcon fontSize="small" /></IconButton>
-              </Tooltip>
-              <Tooltip title="Share This Page">
-                <IconButton onClick={handleSharePage} size="small" sx={{ color: '#0A2540', '&:hover': { color: '#3B82F6', backgroundColor: '#F1F5F9' } }}><ShareIcon fontSize="small" /></IconButton>
-              </Tooltip>
-              <Tooltip title={favorite ? 'Remove from favourites' : 'Add to favourites'}>
-                <IconButton onClick={toggleFavorite} size="small" sx={{ color: favorite ? '#EF4444' : '#0A2540', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
-                  {favorite ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
-                </IconButton>
-              </Tooltip>
-            </Stack>
-            {book?.description && (
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="body1" sx={{ color: '#64748B', lineHeight: 1.7 }}>{book.description}</Typography>
+      
+      {/* Hero Section */}
+      <Box sx={{ 
+        background: 'linear-gradient(180deg, #F0F9FF 0%, #FFF 100%)',
+        pt: { xs: 4, md: 8 },
+        pb: { xs: 6, md: 10 },
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={6} alignItems="flex-start">
+            {/* Left: Cover Image */}
+            <Grid item xs={12} md={4} lg={3.5}>
+              <Box sx={{ position: 'relative', mx: 'auto', maxWidth: '300px' }}>
+                <Box 
+                  component="img" 
+                  src={cover} 
+                  alt={title} 
+                  sx={{ 
+                    width: '100%', 
+                    borderRadius: '1.5rem',
+                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+                    transform: 'rotate(-2deg)',
+                    transition: 'transform 0.3s ease',
+                    '&:hover': { transform: 'rotate(0deg) scale(1.02)' }
+                  }} 
+                />
               </Box>
-            )}
-            {book?.keywords && (
-              <Box sx={{ mt: 3 }}>
-                <Accordion disableGutters expanded={keywordsExpanded} onChange={() => setKeywordsExpanded(!keywordsExpanded)}
-                  sx={{
-                    backgroundColor: 'transparent',
-                    boxShadow: 'none',
-                    '&:before': { display: 'none' }
-                  }}>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#0A2540' }} />}>
-                    <Typography sx={{ fontWeight: 600, fontSize: '1.1rem', color: '#0A2540' }}>Keywords</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-                      {(book.keywords || '')
-                        .split(',')
-                        .map(k => k.trim())
-                        .filter(Boolean)
-                        .map((kw, idx) => (
-                          <Chip
-                            key={`kw-${idx}`}
-                            label={kw}
-                            size="small"
-                            sx={{
-                              color: '#64748B',
-                              borderColor: '#E2E8F0',
-                              backgroundColor: '#F8FAFC',
-                              fontWeight: 500,
-                              '&:hover': { backgroundColor: '#F1F5F9' }
-                            }}
-                          />
-                        ))}
-                    </Box>
-                  </AccordionDetails>
-                </Accordion>
-              </Box>
-            )}
-            <Box sx={{ mt: 2 }}>
-              <Box
-                onClick={() => setSearchDialogOpen(true)}
-                sx={{
-                  cursor: 'pointer',
-                  border: '1px solid',
-                  borderColor: '#E2E8F0',
-                  borderRadius: '2rem',
-                  px: 3,
-                  py: 1.5,
-                  display: 'flex',
-                  alignItems: 'center',
-                  transition: 'all 0.2s',
-                  backgroundColor: '#F8FAFC',
-                  '&:hover': {
-                    borderColor: '#3B82F6',
-                    backgroundColor: '#ffffff',
-                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.1)'
-                  }
-                }}
-              >
-                <SearchIcon sx={{ fontSize: 18, color: 'text.secondary', mr: 0.75 }} />
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  Search within {title}
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
+            </Grid>
 
+            {/* Right: Details */}
+            <Grid item xs={12} md={8} lg={8.5}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {/* Badges */}
+                <Stack direction="row" spacing={1}>
+                  <Chip 
+                    label="Book" 
+                    sx={{ 
+                      background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                      color: 'white',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      fontSize: '0.75rem',
+                      height: '28px',
+                      boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)'
+                    }} 
+                  />
+                </Stack>
+
+                {/* Title */}
+                <Typography variant="h1" sx={{ 
+                  fontFamily: '"Georgia", serif', 
+                  fontWeight: 700, 
+                  color: '#0A2540',
+                  fontSize: { xs: '2.5rem', md: '3.5rem' },
+                  lineHeight: 1.1
+                }}>
+                  {title}
+                </Typography>
+
+                {/* Author */}
+                {author && (
+                  <Typography variant="h5" sx={{ color: '#64748B', fontWeight: 500 }}>
+                    by {author}
+                  </Typography>
+                )}
+
+                {/* Stats / Meta */}
+                <Stack direction="row" spacing={3} sx={{ my: 2, color: '#64748B' }} divider={<Divider orientation="vertical" flexItem />}>
+                  <Box>
+                    <Typography variant="caption" display="block" sx={{ textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>ISBN</Typography>
+                    <Typography variant="subtitle2" color="#0A2540" fontWeight={600}>{isbn}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="caption" display="block" sx={{ textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>Chapters</Typography>
+                    <Typography variant="subtitle2" color="#0A2540" fontWeight={600}>{sections.reduce((acc, s) => acc + s.chapters.length, 0)}</Typography>
+                  </Box>
+                </Stack>
+
+                {/* Description */}
+                {book?.description && (
+                  <Typography variant="body1" sx={{ color: '#475569', lineHeight: 1.8, maxWidth: '90%', fontSize: '1.1rem' }}>
+                    {book.description}
+                  </Typography>
+                )}
+
+                {/* Actions Toolbar */}
+                <Stack direction="row" spacing={2} sx={{ mt: 2 }} alignItems="center">
+                  <Button
+                    variant="contained"
+                    disabled={!bookPdfUrl}
+                    href={bookPdfUrl || undefined}
+                    startIcon={<DownloadIcon />}
+                    sx={{
+                      textTransform: 'none',
+                      borderRadius: '2rem',
+                      background: '#0A2540',
+                      color: 'white',
+                      fontWeight: 600,
+                      px: 4,
+                      py: 1.5,
+                      boxShadow: '0 10px 20px -5px rgba(10, 37, 64, 0.3)',
+                      '&:hover': {
+                        background: '#1e3a5f',
+                        boxShadow: '0 15px 30px -5px rgba(10, 37, 64, 0.4)',
+                      }
+                    }}
+                  >
+                    Download PDF
+                  </Button>
+
+                  <Tooltip title="Refer to Friend">
+                    <IconButton onClick={handleReferFriend} sx={{ color: '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
+                      <PersonAddAlt1Icon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Recommend to Librarian">
+                    <IconButton onClick={handleRecommendLibrarian} sx={{ color: '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
+                      <SchoolIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Share This Page">
+                    <IconButton onClick={handleSharePage} sx={{ color: '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
+                      <ShareIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={favorite ? 'Remove from favourites' : 'Add to favourites'}>
+                    <IconButton onClick={toggleFavorite} sx={{ color: favorite ? '#EF4444' : '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#EF4444', borderColor: '#EF4444', background: 'transparent' } }}>
+                      {favorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+
+                {/* Search Bar */}
+                <Box sx={{ mt: 3, maxWidth: '600px' }}>
+                  <Box
+                    onClick={() => setSearchDialogOpen(true)}
+                    sx={{
+                      cursor: 'pointer',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: '1rem',
+                      px: 3,
+                      py: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      transition: 'all 0.2s',
+                      backgroundColor: 'white',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                      '&:hover': {
+                        borderColor: '#3B82F6',
+                        boxShadow: '0 10px 15px -3px rgba(59, 130, 246, 0.1)'
+                      }
+                    }}
+                  >
+                    <SearchIcon sx={{ fontSize: 20, color: '#94A3B8', mr: 1.5 }} />
+                    <Typography variant="body1" sx={{ color: '#94A3B8' }}>
+                      Search within this book...
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      <Container sx={{ py: 8 }} maxWidth="lg">
         <Tabs
           value={tab}
           onChange={(_, v) => setTab(v)}
           sx={{
             mb: 4,
+            borderBottom: '1px solid #E2E8F0',
             '& .MuiTab-root': {
               fontWeight: 600,
               color: '#64748B',
               textTransform: 'none',
-              fontSize: '1rem',
+              fontSize: '1.1rem',
+              px: 4,
+              py: 2,
               '&.Mui-selected': {
                 color: '#0A2540'
               }
@@ -420,52 +464,25 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         >
           <Tab label="Table of Contents" />
           <Tab label={`Videos (${videosCount})`} />
-
           <Tab label={`Reviews (${reviewsCount})`} />
         </Tabs>
 
         {tab === 0 && (
           <Box>
-            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
               <Button
-                variant="outlined"
+                variant="text"
                 onClick={toggleExpandCollapse}
                 sx={{
                   textTransform: 'none',
-                  borderRadius: '2rem',
-                  borderColor: '#E2E8F0',
                   color: '#0A2540',
                   fontWeight: 600,
-                  px: 3,
-                  '&:hover': {
-                    borderColor: '#0A2540',
-                    backgroundColor: 'transparent'
-                  }
+                  '&:hover': { background: 'transparent', textDecoration: 'underline' }
                 }}
               >
                 {expandAll ? 'Collapse All' : 'Expand All'}
               </Button>
-              <Button
-                variant="contained"
-                disabled={!bookPdfUrl}
-                href={bookPdfUrl || undefined}
-                endIcon={<PictureAsPdfIcon />}
-                sx={{
-                  textTransform: 'none',
-                  borderRadius: '2rem',
-                  background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
-                  boxShadow: '0 10px 25px rgba(255, 107, 107, 0.25)',
-                  fontWeight: 600,
-                  px: 4,
-                  '&:hover': {
-                    background: 'linear-gradient(to right, #FF5252, #FF7043)',
-                    boxShadow: '0 15px 30px rgba(255, 107, 107, 0.4)',
-                  }
-                }}
-              >
-                Download
-              </Button>
-            </Stack>
+            </Box>
 
             {filteredSections.map((sec, sIdx) => (
               <Accordion
@@ -474,23 +491,32 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                 expanded={expandAll || !!expanded[sIdx]}
                 onChange={() => toggleSection(sIdx)}
                 sx={{
-                  mb: 2,
+                  mb: 3,
                   borderRadius: '1rem !important',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
                   border: '1px solid #F1F5F9',
                   '&:before': { display: 'none' },
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                  }
                 }}
               >
-                <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#64748B' }} />} sx={{ backgroundColor: '#F8FAFC' }}>
-                  <Typography sx={{ fontWeight: 600, color: '#0A2540' }}>{sec.title}</Typography>
+                <AccordionSummary 
+                  expandIcon={<ExpandMoreIcon sx={{ color: '#64748B' }} />} 
+                  sx={{ 
+                    backgroundColor: '#fff',
+                    borderBottom: (expandAll || !!expanded[sIdx]) ? '1px solid #F1F5F9' : 'none',
+                    px: 3,
+                    py: 1
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700, color: '#0A2540', fontSize: '1.1rem' }}>{sec.title}</Typography>
                 </AccordionSummary>
-                <AccordionDetails>
-                  <List dense>
+                <AccordionDetails sx={{ p: 0 }}>
+                  <List disablePadding>
                     {sec.chapters.map((ch, idx) => {
-                      // Determine if this chapter should be locked
-                      // Unlock: Prelims, Index, and Chapter 1
-                      // Lock: Chapter 2 and above, and all appendices (unless superuser)
                       const shouldShowLock = isLocked && (
                         (ch.number != null && ch.number >= 2) ||
                         ch.chapterType === 'appendix'
@@ -498,42 +524,87 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                       const shouldShowUnlock = !shouldShowLock
 
                       return (
-                        <ListItem key={`${sec.title}-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <ListItem 
+                          key={`${sec.title}-${idx}`} 
+                          sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: 2,
+                            py: 2,
+                            px: 3,
+                            borderBottom: '1px solid #F8FAFC',
+                            '&:last-child': { borderBottom: 'none' },
+                            transition: 'background-color 0.2s',
+                            '&:hover': { backgroundColor: '#F8FAFC' }
+                          }}
+                        >
                           {ch.slug ? (
                             <>
-                              <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                              <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
+                                <Box sx={{ 
+                                  width: 32, 
+                                  height: 32, 
+                                  borderRadius: '50%', 
+                                  bgcolor: '#F1F5F9', 
+                                  display: 'flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  mr: 2,
+                                  color: '#64748B',
+                                  fontWeight: 600,
+                                  fontSize: '0.875rem'
+                                }}>
+                                  {ch.number || idx + 1}
+                                </Box>
                                 <Typography sx={{
                                   color: '#334155',
+                                  fontWeight: 500,
+                                  fontSize: '1.05rem',
                                   transition: 'color 0.2s',
-                                  '&:hover': { color: '#3B82F6' }
+                                  '&:hover': { color: '#0A2540' }
                                 }}>
-                                  {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                                  {ch.title}
                                 </Typography>
                               </NextLink>
                               {shouldShowLock && (
                                 <Tooltip title="Premium content - Login required">
-                                  <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                                  <LockIcon sx={{ fontSize: 20, color: '#94A3B8' }} />
                                 </Tooltip>
                               )}
                               {shouldShowUnlock && (
                                 <Tooltip title="Unlocked content">
-                                  <LockOpenIcon sx={{ fontSize: 18, color: 'success.main' }} />
+                                  <LockOpenIcon sx={{ fontSize: 20, color: '#10B981' }} />
                                 </Tooltip>
                               )}
                             </>
                           ) : (
                             <>
-                              <Typography sx={{ flex: 1 }}>
-                                {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                              <Box sx={{ 
+                                width: 32, 
+                                height: 32, 
+                                borderRadius: '50%', 
+                                bgcolor: '#F1F5F9', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                mr: 2,
+                                color: '#64748B',
+                                fontWeight: 600,
+                                fontSize: '0.875rem'
+                              }}>
+                                {ch.number || idx + 1}
+                              </Box>
+                              <Typography sx={{ flex: 1, color: '#94A3B8' }}>
+                                {ch.title}
                               </Typography>
                               {shouldShowLock && (
                                 <Tooltip title="Premium content - Login required">
-                                  <LockIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                                  <LockIcon sx={{ fontSize: 20, color: '#94A3B8' }} />
                                 </Tooltip>
                               )}
                               {shouldShowUnlock && (
                                 <Tooltip title="Unlocked content">
-                                  <LockOpenIcon sx={{ fontSize: 18, color: 'success.main' }} />
+                                  <LockOpenIcon sx={{ fontSize: 20, color: '#10B981' }} />
                                 </Tooltip>
                               )}
                             </>
@@ -549,7 +620,55 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
         )}
 
         {tab === 1 && (
-          <Typography variant="body2" color="text.secondary">Videos coming soon</Typography>
+          <Box>
+            {videosCount > 0 ? (
+              <List disablePadding>
+                {sections.find(s => s.title === 'Videos')?.chapters.map((video, idx) => (
+                  <ListItem 
+                    key={idx} 
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 2,
+                      py: 2,
+                      px: 3,
+                      borderBottom: '1px solid #F8FAFC',
+                      '&:last-child': { borderBottom: 'none' },
+                      transition: 'background-color 0.2s',
+                      '&:hover': { backgroundColor: '#F8FAFC' }
+                    }}
+                  >
+                    <NextLink href={video.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ 
+                        width: 40, 
+                        height: 40, 
+                        borderRadius: '50%', 
+                        bgcolor: '#F0F9FF', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        mr: 2,
+                        color: '#0A2540',
+                      }}>
+                        <span style={{ fontSize: '1.2rem' }}>▶</span>
+                      </Box>
+                      <Typography sx={{
+                        color: '#334155',
+                        fontWeight: 500,
+                        fontSize: '1.05rem',
+                        transition: 'color 0.2s',
+                        '&:hover': { color: '#0A2540' }
+                      }}>
+                        {video.title}
+                      </Typography>
+                    </NextLink>
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography variant="body2" color="text.secondary">No videos available for this title.</Typography>
+            )}
+          </Box>
         )}
 
         {tab === 2 && (
@@ -582,7 +701,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12} md={6}>
               <Typography variant="body2" sx={{ mb: 1 }}>
-                Sender's Name <span style={{ color: 'red' }}>*</span>
+                Sender&apos;s Name <span style={{ color: 'red' }}>*</span>
               </Typography>
               <TextField
                 fullWidth
@@ -594,7 +713,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="body2" sx={{ mb: 1 }}>
-                Sender's Email Address <span style={{ color: 'red' }}>*</span>
+                Sender&apos;s Email Address <span style={{ color: 'red' }}>*</span>
               </Typography>
               <TextField
                 fullWidth
@@ -607,7 +726,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="body2" sx={{ mb: 1 }}>
-                Recipient's Name <span style={{ color: 'red' }}>*</span>
+                Recipient&apos;s Name <span style={{ color: 'red' }}>*</span>
               </Typography>
               <TextField
                 fullWidth
@@ -619,7 +738,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="body2" sx={{ mb: 1 }}>
-                Recipient's Email Address <span style={{ color: 'red' }}>*</span>
+                Recipient&apos;s Email Address <span style={{ color: 'red' }}>*</span>
               </Typography>
               <TextField
                 fullWidth
@@ -749,7 +868,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
             {/* Librarian's details */}
             <Grid item xs={12}>
               <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
-                Librarian's details:
+                Librarian&apos;s details:
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -920,7 +1039,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
               {searchResults.length > 0 ? (
                 <List>
                   {searchResults.map((ch, idx) => {
-                    const isKeyword = (ch as any).isKeyword
+                    const isKeyword = ch.isKeyword
                     return (
                       <ListItem
                         key={idx}
@@ -946,7 +1065,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, bookP
                 </List>
               ) : (
                 <Typography variant="body2" color="text.secondary">
-                  No results found for "{searchQuery}"
+                  No results found for &quot;{searchQuery}&quot;
                 </Typography>
               )}
             </Box>
@@ -1015,19 +1134,19 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       // Determine the slug, type, and file path based on chapter number
       if (chapterNo === 'Prelims') {
         filePath = path.join(bookDir, 'preliminary', 'prelims.html')
-        slug = `/books/${isbnStr}/preliminary/prelims.html`
+        slug = `/content/book/${isbnStr}/chapter/preliminary`
         chapterType = 'prelims'
       } else if (chapterNo === 'Index') {
         filePath = path.join(bookDir, 'index', `${chapterFileName}.html`)
-        slug = `/books/${isbnStr}/index/${chapterFileName}.html`
+        slug = `/content/book/${isbnStr}/chapter/index`
         chapterType = 'index'
       } else if (chapterNo.startsWith('Appendix')) {
         filePath = path.join(bookDir, 'chapter', `${chapterFileName}.html`)
-        slug = `/books/${isbnStr}/chapter/${chapterFileName}.html`
+        slug = `/content/book/${isbnStr}/chapter/${chapterFileName}`
         chapterType = 'appendix'
       } else if (chapterNo.startsWith('Chapter')) {
         filePath = path.join(bookDir, 'chapter', `${chapterFileName}.html`)
-        slug = `/books/${isbnStr}/chapter/${chapterFileName}.html`
+        slug = `/content/book/${isbnStr}/chapter/${chapterFileName}`
         chapterType = 'chapter'
       }
 
@@ -1051,25 +1170,39 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         slug: slug,
         id: chapterSequence, // Add chapter data for filtering
         chapterType: chapterType, // Store the type
-      } as any)
+      })
     })
 
     // Group into sections based on chapterType
-    const prelims = chapters.filter((ch: any) => ch.chapterType === 'prelims')
-    const index = chapters.filter((ch: any) => ch.chapterType === 'index')
-    const appendices = chapters.filter((ch: any) => ch.chapterType === 'appendix')
-    const mainChapters = chapters.filter((ch: any) => ch.chapterType === 'chapter' && ch.number != null)
+    const prelims = chapters.filter((ch) => ch.chapterType === 'prelims')
+    const index = chapters.filter((ch) => ch.chapterType === 'index')
+    const appendices = chapters.filter((ch) => ch.chapterType === 'appendix')
+    const mainChapters = chapters.filter((ch) => ch.chapterType === 'chapter' && ch.number != null)
 
     // Process Cases from JSON
     const casesData = bookData.cases || []
-    const cases: Chapter[] = casesData.map((c: any, idx: number) => {
+    const cases: Chapter[] = casesData.map((c: Record<string, any>, idx: number) => {
       const caseId = c.case_id || `case${idx + 1}`
       return {
         number: null, // Cases don't have a standard chapter number
         title: c.case_title,
-        slug: `/books/${isbnStr}/cases/${caseId}.html`, // Assuming case file structure
+        slug: `/content/book/${isbnStr}/chapter/${caseId}`, // Assuming case file structure
         id: 1000 + idx, // Arbitrary high ID for sorting/filtering
         chapterType: 'case'
+      }
+    })
+
+    // Process Videos from JSON
+    const videosData = bookData.videos || []
+    const videos: Chapter[] = videosData.map((v: Record<string, any>, idx: number) => {
+      const videoId = v.video_id || `video${idx + 1}`
+      return {
+        number: null,
+        title: v.video_title || `Video ${idx + 1}`,
+        slug: `/content/book/${isbnStr}/chapter/video-${videoId}`,
+        id: 2000 + idx,
+        chapterType: 'video',
+        videoUrl: v.video_url
       }
     })
 
@@ -1078,6 +1211,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     if (mainChapters.length) sections.push({ title: 'Chapters', chapters: mainChapters })
     if (appendices.length) sections.push({ title: 'Appendices', chapters: appendices })
     if (cases.length) sections.push({ title: 'Cases', chapters: cases })
+    if (videos.length) sections.push({ title: 'Videos', chapters: videos }) // Add videos to sections if you want them in main list, or keep separate
     if (index.length) sections.push({ title: 'Index', chapters: index })
 
     // Detect book PDF (<isbn>.pdf or book.pdf) if present
@@ -1092,7 +1226,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
       }
     } catch { }
 
-    return { props: { isbn: isbnStr, book, sections, bookPdfUrl, videosCount: 0, casesCount: cases.length, reviewsCount: 0 } }
+    return { props: { isbn: isbnStr, book, sections, bookPdfUrl, videosCount: videos.length, casesCount: cases.length, reviewsCount: 0 } }
   } catch (e) {
     console.error('Error loading book metadata:', e)
     return { props: { isbn: isbnStr, book: null, sections: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
