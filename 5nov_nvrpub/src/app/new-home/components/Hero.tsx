@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from './ui/button';
-import { Play } from 'lucide-react';
-import HeroSlider, { heroDefaultSlides, type HeroSlide } from './ui/HeroSlider';
+import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
+import HeroSlider, { heroDefaultSlides, type HeroSlide, type HeroSliderHandle } from './ui/HeroSlider';
 
 const Hero = (): JSX.Element => {
   const [activeSlide, setActiveSlide] = useState<HeroSlide>(heroDefaultSlides[0]!);
+  const sliderRef = useRef<HeroSliderHandle>(null);
   const primaryStat = activeSlide?.stats;
 
   return (
@@ -18,6 +19,22 @@ const Hero = (): JSX.Element => {
       <div className="absolute top-20 left-10 w-32 h-32 bg-[#3B82F6]/5 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-40 right-20 w-48 h-48 bg-[#FF6B6B]/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-[#10B981]/5 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+
+      {/* Navigation Arrow Buttons */}
+      <button
+        onClick={() => sliderRef.current?.previous()}
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-white/80 hover:bg-white shadow-md hover:shadow-lg transition-all duration-300 group border border-slate-200/50 hidden lg:flex items-center justify-center"
+        aria-label="Previous slide"
+      >
+        <ChevronLeft className="w-5 h-5 text-slate-600 group-hover:text-slate-900 transition-colors" />
+      </button>
+      <button
+        onClick={() => sliderRef.current?.next()}
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-white/80 hover:bg-white shadow-md hover:shadow-lg transition-all duration-300 group border border-slate-200/50 hidden lg:flex items-center justify-center"
+        aria-label="Next slide"
+      >
+        <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-slate-900 transition-colors" />
+      </button>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
