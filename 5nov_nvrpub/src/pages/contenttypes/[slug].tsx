@@ -147,7 +147,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                 </Stack>
               </motion.div>
             </Grid>
-
+            
             {/* Decorative Image/Graphic could go here in the other grid column */}
           </Grid>
         </Container>
@@ -278,7 +278,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                           >
                             {content.title}
                           </Typography>
-
+                          
                           <Typography
                             variant="body2"
                             sx={{

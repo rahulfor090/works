@@ -317,9 +317,9 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
       <Head>
         <title>{title} | Book</title>
       </Head>
-
+      
       {/* Hero Section */}
-      <Box sx={{
+      <Box sx={{ 
         background: 'linear-gradient(180deg, #F0F9FF 0%, #FFF 100%)',
         pt: { xs: 4, md: 8 },
         pb: { xs: 6, md: 10 },
@@ -331,18 +331,18 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
             {/* Left: Cover Image */}
             <Grid item xs={12} md={4} lg={3.5}>
               <Box sx={{ position: 'relative', mx: 'auto', maxWidth: '300px' }}>
-                <Box
-                  component="img"
-                  src={cover}
-                  alt={title}
-                  sx={{
-                    width: '100%',
+                <Box 
+                  component="img" 
+                  src={cover} 
+                  alt={title} 
+                  sx={{ 
+                    width: '100%', 
                     borderRadius: '1.5rem',
                     boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
                     transform: 'rotate(-2deg)',
                     transition: 'transform 0.3s ease',
                     '&:hover': { transform: 'rotate(0deg) scale(1.02)' }
-                  }}
+                  }} 
                 />
               </Box>
             </Grid>
@@ -352,9 +352,9 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {/* Badges */}
                 <Stack direction="row" spacing={1}>
-                  <Chip
-                    label="Book"
-                    sx={{
+                  <Chip 
+                    label="Book" 
+                    sx={{ 
                       background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
                       color: 'white',
                       fontWeight: 700,
@@ -363,14 +363,14 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
                       fontSize: '0.75rem',
                       height: '28px',
                       boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)'
-                    }}
+                    }} 
                   />
                 </Stack>
 
                 {/* Title */}
-                <Typography variant="h1" sx={{
-                  fontFamily: '"Georgia", serif',
-                  fontWeight: 700,
+                <Typography variant="h1" sx={{ 
+                  fontFamily: '"Georgia", serif', 
+                  fontWeight: 700, 
                   color: '#0A2540',
                   fontSize: { xs: '2.5rem', md: '3.5rem' },
                   lineHeight: 1.1
@@ -532,74 +532,112 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
               </Button>
 
             </Box>
-          </Stack>
+            </Stack>
 
 
             {filteredSections.map((sec, sIdx) => (
-            <Accordion
-              key={sIdx}
-              disableGutters
-              expanded={expandAll || !!expanded[sIdx]}
-              onChange={() => toggleSection(sIdx)}
-              sx={{
-                mb: 3,
-                borderRadius: '1rem !important',
-                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
-                border: '1px solid #F1F5F9',
-                '&:before': { display: 'none' },
-                overflow: 'hidden',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                }
-              }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon sx={{ color: '#64748B' }} />}
+              <Accordion
+                key={sIdx}
+                disableGutters
+                expanded={expandAll || !!expanded[sIdx]}
+                onChange={() => toggleSection(sIdx)}
                 sx={{
-                  backgroundColor: '#fff',
-                  borderBottom: (expandAll || !!expanded[sIdx]) ? '1px solid #F1F5F9' : 'none',
-                  px: 3,
-                  py: 1
+                  mb: 3,
+                  borderRadius: '1rem !important',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
+                  border: '1px solid #F1F5F9',
+                  '&:before': { display: 'none' },
+                  overflow: 'hidden',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                  }
                 }}
               >
-                <Typography sx={{ fontWeight: 700, color: '#0A2540', fontSize: '1.1rem' }}>{sec.title}</Typography>
-              </AccordionSummary>
-              <AccordionDetails sx={{ p: 0 }}>
-                <List disablePadding>
-                  {sec.chapters.map((ch, idx) => {
-                    const shouldShowLock = isLocked && (
-                      (ch.number != null && ch.number >= 2) ||
-                      ch.chapterType === 'appendix'
-                    )
-                    const shouldShowUnlock = !shouldShowLock
+                <AccordionSummary 
+                  expandIcon={<ExpandMoreIcon sx={{ color: '#64748B' }} />} 
+                  sx={{ 
+                    backgroundColor: '#fff',
+                    borderBottom: (expandAll || !!expanded[sIdx]) ? '1px solid #F1F5F9' : 'none',
+                    px: 3,
+                    py: 1
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700, color: '#0A2540', fontSize: '1.1rem' }}>{sec.title}</Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ p: 0 }}>
+                  <List disablePadding>
+                    {sec.chapters.map((ch, idx) => {
+                      const shouldShowLock = isLocked && (
+                        (ch.number != null && ch.number >= 2) ||
+                        ch.chapterType === 'appendix'
+                      )
+                      const shouldShowUnlock = !shouldShowLock
 
-                    return (
+                      return (
 
-                      <ListItem
-                        key={`${sec.title}-${idx}`}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 2,
-                          py: 2,
-                          px: 3,
-                          borderBottom: '1px solid #F8FAFC',
-                          '&:last-child': { borderBottom: 'none' },
-                          transition: 'background-color 0.2s',
-                          '&:hover': { backgroundColor: '#F8FAFC' }
-                        }}
-                      >
-                        {ch.slug ? (
-                          <>
-                            <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
-                              <Box sx={{
-                                width: 32,
-                                height: 32,
-                                borderRadius: '50%',
-                                bgcolor: '#F1F5F9',
-                                display: 'flex',
-                                alignItems: 'center',
+                        <ListItem 
+                          key={`${sec.title}-${idx}`} 
+                          sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: 2,
+                            py: 2,
+                            px: 3,
+                            borderBottom: '1px solid #F8FAFC',
+                            '&:last-child': { borderBottom: 'none' },
+                            transition: 'background-color 0.2s',
+                            '&:hover': { backgroundColor: '#F8FAFC' }
+                          }}
+                        >
+                          {ch.slug ? (
+                            <>
+                              <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
+                                <Box sx={{ 
+                                  width: 32, 
+                                  height: 32, 
+                                  borderRadius: '50%', 
+                                  bgcolor: '#F1F5F9', 
+                                  display: 'flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  mr: 2,
+                                  color: '#64748B',
+                                  fontWeight: 600,
+                                  fontSize: '0.875rem'
+                                }}>
+                                  {ch.number || idx + 1}
+                                </Box>
+                                <Typography sx={{
+                                  color: '#334155',
+                                  fontWeight: 500,
+                                  fontSize: '1.05rem',
+                                  transition: 'color 0.2s',
+                                  '&:hover': { color: '#0A2540' }
+                                }}>
+                                  {ch.title}
+                                </Typography>
+                              </NextLink>
+                              {shouldShowLock && (
+                                <Tooltip title="Premium content - Login required">
+                                  <LockIcon sx={{ fontSize: 20, color: '#94A3B8' }} />
+                                </Tooltip>
+                              )}
+                              {shouldShowUnlock && (
+                                <Tooltip title="Unlocked content">
+                                  <LockOpenIcon sx={{ fontSize: 20, color: '#10B981' }} />
+                                </Tooltip>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <Box sx={{ 
+                                width: 32, 
+                                height: 32, 
+                                borderRadius: '50%', 
+                                bgcolor: '#F1F5F9', 
+                                display: 'flex', 
+                                alignItems: 'center', 
                                 justifyContent: 'center',
                                 mr: 2,
                                 color: '#64748B',
@@ -608,674 +646,636 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
                               }}>
                                 {ch.number || idx + 1}
                               </Box>
-                              <Typography sx={{
-                                color: '#334155',
-                                fontWeight: 500,
-                                fontSize: '1.05rem',
-                                transition: 'color 0.2s',
-                                '&:hover': { color: '#0A2540' }
-                              }}>
+                              <Typography sx={{ flex: 1, color: '#94A3B8' }}>
                                 {ch.title}
                               </Typography>
-                            </NextLink>
-                            {shouldShowLock && (
-                              <Tooltip title="Premium content - Login required">
-                                <LockIcon sx={{ fontSize: 20, color: '#94A3B8' }} />
-                              </Tooltip>
-                            )}
-                            {shouldShowUnlock && (
-                              <Tooltip title="Unlocked content">
-                                <LockOpenIcon sx={{ fontSize: 20, color: '#10B981' }} />
-                              </Tooltip>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            <Box sx={{
-                              width: 32,
-                              height: 32,
-                              borderRadius: '50%',
-                              bgcolor: '#F1F5F9',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              mr: 2,
-                              color: '#64748B',
-                              fontWeight: 600,
-                              fontSize: '0.875rem'
-                            }}>
-                              {ch.number || idx + 1}
-                            </Box>
-                            <Typography sx={{ flex: 1, color: '#94A3B8' }}>
-                              {ch.title}
-                            </Typography>
-                            {shouldShowLock && (
-                              <Tooltip title="Premium content - Login required">
-                                <LockIcon sx={{ fontSize: 20, color: '#94A3B8' }} />
-                              </Tooltip>
-                            )}
-                            {shouldShowUnlock && (
-                              <Tooltip title="Unlocked content">
-                                <LockOpenIcon sx={{ fontSize: 20, color: '#10B981' }} />
-                              </Tooltip>
-                            )}
-                          </>
+                              {shouldShowLock && (
+                                <Tooltip title="Premium content - Login required">
+                                  <LockIcon sx={{ fontSize: 20, color: '#94A3B8' }} />
+                                </Tooltip>
+                              )}
+                              {shouldShowUnlock && (
+                                <Tooltip title="Unlocked content">
+                                  <LockOpenIcon sx={{ fontSize: 20, color: '#10B981' }} />
+                                </Tooltip>
+                              )}
+                            </>
 
+                          )}
+
+                          {/* Download PDF button on the right */}
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDownloadPdf(ch.slug)}
+                            sx={{
+                              color: '#FF6B6B',
+                              '&:hover': {
+                                backgroundColor: '#FEF2F2',
+                                color: '#FF5252'
+                              }
+                            }}
+                          >
+                            <PictureAsPdfIcon fontSize="small" />
+                          </IconButton>
+                        </ListItem>
+                      )
+                    })}
+                  </List>
+                </AccordionDetails>
+              </Accordion>
+            ))}
+          </Box>
+        )}
+
+        {tab === 1 && (
+          <Box>
+
+            {videosCount > 0 ? (
+              <List disablePadding>
+                {sections.find(s => s.title === 'Videos')?.chapters.map((video, idx) => (
+                  <ListItem 
+                    key={idx} 
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 2,
+                      py: 2,
+                      px: 3,
+                      borderBottom: '1px solid #F8FAFC',
+                      '&:last-child': { borderBottom: 'none' },
+                      transition: 'background-color 0.2s',
+                      '&:hover': { backgroundColor: '#F8FAFC' }
+                    }}
+                  >
+                    <NextLink href={video.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ 
+                        width: 40, 
+                        height: 40, 
+                        borderRadius: '50%', 
+                        bgcolor: '#F0F9FF', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        mr: 2,
+                        color: '#0A2540',
+                      }}>
+                        <span style={{ fontSize: '1.2rem' }}>▶</span>
+                      </Box>
+                      <Typography sx={{
+                        color: '#334155',
+                        fontWeight: 500,
+                        fontSize: '1.05rem',
+                        transition: 'color 0.2s',
+                        '&:hover': { color: '#0A2540' }
+                      }}>
+                        {video.title}
+                      </Typography>
+                    </NextLink>
+
+            {cases.length > 0 ? (
+              <List>
+                {cases.map((caseItem, idx) => (
+                  <ListItem key={`case-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, p: 2, borderRadius: '0.5rem', border: '1px solid #F1F5F9', '&:hover': { backgroundColor: '#F8FAFC' } }}>
+                    {caseItem.slug ? (
+                      <NextLink href={caseItem.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
+                        <Typography sx={{
+                          color: '#334155',
+                          transition: 'color 0.2s',
+                          '&:hover': { color: '#3B82F6' }
+                        }}>
+                          {caseItem.title}
+                        </Typography>
+                      </NextLink>
+                    ) : (
+                      <Typography sx={{ flex: 1 }}>
+                        {caseItem.title}
+                      </Typography>
+                    )}
+
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography variant="body2" color="text.secondary">No cases available</Typography>
+            )}
+          </Box>
+        )}
+
+        {tab === 2 && (
+          <Typography variant="body2" color="text.secondary">Videos coming soon</Typography>
+        )}
+
+        {tab === 3 && (
+          <Typography variant="body2" color="text.secondary">Reviews coming soon</Typography>
+        )}
+      </Container>
+
+      {/* Refer to Friend Dialog */}
+      <Dialog
+        open={referDialogOpen}
+        onClose={handleCloseReferDialog}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '1.5rem',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Refer to Friend</Typography>
+            <IconButton onClick={handleCloseReferDialog} size="small" sx={{ color: '#94A3B8', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ px: 4, py: 4 }}>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Sender&apos;s Name <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={senderName}
+                onChange={(e) => setSenderName(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Sender&apos;s Email Address <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                type="email"
+                value={senderEmail}
+                onChange={(e) => setSenderEmail(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Recipient&apos;s Name <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={recipientName}
+                onChange={(e) => setRecipientName(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Recipient&apos;s Email Address <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                type="email"
+                value={recipientEmail}
+                onChange={(e) => setRecipientEmail(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Subject <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={referSubject}
+                onChange={(e) => setReferSubject(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Message to Recipient <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                multiline
+                rows={4}
+                value={referMessage}
+                onChange={(e) => setReferMessage(e.target.value)}
+                required
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ px: 4, pb: 4, borderTop: '1px solid #E2E8F0', pt: 3 }}>
+          <Button
+            variant="contained"
+            onClick={handleSubmitRefer}
+            sx={{
+              textTransform: 'none',
+              borderRadius: '2rem',
+              background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+              boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
+              fontWeight: 600,
+              px: 4,
+              py: 1,
+              '&:hover': {
+                background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+              }
+            }}
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Recommend to Librarian Dialog */}
+      <Dialog
+        open={librarianDialogOpen}
+        onClose={handleCloseLibrarianDialog}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '1.5rem',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Recommend To Librarian</Typography>
+            <IconButton onClick={handleCloseLibrarianDialog} size="small" sx={{ color: '#94A3B8', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ px: 4, py: 4 }}>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            {/* Title and ISBN */}
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Title <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={libTitle}
+                onChange={(e) => setLibTitle(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                ISBN <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={libIsbn}
+                onChange={(e) => setLibIsbn(e.target.value)}
+                required
+              />
+            </Grid>
+
+            {/* Reason */}
+            <Grid item xs={12}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Your reason to recommend this publication: <span style={{ color: 'red' }}>*</span> (max. 1000 characters)
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                value={libReason}
+                onChange={(e) => setLibReason(e.target.value)}
+                inputProps={{ maxLength: 1000 }}
+                required
+              />
+            </Grid>
+
+            {/* Librarian's details */}
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
+                Librarian&apos;s details:
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Name <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={librarianName}
+                onChange={(e) => setLibrarianName(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Email ID <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                type="email"
+                value={librarianEmail}
+                onChange={(e) => setLibrarianEmail(e.target.value)}
+                required
+              />
+            </Grid>
+
+            {/* Your personal details */}
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
+                Your personal details:
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Name <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={yourName}
+                onChange={(e) => setYourName(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Company/Organisation
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                E-mail ID <span style={{ color: 'red' }}>*</span>
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                type="email"
+                value={yourEmail}
+                onChange={(e) => setYourEmail(e.target.value)}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Department
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Country
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ px: 4, pb: 4, borderTop: '1px solid #E2E8F0', pt: 3 }}>
+          <Button
+            variant="contained"
+            onClick={handleSubmitLibrarian}
+            sx={{
+              textTransform: 'none',
+              borderRadius: '2rem',
+              background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+              boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
+              fontWeight: 600,
+              px: 4,
+              py: 1,
+              '&:hover': {
+                background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+              }
+            }}
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Search Dialog */}
+      <Dialog
+        open={searchDialogOpen}
+        onClose={() => {
+          setSearchDialogOpen(false)
+          setSearchQuery('')
+        }}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '1.5rem',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Search within {title}</Typography>
+            <IconButton onClick={() => {
+              setSearchDialogOpen(false)
+              setSearchQuery('')
+            }} size="small" sx={{ color: '#94A3B8', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ px: 4, py: 4 }}>
+          <TextField
+            fullWidth
+            placeholder="Search chapters..."
+            size="small"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            autoFocus
+            sx={{
+              mb: 2,
+              borderRadius: '2rem',
+              backgroundColor: '#ffffff',
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '2rem',
+                paddingRight: '8px',
+                '& fieldset': { borderColor: '#E2E8F0' },
+                '&:hover fieldset': { borderColor: '#0A2540' },
+                '&.Mui-focused fieldset': { borderColor: '#0A2540' },
+              },
+            }}
+          />
+          {searchQuery.trim() && (
+            <Box>
+              {searchResults.length > 0 ? (
+                <List>
+                  {searchResults.map((ch, idx) => {
+                    const isKeyword = ch.isKeyword
+                    return (
+                      <ListItem
+                        key={idx}
+                        {...(!isKeyword && ch.slug ? { component: NextLink, href: ch.slug } : {})}
+                        sx={{
+                          cursor: isKeyword ? 'default' : 'pointer',
+                          '&:hover': !isKeyword ? { backgroundColor: 'action.hover' } : {},
+                          borderRadius: 1,
+                          mb: 0.5,
+                          display: 'flex',
+                          gap: 1
+                        }}
+                      >
+                        <Typography sx={{ flex: 1 }}>
+                          {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
+                        </Typography>
+                        {isKeyword && (
+                          <Chip label="Keyword" size="small" sx={{ background: '#FF6B6B', color: 'white', borderColor: '#FF6B6B' }} variant="outlined" />
                         )}
-
-                        {/* Download PDF button on the right */}
-                        <IconButton
-                          size="small"
-                          onClick={() => handleDownloadPdf(ch.slug)}
-                          sx={{
-                            color: '#FF6B6B',
-                            '&:hover': {
-                              backgroundColor: '#FEF2F2',
-                              color: '#FF5252'
-                            }
-                          }}
-                        >
-                          <PictureAsPdfIcon fontSize="small" />
-                        </IconButton>
                       </ListItem>
                     )
                   })}
                 </List>
-              </AccordionDetails>
-            </Accordion>
-          ))}
-      </Box>
-        )}
-
-      {tab === 1 && (
-        <Box>
-
-          {videosCount > 0 ? (
-            <List disablePadding>
-              {sections.find(s => s.title === 'Videos')?.chapters.map((video, idx) => (
-                <ListItem
-                  key={idx}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
-                    py: 2,
-                    px: 3,
-                    borderBottom: '1px solid #F8FAFC',
-                    '&:last-child': { borderBottom: 'none' },
-                    transition: 'background-color 0.2s',
-                    '&:hover': { backgroundColor: '#F8FAFC' }
-                  }}
-                >
-                  <NextLink href={video.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '50%',
-                      bgcolor: '#F0F9FF',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mr: 2,
-                      color: '#0A2540',
-                    }}>
-                      <span style={{ fontSize: '1.2rem' }}>▶</span>
-                    </Box>
-                    <Typography sx={{
-                      color: '#334155',
-                      fontWeight: 500,
-                      fontSize: '1.05rem',
-                      transition: 'color 0.2s',
-                      '&:hover': { color: '#0A2540' }
-                    }}>
-                      {video.title}
-                    </Typography>
-                  </NextLink>
-
-                  {cases.length > 0 ? (
-                    <List>
-                      {cases.map((caseItem, idx) => (
-                        <ListItem key={`case-${idx}`} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, p: 2, borderRadius: '0.5rem', border: '1px solid #F1F5F9', '&:hover': { backgroundColor: '#F8FAFC' } }}>
-                          {caseItem.slug ? (
-                            <NextLink href={caseItem.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}>
-                              <Typography sx={{
-                                color: '#334155',
-                                transition: 'color 0.2s',
-                                '&:hover': { color: '#3B82F6' }
-                              }}>
-                                {caseItem.title}
-                              </Typography>
-                            </NextLink>
-                          ) : (
-                            <Typography sx={{ flex: 1 }}>
-                              {caseItem.title}
-                            </Typography>
-                          )}
-
-                        </ListItem>
-                      ))}
-                    </List>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">No cases available</Typography>
-                  )}
-                </Box>
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  No results found for &quot;{searchQuery}&quot;
+                </Typography>
               )}
+            </Box>
+          )}
+        </DialogContent>
+      </Dialog>
 
-              {tab === 2 && (
-                <Typography variant="body2" color="text.secondary">Videos coming soon</Typography>
-              )}
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
+  )
+}
 
-              {tab === 3 && (
-                <Typography variant="body2" color="text.secondary">Reviews coming soon</Typography>
-              )}
-            </Container>
+export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
+  const { isbn } = ctx.query
+  const isbnStr = String(isbn || '')
 
-      {/* Refer to Friend Dialog */}
-          <Dialog
-            open={referDialogOpen}
-            onClose={handleCloseReferDialog}
-            maxWidth="md"
-            fullWidth
-            PaperProps={{
-              sx: {
-                borderRadius: '1.5rem',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-              }
-            }}
-          >
-            <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Refer to Friend</Typography>
-                <IconButton onClick={handleCloseReferDialog} size="small" sx={{ color: '#94A3B8', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-            </DialogTitle>
-            <DialogContent sx={{ px: 4, py: 4 }}>
-              <Grid container spacing={2} sx={{ mt: 1 }}>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Sender&apos;s Name <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={senderName}
-                    onChange={(e) => setSenderName(e.target.value)}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Sender&apos;s Email Address <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    type="email"
-                    value={senderEmail}
-                    onChange={(e) => setSenderEmail(e.target.value)}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Recipient&apos;s Name <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={recipientName}
-                    onChange={(e) => setRecipientName(e.target.value)}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Recipient&apos;s Email Address <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    type="email"
-                    value={recipientEmail}
-                    onChange={(e) => setRecipientEmail(e.target.value)}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Subject <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={referSubject}
-                    onChange={(e) => setReferSubject(e.target.value)}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Message to Recipient <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    multiline
-                    rows={4}
-                    value={referMessage}
-                    onChange={(e) => setReferMessage(e.target.value)}
-                    required
-                  />
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions sx={{ px: 4, pb: 4, borderTop: '1px solid #E2E8F0', pt: 3 }}>
-              <Button
-                variant="contained"
-                onClick={handleSubmitRefer}
-                sx={{
-                  textTransform: 'none',
-                  borderRadius: '2rem',
-                  background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
-                  boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
-                  fontWeight: 600,
-                  px: 4,
-                  py: 1,
-                  '&:hover': {
-                    background: 'linear-gradient(to right, #FF5252, #FF7043)',
-                    boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
-                  }
-                }}
-              >
-                Submit
-              </Button>
-            </DialogActions>
-          </Dialog>
-
-          {/* Recommend to Librarian Dialog */}
-          <Dialog
-            open={librarianDialogOpen}
-            onClose={handleCloseLibrarianDialog}
-            maxWidth="md"
-            fullWidth
-            PaperProps={{
-              sx: {
-                borderRadius: '1.5rem',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-              }
-            }}
-          >
-            <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Recommend To Librarian</Typography>
-                <IconButton onClick={handleCloseLibrarianDialog} size="small" sx={{ color: '#94A3B8', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-            </DialogTitle>
-            <DialogContent sx={{ px: 4, py: 4 }}>
-              <Grid container spacing={2} sx={{ mt: 1 }}>
-                {/* Title and ISBN */}
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Title <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={libTitle}
-                    onChange={(e) => setLibTitle(e.target.value)}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    ISBN <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={libIsbn}
-                    onChange={(e) => setLibIsbn(e.target.value)}
-                    required
-                  />
-                </Grid>
-
-                {/* Reason */}
-                <Grid item xs={12}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Your reason to recommend this publication: <span style={{ color: 'red' }}>*</span> (max. 1000 characters)
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    value={libReason}
-                    onChange={(e) => setLibReason(e.target.value)}
-                    inputProps={{ maxLength: 1000 }}
-                    required
-                  />
-                </Grid>
-
-                {/* Librarian's details */}
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
-                    Librarian&apos;s details:
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Name <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={librarianName}
-                    onChange={(e) => setLibrarianName(e.target.value)}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Email ID <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    type="email"
-                    value={librarianEmail}
-                    onChange={(e) => setLibrarianEmail(e.target.value)}
-                    required
-                  />
-                </Grid>
-
-                {/* Your personal details */}
-                <Grid item xs={12}>
-                  <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
-                    Your personal details:
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Name <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={yourName}
-                    onChange={(e) => setYourName(e.target.value)}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Company/Organisation
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    E-mail ID <span style={{ color: 'red' }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    type="email"
-                    value={yourEmail}
-                    onChange={(e) => setYourEmail(e.target.value)}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Department
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={department}
-                    onChange={(e) => setDepartment(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    Country
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    size="small"
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                  />
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions sx={{ px: 4, pb: 4, borderTop: '1px solid #E2E8F0', pt: 3 }}>
-              <Button
-                variant="contained"
-                onClick={handleSubmitLibrarian}
-                sx={{
-                  textTransform: 'none',
-                  borderRadius: '2rem',
-                  background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
-                  boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
-                  fontWeight: 600,
-                  px: 4,
-                  py: 1,
-                  '&:hover': {
-                    background: 'linear-gradient(to right, #FF5252, #FF7043)',
-                    boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
-                  }
-                }}
-              >
-                Submit
-              </Button>
-            </DialogActions>
-          </Dialog>
-
-          {/* Search Dialog */}
-          <Dialog
-            open={searchDialogOpen}
-            onClose={() => {
-              setSearchDialogOpen(false)
-              setSearchQuery('')
-            }}
-            maxWidth="md"
-            fullWidth
-            PaperProps={{
-              sx: {
-                borderRadius: '1.5rem',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-              }
-            }}
-          >
-            <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Search within {title}</Typography>
-                <IconButton onClick={() => {
-                  setSearchDialogOpen(false)
-                  setSearchQuery('')
-                }} size="small" sx={{ color: '#94A3B8', '&:hover': { color: '#EF4444', backgroundColor: '#FEF2F2' } }}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-            </DialogTitle>
-            <DialogContent sx={{ px: 4, py: 4 }}>
-              <TextField
-                fullWidth
-                placeholder="Search chapters..."
-                size="small"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                autoFocus
-                sx={{
-                  mb: 2,
-                  borderRadius: '2rem',
-                  backgroundColor: '#ffffff',
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '2rem',
-                    paddingRight: '8px',
-                    '& fieldset': { borderColor: '#E2E8F0' },
-                    '&:hover fieldset': { borderColor: '#0A2540' },
-                    '&.Mui-focused fieldset': { borderColor: '#0A2540' },
-                  },
-                }}
-              />
-              {searchQuery.trim() && (
-                <Box>
-                  {searchResults.length > 0 ? (
-                    <List>
-                      {searchResults.map((ch, idx) => {
-                        const isKeyword = ch.isKeyword
-                        return (
-                          <ListItem
-                            key={idx}
-                            {...(!isKeyword && ch.slug ? { component: NextLink, href: ch.slug } : {})}
-                            sx={{
-                              cursor: isKeyword ? 'default' : 'pointer',
-                              '&:hover': !isKeyword ? { backgroundColor: 'action.hover' } : {},
-                              borderRadius: 1,
-                              mb: 0.5,
-                              display: 'flex',
-                              gap: 1
-                            }}
-                          >
-                            <Typography sx={{ flex: 1 }}>
-                              {ch.number != null ? `Chapter ${ch.number}: ` : ''}{ch.title}
-                            </Typography>
-                            {isKeyword && (
-                              <Chip label="Keyword" size="small" sx={{ background: '#FF6B6B', color: 'white', borderColor: '#FF6B6B' }} variant="outlined" />
-                            )}
-                          </ListItem>
-                        )
-                      })}
-                    </List>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No results found for &quot;{searchQuery}&quot;
-                    </Typography>
-                  )}
-                </Box>
-              )}
-            </DialogContent>
-          </Dialog>
-
-          {/* Snackbar for notifications */}
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={3000}
-            onClose={() => setSnackbarOpen(false)}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          >
-            <Alert
-              onClose={() => setSnackbarOpen(false)}
-              severity="error"
-              sx={{ width: '100%' }}
-            >
-              {snackbarMessage}
-            </Alert>
-          </Snackbar>
-        </>
-      )
-      }
-
-      export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const {isbn} = ctx.query
-        const isbnStr = String(isbn || '')
-
-        try {
+  try {
     // Build path to {isbn}.json in public folder
     const bookDir = path.join(process.cwd(), 'public', 'books', isbnStr)
-        const jsonPath = path.join(bookDir, `${isbnStr}.json`)
+    const jsonPath = path.join(bookDir, `${isbnStr}.json`)
 
-        // Check if JSON file exists
-        if (!fs.existsSync(jsonPath)) {
-      return {props: {isbn: isbnStr, book: null, sections: [], cases: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
+    // Check if JSON file exists
+    if (!fs.existsSync(jsonPath)) {
+      return { props: { isbn: isbnStr, book: null, sections: [], cases: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
     }
 
-        // Read and parse JSON file
-        const jsonContent = fs.readFileSync(jsonPath, 'utf-8')
-        const bookData = JSON.parse(jsonContent)
+    // Read and parse JSON file
+    const jsonContent = fs.readFileSync(jsonPath, 'utf-8')
+    const bookData = JSON.parse(jsonContent)
 
-        // Extract book information from JSON
-        const chaptersData = bookData.chapters || []
+    // Extract book information from JSON
+    const chaptersData = bookData.chapters || []
 
-        // Build book object with correct field names
-        const book: Book = {
-          isbn: bookData.print_isbn || isbnStr,
-        print_isbn: bookData.print_isbn || null,
-        title: bookData.book_title || 'Untitled',
-        author: bookData.book_author_name || null,
-        coverImage: `/books/${isbnStr}/${isbnStr}.png`,
-        description: bookData.book_abstract || null,
-        keywords: bookData.book_keywords || null,
+    // Build book object with correct field names
+    const book: Book = {
+      isbn: bookData.print_isbn || isbnStr,
+      print_isbn: bookData.print_isbn || null,
+      title: bookData.book_title || 'Untitled',
+      author: bookData.book_author_name || null,
+      coverImage: `/books/${isbnStr}/${isbnStr}.png`,
+      description: bookData.book_abstract || null,
+      keywords: bookData.book_keywords || null,
     }
 
-        // Build chapters from metadata
-        const chapters: Chapter[] = []
+    // Build chapters from metadata
+    const chapters: Chapter[] = []
 
     // Sort chapters by sequence
     const sortedChapters = [...chaptersData].sort((a, b) => {
       const seqA = parseInt(a['chapter-sequence']) || 0
-        const seqB = parseInt(b['chapter-sequence']) || 0
-        return seqA - seqB
+      const seqB = parseInt(b['chapter-sequence']) || 0
+      return seqA - seqB
     })
 
     // Process each chapter
     sortedChapters.forEach((chapterData) => {
       const chapterNo = chapterData['chapter-number'] || ''
-        const chapterTitle = chapterData['chapter-title'] || 'Untitled'
-        const chapterFileName = chapterData['chapter-file-name'] || ''
-        const chapterSequence = parseInt(chapterData['chapter-sequence']) || 0
+      const chapterTitle = chapterData['chapter-title'] || 'Untitled'
+      const chapterFileName = chapterData['chapter-file-name'] || ''
+      const chapterSequence = parseInt(chapterData['chapter-sequence']) || 0
 
-        if (!chapterFileName) return // Skip if no filename
+      if (!chapterFileName) return // Skip if no filename
 
-        let slug: string | null = null
-        let chapterType = 'chapter' // default type
-        let filePath: string | null = null
+      let slug: string | null = null
+      let chapterType = 'chapter' // default type
+      let filePath: string | null = null
 
-        // Determine the slug, type, and file path based on chapter number
-        if (chapterNo === 'Prelims') {
-          filePath = path.join(bookDir, 'preliminary', 'prelims.html')
+      // Determine the slug, type, and file path based on chapter number
+      if (chapterNo === 'Prelims') {
+        filePath = path.join(bookDir, 'preliminary', 'prelims.html')
         slug = `/content/book/${isbnStr}/chapter/preliminary`
         chapterType = 'prelims'
       } else if (chapterNo === 'Index') {
-          filePath = path.join(bookDir, 'index', `${chapterFileName}.html`)
+        filePath = path.join(bookDir, 'index', `${chapterFileName}.html`)
         slug = `/content/book/${isbnStr}/chapter/index`
         chapterType = 'index'
       } else if (chapterNo.startsWith('Appendix')) {
-          filePath = path.join(bookDir, 'chapter', `${chapterFileName}.html`)
+        filePath = path.join(bookDir, 'chapter', `${chapterFileName}.html`)
         slug = `/content/book/${isbnStr}/chapter/${chapterFileName}`
         chapterType = 'appendix'
       } else if (chapterNo.startsWith('Chapter')) {
-          filePath = path.join(bookDir, 'chapter', `${chapterFileName}.html`)
+        filePath = path.join(bookDir, 'chapter', `${chapterFileName}.html`)
         slug = `/content/book/${isbnStr}/chapter/${chapterFileName}`
         chapterType = 'chapter'
       }
 
-        // Check if the file actually exists, if not, set slug to null
-        if (filePath && !fs.existsSync(filePath)) {
-          slug = null
-        }
+      // Check if the file actually exists, if not, set slug to null
+      if (filePath && !fs.existsSync(filePath)) {
+        slug = null
+      }
 
       // Extract chapter number if it's a regular chapter
-        let chapterNumber: number | null = null
-        if (chapterNo.startsWith('Chapter-')) {
+      let chapterNumber: number | null = null
+      if (chapterNo.startsWith('Chapter-')) {
         const numMatch = chapterNo.match(/Chapter-(\d+)/)
         if (numMatch) {
           chapterNumber = parseInt(numMatch[1])
         }
       }
 
-        chapters.push({
-          number: chapterNumber,
+      chapters.push({
+        number: chapterNumber,
         title: chapterTitle,
         slug: slug,
         id: chapterSequence, // Add chapter data for filtering
@@ -1289,12 +1289,12 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
     const appendices = chapters.filter((ch) => ch.chapterType === 'appendix')
     const mainChapters = chapters.filter((ch) => ch.chapterType === 'chapter' && ch.number != null)
 
-        // Process Cases from JSON
-        const casesData = bookData.cases || []
-        const cases: Chapter[] = casesData.map((c: Record<string, any>, idx: number) => {
+    // Process Cases from JSON
+    const casesData = bookData.cases || []
+    const cases: Chapter[] = casesData.map((c: Record<string, any>, idx: number) => {
       const caseId = c.case_id || `case${idx + 1}`
-        return {
-          number: null, // Cases don't have a standard chapter number
+      return {
+        number: null, // Cases don't have a standard chapter number
         title: c.case_title,
         slug: `/content/book/${isbnStr}/chapter/${caseId}`, // Assuming case file structure
         id: 1000 + idx, // Arbitrary high ID for sorting/filtering
@@ -1302,12 +1302,12 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
       }
     })
 
-        // Process Videos from JSON
-        const videosData = bookData.videos || []
-        const videos: Chapter[] = videosData.map((v: Record<string, any>, idx: number) => {
+    // Process Videos from JSON
+    const videosData = bookData.videos || []
+    const videos: Chapter[] = videosData.map((v: Record<string, any>, idx: number) => {
       const videoId = v.video_id || `video${idx + 1}`
-        return {
-          number: null,
+      return {
+        number: null,
         title: v.video_title || `Video ${idx + 1}`,
         slug: `/content/book/${isbnStr}/chapter/video-${videoId}`,
         id: 2000 + idx,
@@ -1316,34 +1316,34 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, cases
       }
     })
 
-        const sections: Section[] = []
-        if (prelims.length) sections.push({title: 'Prelims', chapters: prelims })
-        if (mainChapters.length) sections.push({title: 'Chapters', chapters: mainChapters })
-        if (appendices.length) sections.push({title: 'Appendices', chapters: appendices })
-        if (cases.length) sections.push({title: 'Cases', chapters: cases })
-        if (videos.length) sections.push({title: 'Videos', chapters: videos }) // Add videos to sections if you want them in main list, or keep separate
-        if (index.length) sections.push({title: 'Index', chapters: index })
+    const sections: Section[] = []
+    if (prelims.length) sections.push({ title: 'Prelims', chapters: prelims })
+    if (mainChapters.length) sections.push({ title: 'Chapters', chapters: mainChapters })
+    if (appendices.length) sections.push({ title: 'Appendices', chapters: appendices })
+    if (cases.length) sections.push({ title: 'Cases', chapters: cases })
+    if (videos.length) sections.push({ title: 'Videos', chapters: videos }) // Add videos to sections if you want them in main list, or keep separate
+    if (index.length) sections.push({ title: 'Index', chapters: index })
 
     // Detect book PDF (<isbn>.pdf or book.pdf) if present
-          let bookPdfUrl: string | null = null
-          try {
+    let bookPdfUrl: string | null = null
+    try {
       const isbnPdfFs = path.join(bookDir, `${isbnStr}.pdf`)
-          const bookPdfFs = path.join(bookDir, 'book.pdf')
-          if (fs.existsSync(isbnPdfFs)) {
-            bookPdfUrl = `/books/${isbnStr}/${isbnStr}.pdf`
-          } else if (fs.existsSync(bookPdfFs)) {
-            bookPdfUrl = `/books/${isbnStr}/book.pdf`
-          }
+      const bookPdfFs = path.join(bookDir, 'book.pdf')
+      if (fs.existsSync(isbnPdfFs)) {
+        bookPdfUrl = `/books/${isbnStr}/${isbnStr}.pdf`
+      } else if (fs.existsSync(bookPdfFs)) {
+        bookPdfUrl = `/books/${isbnStr}/book.pdf`
+      }
     } catch { }
 
-          return {props: {isbn: isbnStr, book, sections, cases, bookPdfUrl, videosCount: 0, casesCount: cases.length, reviewsCount: 0 } }
+    return { props: { isbn: isbnStr, book, sections, cases, bookPdfUrl, videosCount: 0, casesCount: cases.length, reviewsCount: 0 } }
 
   } catch (e) {
-            console.error('Error loading book metadata:', e)
-    return {props: {isbn: isbnStr, book: null, sections: [], cases: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
+    console.error('Error loading book metadata:', e)
+    return { props: { isbn: isbnStr, book: null, sections: [], cases: [], bookPdfUrl: null, videosCount: 0, casesCount: 0, reviewsCount: 0 } }
   }
 }
 
 BookDetailPage.getLayout = (page) => <MainLayout>{page}</MainLayout>
 
-          export default BookDetailPage
+export default BookDetailPage
