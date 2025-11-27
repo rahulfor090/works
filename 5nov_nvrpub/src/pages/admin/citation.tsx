@@ -224,7 +224,12 @@ const AdminCitations = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           })
-          if (!res.ok) throw new Error('Update failed')
+          
+          if (!res.ok) {
+            const errorData = await res.json()
+            throw new Error(errorData.message || 'Update failed')
+          }
+          
           setCitations(prev => prev.map(p => (p.id === currentCitation.id ? { ...(p as any), ...payload, id: currentCitation.id } as Citation : p)))
           showSnackbar('Ad updated successfully', 'success')
         } else {
@@ -233,15 +238,20 @@ const AdminCitations = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           })
-          if (!res.ok) throw new Error('Create failed')
+          
+          if (!res.ok) {
+            const errorData = await res.json()
+            throw new Error(errorData.message || 'Create failed')
+          }
+          
           const data = await res.json()
           const newC: Citation = { id: Number(data.id), title: payload.title, url: payload.url, logo: payload.logo, location: payload.location, page_location: payload.page_location, isPublished: payload.isPublished }
           setCitations(prev => [newC, ...prev])
           showSnackbar('Ad created successfully', 'success')
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error(err)
-        showSnackbar('Failed to save ad', 'error')
+        showSnackbar(err.message || 'Failed to save ad', 'error')
       } finally {
         setOpen(false)
         setUploadFile(null)
