@@ -184,7 +184,7 @@ const TestimonialsNew: React.FC = () => {
                       ))}
                     </div>
                     <p className="body-large mb-6 italic" style={{ color: 'var(--text-primary)' }}>
-                      &quot;{currentTestimonial.quote}&quot;
+                      "{currentTestimonial.quote}"
                     </p>
                     <div>
                       <h4 className="heading-3 mb-1">{currentTestimonial.name}</h4>
