@@ -34,9 +34,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { title, url, logo, location, page_location, isPublished } = req.body || {}
       if (!title || !url) return res.status(400).json({ message: 'Missing title or url' })
 
+      const loc = location ?? 'header'
+      const pageLoc = page_location ?? 'home'
+
+      // Check if an ad already exists in this location and page combination
+      const [existing] = await query(
+        `SELECT id FROM citations WHERE location = ? AND page_location = ? AND isPublished = 1`,
+        [loc, pageLoc]
+      )
+
+      if ((existing as any[]).length > 0) {
+        return res.status(409).json({ 
+          message: `An active ad already exists in ${loc} position on ${pageLoc} page(s). Please deactivate or delete the existing ad first.` 
+        })
+      }
+
       const [result]: any = await query(
         `INSERT INTO citations (title, url, logo, location, page_location, isPublished, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-        [title, url, logo ?? '', location ?? 'header', page_location ?? 'home', isPublished ? 1 : 0]
+        [title, url, logo ?? '', loc, pageLoc, isPublished ? 1 : 0]
       )
       return res.status(201).json({ id: result.insertId })
     }
