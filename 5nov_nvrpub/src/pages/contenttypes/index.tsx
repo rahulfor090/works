@@ -79,6 +79,7 @@ const ContenttypesPage: NextPageWithLayout<Props> = ({ contenttypes }) => {
                     display: 'flex',
                     flexDirection: 'column',
                     transition: theme.transitions.create(['transform', 'box-shadow']),
+                    willChange: 'transform',
                     '&:hover': {
                       transform: 'translateY(-4px)',
                       boxShadow: theme.shadows[8],

@@ -143,6 +143,7 @@ const AboutPage = () => {
                       height: '100%',
                       textAlign: 'center',
                       transition: 'transform 0.3s, box-shadow 0.3s',
+                      willChange: 'transform',
                       '&:hover': {
                         transform: 'translateY(-8px)',
                         boxShadow: 6

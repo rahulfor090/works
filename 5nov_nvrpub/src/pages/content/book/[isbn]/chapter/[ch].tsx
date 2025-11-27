@@ -1364,27 +1364,31 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                       width: '100%',
                       display: 'block',
                       overflowX: 'auto',
-                      borderCollapse: 'collapse',
+                      borderCollapse: 'separate',
                       borderSpacing: 0,
                       margin: '3em 0',
-                      fontSize: `${fontSize * 0.9}rem`,
+                      fontSize: `${fontSize * 0.95}rem`,
                       border: `1px solid ${themeColors.border}`,
-                      borderRadius: '8px',
-                      boxShadow: 'none'
+                      borderRadius: '16px',
+                      boxShadow: themeColors.shadow,
+                      overflow: 'hidden',
+                      backgroundColor: themeColors.bg
                     },
                     '& .chapter-html thead': {
-                      backgroundColor: themeColors.tableHeader,
-                      borderBottom: `2px solid ${themeColors.border}`
+                      backgroundColor: themeColors.activeItemBg,
                     },
                     '& .chapter-html th': {
                       color: themeColors.heading,
                       fontWeight: 700,
                       textAlign: 'left',
-                      padding: '1rem',
-                      borderBottom: `2px solid ${themeColors.border}`,
+                      padding: '1.25rem 1.5rem',
+                      borderBottom: `1px solid ${themeColors.border}`,
                       borderRight: `1px solid ${themeColors.border}`,
-                      backgroundColor: themeColors.tableHeader,
-                      whiteSpace: 'nowrap'
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.8rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      backgroundColor: themeColors.activeItemBg
                     },
                     '& .chapter-html th:last-child': {
                       borderRight: 'none'
@@ -1393,13 +1397,13 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                       backgroundColor: themeColors.hoverItemBg
                     },
                     '& .chapter-html td': {
-                      padding: '1rem',
+                      padding: '1.25rem 1.5rem',
                       borderBottom: `1px solid ${themeColors.border}`,
                       borderRight: `1px solid ${themeColors.border}`,
                       color: themeColors.text,
                       verticalAlign: 'top',
                       lineHeight: 1.6,
-                      minWidth: '120px'
+                      minWidth: '140px'
                     },
                     '& .chapter-html td:last-child': {
                       borderRight: 'none'

@@ -28,6 +28,7 @@ const ContentCardItem: FC<Props> = ({ item, contenttypeSlug }) => {
           backgroundColor: 'background.paper',
           borderRadius: 4,
           transition: (theme) => theme.transitions.create(['box-shadow']),
+          willChange: 'transform', // Promote to layer to optimize box-shadow repaint
           '&:hover': {
             boxShadow: 2,
           },

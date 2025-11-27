@@ -74,6 +74,7 @@ const StatCard = styled(motion.div)(({ theme }) => ({
   border: '1px solid rgba(0,0,0,0.06)',
   boxShadow: '0 6px 18px -4px rgba(0,0,0,0.10)',
   transition: 'transform .45s cubic-bezier(.4,0,.2,1), box-shadow .45s cubic-bezier(.4,0,.2,1)',
+  willChange: 'transform',
   cursor: 'default',
   '&:hover': {
     transform: 'translateY(-6px)',
@@ -94,7 +95,7 @@ const StatCount = styled(Typography)(({ theme }) => ({
   letterSpacing: '.5px',
   lineHeight: 1,
   display: 'block',
-  background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`,
+  background: `linear-gradient(90deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
   WebkitBackgroundClip: 'text',
   color: 'transparent',
 }))
@@ -157,7 +158,7 @@ const HomeHero: FC = () => {
           <motion.div variants={containerVariants} initial="hidden" animate="visible">
             <motion.div variants={itemVariants}>
               <Box sx={{ display: 'inline-block', mb: 2 }}>
-                <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 2, py: '6px', borderRadius: 999, background: 'rgba(30,136,229,0.08)', color: '#1E88E5', fontWeight: 600, fontSize: '0.875rem' }}>
+                <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 2, py: '6px', borderRadius: 999, background: 'rgba(21, 101, 192, 0.08)', color: '#1565C0', fontWeight: 600, fontSize: '0.875rem' }}>
                   Trusted by 50,000+ Medical Professionals
                 </Box>
               </Box>
