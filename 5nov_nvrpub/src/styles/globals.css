@@ -200,6 +200,7 @@ body {
   letter-spacing: 0.025em;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
+  will-change: transform;
   min-height: 2.25rem;
   display: inline-flex;
   align-items: center;
@@ -230,6 +231,7 @@ body {
   letter-spacing: 0.025em;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  will-change: transform;
   min-height: 2.25rem;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -253,6 +255,7 @@ body {
 /* Utility Classes */
 .hover-lift {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
 }
 
 .hover-lift:hover {
@@ -262,6 +265,7 @@ body {
 
 .hover-scale {
   transition: transform 0.2s ease;
+  will-change: transform;
 }
 
 .hover-scale:hover {

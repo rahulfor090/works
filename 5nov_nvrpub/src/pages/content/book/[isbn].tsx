@@ -297,6 +297,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                     boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
                     transform: 'rotate(-2deg)',
                     transition: 'transform 0.3s ease',
+                    willChange: 'transform',
                     '&:hover': { transform: 'rotate(0deg) scale(1.02)' }
                   }} 
                 />
@@ -336,13 +337,13 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
 
                 {/* Author */}
                 {author && (
-                  <Typography variant="h5" sx={{ color: '#64748B', fontWeight: 500 }}>
+                  <Typography variant="h5" sx={{ color: '#475569', fontWeight: 500 }}>
                     by {author}
                   </Typography>
                 )}
 
                 {/* Stats / Meta */}
-                <Stack direction="row" spacing={3} sx={{ my: 2, color: '#64748B' }} divider={<Divider orientation="vertical" flexItem />}>
+                <Stack direction="row" spacing={3} sx={{ my: 2, color: '#475569' }} divider={<Divider orientation="vertical" flexItem />}>
                   <Box>
                     <Typography variant="caption" display="block" sx={{ textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>ISBN</Typography>
                     <Typography variant="subtitle2" color="#0A2540" fontWeight={600}>{isbn}</Typography>
@@ -355,7 +356,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
 
                 {/* Description */}
                 {book?.description && (
-                  <Typography variant="body1" sx={{ color: '#475569', lineHeight: 1.8, maxWidth: '90%', fontSize: '1.1rem' }}>
+                  <Typography variant="body1" sx={{ color: '#334155', lineHeight: 1.8, maxWidth: '90%', fontSize: '1.1rem' }}>
                     {book.description}
                   </Typography>
                 )}
@@ -377,7 +378,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                       <Typography variant="subtitle2" sx={{ color: '#0A2540', fontWeight: 600 }}>
                         Keywords
                       </Typography>
-                      {showKeywords ? <ExpandLessIcon fontSize="small" sx={{ ml: 0.5, color: '#64748B' }} /> : <ExpandMoreIcon fontSize="small" sx={{ ml: 0.5, color: '#64748B' }} />}
+                      {showKeywords ? <ExpandLessIcon fontSize="small" sx={{ ml: 0.5, color: '#475569' }} /> : <ExpandMoreIcon fontSize="small" sx={{ ml: 0.5, color: '#475569' }} />}
                     </Box>
                     <Collapse in={showKeywords}>
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -388,7 +389,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                             size="small" 
                             sx={{ 
                               backgroundColor: '#F1F5F9', 
-                              color: '#64748B',
+                              color: '#475569',
                               border: '1px solid #E2E8F0'
                             }} 
                           />
@@ -401,22 +402,22 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                 {/* Actions Toolbar */}
                 <Stack direction="row" spacing={2} sx={{ mt: 2 }} alignItems="center">
                   <Tooltip title="Refer to Friend">
-                    <IconButton onClick={handleReferFriend} sx={{ color: '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
+                    <IconButton onClick={handleReferFriend} sx={{ color: '#475569', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
                       <PersonAddAlt1Icon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Recommend to Librarian">
-                    <IconButton onClick={handleRecommendLibrarian} sx={{ color: '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
+                    <IconButton onClick={handleRecommendLibrarian} sx={{ color: '#475569', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
                       <SchoolIcon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Share This Page">
-                    <IconButton onClick={handleSharePage} sx={{ color: '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
+                    <IconButton onClick={handleSharePage} sx={{ color: '#475569', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
                       <ShareIcon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={favorite ? 'Remove from favourites' : 'Add to favourites'}>
-                    <IconButton onClick={toggleFavorite} sx={{ color: favorite ? '#EF4444' : '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#EF4444', borderColor: '#EF4444', background: 'transparent' } }}>
+                    <IconButton onClick={toggleFavorite} sx={{ color: favorite ? '#EF4444' : '#475569', border: '1px solid #E2E8F0', '&:hover': { color: '#EF4444', borderColor: '#EF4444', background: 'transparent' } }}>
                       {favorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                     </IconButton>
                   </Tooltip>
@@ -464,7 +465,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
             borderBottom: '1px solid #E2E8F0',
             '& .MuiTab-root': {
               fontWeight: 600,
-              color: '#64748B',
+              color: '#475569',
               textTransform: 'none',
               fontSize: '1.1rem',
               px: 4,
@@ -1312,7 +1313,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
       // Check for PDF
       let pdfUrl: string | null = null
-      if (filePath) {
+
+      if (chapterData['chapter-pdf']) {
+        pdfUrl = chapterData['chapter-pdf']
+      }
+
+      if (!pdfUrl && filePath) {
         const siblingPdfPath = filePath.replace(/\.html$/, '.pdf')
         const dir = path.dirname(filePath)
         const filename = path.basename(siblingPdfPath)

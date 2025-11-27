@@ -34,6 +34,7 @@ interface ChapterFormData {
   access_type: string
   keywords: string[]
   description: string
+  pdf_url: string
 }
 
 interface Book {
@@ -65,7 +66,8 @@ const CreateEditChapterPage = () => {
     last_page: '',
     access_type: 'Paid',
     keywords: [''],
-    description: ''
+    description: '',
+    pdf_url: ''
   })
 
   useEffect(() => {
@@ -106,7 +108,8 @@ const CreateEditChapterPage = () => {
           last_page: chapter.last_page?.toString() || '',
           access_type: chapter.access_type || 'Paid',
           keywords: chapter.keywords ? chapter.keywords.split(',').map((k: string) => k.trim()) : [''],
-          description: chapter.description || ''
+          description: chapter.description || '',
+          pdf_url: chapter.pdf_url || ''
         })
       } else {
         setError(data.message || 'Failed to fetch chapter')

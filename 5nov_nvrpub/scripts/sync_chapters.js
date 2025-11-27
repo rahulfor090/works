@@ -8,7 +8,7 @@ async function syncChapters() {
     connection = await mysql.createConnection({
       host: 'localhost',
       user: 'root',
-      password: 'Smarth@2006',
+      password: 'anshpandey@18072006',
       database: 'jaypeedigi'
     });
 
@@ -69,13 +69,14 @@ async function syncChapters() {
             const lastPage = chapter['chapter-lpage'] || '';
             const keywords = chapter['chapter-keyword'] || '';
             const description = chapter['chapter-abstract'] || '';
+            const pdfUrl = chapter['chapter-pdf'] || '';
             const accessType = 'Paid';
 
             const [result] = await connection.execute(
                 `INSERT INTO chapters (
                     book_id, book_isbn, chapter_number, sequence_number, chapter_title, doi,
-                    first_page, last_page, access_type, keywords, description, status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')
+                    first_page, last_page, access_type, keywords, description, pdf_url, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')
                 ON DUPLICATE KEY UPDATE
                     sequence_number = VALUES(sequence_number),
                     chapter_title = VALUES(chapter_title),
@@ -84,11 +85,12 @@ async function syncChapters() {
                     last_page = VALUES(last_page),
                     keywords = VALUES(keywords),
                     description = VALUES(description),
+                    pdf_url = VALUES(pdf_url),
                     status = 'Active',
                     updated_date = NOW()`,
                 [
                     bookId, isbn, chapterNumber, sequenceNumber, chapterTitle, doi,
-                    firstPage, lastPage, accessType, keywords, description
+                    firstPage, lastPage, accessType, keywords, description, pdfUrl
                 ]
             );
 
@@ -118,13 +120,14 @@ async function syncChapters() {
             const lastPage = caseItem.lpage || '';
             const keywords = caseItem.case_keywords || '';
             const description = '';
+            const pdfUrl = '';
             const accessType = 'Paid';
 
             const [result] = await connection.execute(
                 `INSERT INTO chapters (
                     book_id, book_isbn, chapter_number, sequence_number, chapter_title, doi,
-                    first_page, last_page, access_type, keywords, description, status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')
+                    first_page, last_page, access_type, keywords, description, pdf_url, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')
                 ON DUPLICATE KEY UPDATE
                     sequence_number = VALUES(sequence_number),
                     chapter_title = VALUES(chapter_title),
@@ -133,11 +136,12 @@ async function syncChapters() {
                     last_page = VALUES(last_page),
                     keywords = VALUES(keywords),
                     description = VALUES(description),
+                    pdf_url = VALUES(pdf_url),
                     status = 'Active',
                     updated_date = NOW()`,
                 [
                     bookId, isbn, chapterNumber, sequenceNumber, chapterTitle, doi,
-                    firstPage, lastPage, accessType, keywords, description
+                    firstPage, lastPage, accessType, keywords, description, pdfUrl
                 ]
             );
 

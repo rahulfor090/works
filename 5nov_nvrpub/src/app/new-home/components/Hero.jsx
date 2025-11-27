@@ -1,4 +1,5 @@
 import React, { useState } from 'react';  
+import Link from 'next/link';
 import { Button } from './ui/button';
 import { Play } from 'lucide-react';
 import HeroSlider, { heroDefaultSlides } from './ui/HeroSlider';
@@ -63,20 +64,24 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4 pt-2">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] hover:from-[#FF5252] hover:to-[#FF7043] text-white px-8 py-6 text-base shadow-xl shadow-[#FF6B6B]/25 hover:shadow-2xl hover:shadow-[#FF6B6B]/40 transition-all duration-300 transform hover:-translate-y-1"
-              >
-                Explore Module
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-[#0A2540] text-[#0A2540] hover:bg-[#0A2540] hover:text-white px-6 py-6 text-base transition-all duration-300 flex items-center gap-2 group"
-              >
-                <Play size={18} className="group-hover:scale-110 transition-transform" />
-                Watch Preview
-              </Button>
+              <Link href="/contenttypes/books">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-[#FF6B6B] to-[#FF8E53] hover:from-[#FF5252] hover:to-[#FF7043] text-white px-8 py-6 text-base shadow-xl shadow-[#FF6B6B]/25 hover:shadow-2xl hover:shadow-[#FF6B6B]/40 transition-all duration-300 transform hover:-translate-y-1"
+                >
+                  Explore Books
+                </Button>
+              </Link>
+              <Link href="/contenttypes/videos">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-[#0A2540] text-[#0A2540] hover:bg-[#0A2540] hover:text-white px-6 py-6 text-base transition-all duration-300 flex items-center gap-2 group"
+                >
+                  <Play size={18} className="group-hover:scale-110 transition-transform" />
+                  Watch Videos
+                </Button>
+              </Link>
             </div>
           </div>
 
