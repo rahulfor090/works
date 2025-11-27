@@ -135,7 +135,7 @@ const AdminLayout = ({ children, title = 'Admin Dashboard', breadcrumbs = [] }: 
     { label: 'Mentors', href: '/admin/mentors', icon: <PersonIcon /> },
     { label: 'Offers', href: '/admin/offers', icon: <LocalOfferIcon /> },
     { label: 'Menu Management', href: '/admin/menu-management', icon: <MenuBookIcon /> },
-    { label: 'Citation', href: '/admin/citation', icon: <FormatQuoteIcon /> },
+    { label: 'Ads', href: '/admin/ads', icon: <FormatQuoteIcon /> },
     { divider: true },
   ];
 

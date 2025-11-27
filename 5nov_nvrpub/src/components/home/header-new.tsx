@@ -90,8 +90,12 @@ const HeaderNew: React.FC = () => {
           transition={{ delay: 0.5, duration: 0.5 }}
           className="hidden md:flex items-center gap-4"
         >
-          <button className="btn-secondary">Sign In</button>
-          <button className="btn-primary">Sign Up</button>
+          <Link href="/login">
+            <button className="btn-secondary">Sign In</button>
+          </Link>
+          <Link href="/signup">
+            <button className="btn-primary">Sign Up</button>
+          </Link>
         </motion.div>
 
         {/* Mobile Menu Button */}
@@ -133,8 +137,12 @@ const HeaderNew: React.FC = () => {
                 )
               })}
               <div className="flex flex-col gap-2 pt-2">
-                <button className="btn-secondary w-full">Sign In</button>
-                <button className="btn-primary w-full">Sign Up</button>
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <button className="btn-secondary w-full">Sign In</button>
+                </Link>
+                <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                  <button className="btn-primary w-full">Sign Up</button>
+                </Link>
               </div>
             </nav>
           </motion.div>

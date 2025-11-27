@@ -203,278 +203,170 @@ const HeroNew: React.FC = () => {
         paddingBottom: '2rem'
       }}
     >
-      {/* Manual Navigation Buttons */}
-      <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-4 z-30 pointer-events-none">
-        <button
-          onClick={() => changeSlide('prev')}
-          className="pointer-events-auto w-12 h-12 rounded-full bg-white/90 border border-gray-200 text-gray-700 shadow-lg flex items-center justify-center hover:bg-white transition-colors"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft size={22} />
-        </button>
-
-        <button
-          onClick={() => changeSlide('next')}
-          className="pointer-events-auto w-12 h-12 rounded-full bg-white/90 border border-gray-200 text-gray-700 shadow-lg flex items-center justify-center hover:bg-white transition-colors"
-          aria-label="Next slide"
-        >
-          <ChevronRight size={22} />
-        </button>
-      </div>
-
-      {/* Background Carousel */}
-      <div className="absolute inset-0 opacity-70">
+      {/* Background Image (Blurred/dimmed for atmosphere) */}
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
         <AnimatePresence mode="wait">
           <motion.div
-            key={
-              normalizedSlides[currentImageIndex]?.image ||
-              currentImageIndex
-            }
+            key={normalizedSlides[currentImageIndex]?.image}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2 }}
-            className="absolute inset-0"
+            className="absolute inset-0 bg-cover bg-center blur-3xl scale-110"
             style={{
               backgroundImage: `url(${normalizedSlides[currentImageIndex]?.image})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: 'brightness(0.7) contrast(1.25)'
             }}
           />
         </AnimatePresence>
       </div>
 
-      {/* CONTENT START */}
-      <div className="container mx-auto px-4 relative z-10 text-center pt-40 sm:pt-48 pb-12">
+      <div className="container mx-auto px-4 relative z-10 text-center pt-24 sm:pt-32 pb-12 flex items-center justify-center min-h-screen">
+        <div className="w-full max-w-7xl bg-white/80 backdrop-blur-xl border border-white/40 rounded-[2.5rem] shadow-2xl overflow-hidden relative flex flex-col lg:flex-row min-h-[600px] lg:h-[700px]">
 
-        {/* Search Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="max-w-4xl mx-auto mb-10 sm:mb-12"
-        >
-          <form onSubmit={handleSearch} className="relative filter-container">
-            <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 rounded-3xl sm:rounded-full border border-gray-200 bg-white backdrop-blur-2xl px-5 py-4 shadow-xl">
-              <div className="flex items-center w-full gap-2.5">
-                <Search size={22} className="text-gray-600" />
-                <input
-                  type="search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search medical resources, journals, or mentors"
-                  className="flex-1 bg-transparent text-base sm:text-lg font-medium text-gray-900 placeholder-gray-500 focus:outline-none"
-                />
+          {/* Left Column: Content */}
+          <div className="w-full lg:w-1/2 p-8 sm:p-12 flex flex-col justify-center text-left relative z-10">
 
-                <button
-                  type="button"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className={`p-2 rounded-full transition-colors relative ${selectedType !== 'all'
-                      ? 'bg-gray-100'
-                      : 'hover:bg-gray-100'
-                    }`}
-                >
-                  <Filter size={20} />
-                  {selectedType !== 'all' && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-black" />
-                  )}
-                </button>
+            {/* Announcement Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex self-start items-center gap-2 px-4 py-1.5 mb-8 rounded-full bg-blue-50 border border-blue-100 text-blue-700"
+            >
+              <span className="text-xs font-bold tracking-wider uppercase">
+                New Resources Available
+              </span>
+            </motion.div>
+
+            {/* Title */}
+            <motion.h1
+              key={currentImageIndex}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 text-gray-900 leading-[1.1]"
+            >
+              <span>{normalizedSlides[currentImageIndex]?.title}</span>
+              {normalizedSlides[currentImageIndex]?.highlightedWord &&
+                normalizedSlides[currentImageIndex]?.highlightedWord !==
+                normalizedSlides[currentImageIndex]?.title && (
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mt-2">
+                    {normalizedSlides[currentImageIndex]?.highlightedWord}
+                  </span>
+                )}
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              key={`sub-${currentImageIndex}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg text-gray-600 mb-8 max-w-lg leading-relaxed"
+            >
+              {normalizedSlides[currentImageIndex]?.subtitle}
+            </motion.p>
+
+            {/* Search Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="w-full max-w-md mb-10"
+            >
+              <form onSubmit={handleSearch} className="relative">
+                <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-3 shadow-sm focus-within:shadow-md transition-shadow duration-300">
+                  <Search size={20} className="text-gray-400" />
+                  <input
+                    type="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search resources..."
+                    className="flex-1 bg-transparent text-base font-medium text-gray-900 placeholder-gray-400 focus:outline-none"
+                  />
+                  <button
+                    type="submit"
+                    className="p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="flex flex-wrap items-center gap-4"
+            >
+              <Link href="/signup" className="px-8 py-3.5 rounded-full bg-gray-900 text-white font-semibold text-base hover:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl">
+                Start Free
+              </Link>
+              <Link href="/login" className="px-8 py-3.5 rounded-full bg-white text-gray-900 border border-gray-200 font-semibold text-base hover:bg-gray-50 transition-all duration-300 flex items-center gap-2">
+                <Play size={18} className="fill-current" />
+                Watch Demo
+              </Link>
+            </motion.div>
+
+            {/* Trust Badges / Stats (Small) */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="mt-12 pt-8 border-t border-gray-100 flex items-center gap-6 text-gray-500 text-sm font-medium"
+            >
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={16} className="text-green-500" />
+                <span>Verified Content</span>
               </div>
+              <div className="flex items-center gap-2">
+                <Users size={16} className="text-blue-500" />
+                <span>450+ Mentors</span>
+              </div>
+            </motion.div>
 
-              <button
-                type="submit"
-                className="w-full sm:w-auto px-5 py-2.5 rounded-full font-semibold text-base"
+          </div>
+
+          {/* Right Column: Image */}
+          <div className="w-full lg:w-1/2 relative h-[400px] lg:h-auto overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={normalizedSlides[currentImageIndex]?.image}
+                initial={{ opacity: 0, scale: 1.1 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                className="absolute inset-0 bg-cover bg-center"
                 style={{
-                  background: 'rgba(255,255,255,0.9)',
-                  color: 'var(--gradient-hero-start)'
+                  backgroundImage: `url(${normalizedSlides[currentImageIndex]?.image})`,
                 }}
+              />
+            </AnimatePresence>
+
+            {/* Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent lg:bg-gradient-to-l lg:from-transparent lg:to-black/10 pointer-events-none" />
+
+            {/* Navigation Buttons (Overlaid on Image) */}
+            <div className="absolute bottom-8 right-8 flex gap-3 z-20">
+              <button
+                onClick={() => changeSlide('prev')}
+                className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center"
               >
-                Search
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={() => changeSlide('next')}
+                className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center"
+              >
+                <ChevronRight size={24} />
               </button>
             </div>
+          </div>
 
-            {/* Filters Dropdown */}
-            <AnimatePresence>
-              {showFilters && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10, height: 0 }}
-                  animate={{ opacity: 1, y: 0, height: 'auto' }}
-                  exit={{ opacity: 0, y: -10, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="absolute top-full left-0 right-0 mt-2 rounded-2xl border border-white/30 bg-white p-4 backdrop-blur-2xl shadow-xl z-50"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-semibold">
-                      Filter by Content Type
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setShowFilters(false)}
-                      className="p-1 rounded-full hover:bg-gray-100"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {CONTENT_TYPES.map((type) => (
-                      <button
-                        key={type.value}
-                        onClick={() => {
-                          setSelectedType(type.value)
-                          setShowFilters(false)
-                        }}
-                        className={`px-4 py-2 rounded-full text-sm font-medium ${selectedType === type.value
-                            ? 'bg-black text-white'
-                            : 'bg-white text-black hover:bg-gray-100'
-                          }`}
-                        style={{ border: '1px solid rgba(0,0,0,0.1)' }}
-                      >
-                        {type.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {selectedType !== 'all' && (
-                    <div className="mt-3 pt-3 border-t border-gray-200">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedType('all')
-                          setShowFilters(false)
-                        }}
-                        className="text-sm text-gray-600 hover:text-gray-900"
-                      >
-                        Clear filter
-                      </button>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </form>
-        </motion.div>
-
-        {/* Trust Badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.25 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-5xl mx-auto mb-8"
-        >
-          {TRUST_BADGES.map(({ icon: Icon, title, meta }) => (
-            <div
-              key={title}
-              className="flex items-center gap-3 bg-white/90 border border-gray-100 rounded-2xl px-4 py-3 shadow-lg"
-            >
-              <span className="w-10 h-10 rounded-xl bg-gray-900 text-white flex items-center justify-center">
-                <Icon size={18} />
-              </span>
-              <div>
-                <p className="text-sm font-semibold">{title}</p>
-                <p className="text-xs text-gray-500">{meta}</p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Announcement Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white/40 backdrop-blur"
-        >
-          <span className="caption font-mono uppercase">
-            New Resources Available
-          </span>
-        </motion.div>
-
-        {/* Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="heading-hero mb-6 max-w-4xl mx-auto"
-        >
-          <span>{normalizedSlides[currentImageIndex]?.title}</span>
-          {normalizedSlides[currentImageIndex]?.highlightedWord &&
-            normalizedSlides[currentImageIndex]?.highlightedWord !==
-            normalizedSlides[currentImageIndex]?.title && (
-              <span className="block text-primary">
-                {normalizedSlides[currentImageIndex]?.highlightedWord}
-              </span>
-            )}
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="body-large mb-8 max-w-2xl mx-auto text-gray-600"
-        >
-          {normalizedSlides[currentImageIndex]?.subtitle}
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
-        >
-          <Link href="/signup" className="btn-primary px-8 py-3 text-base">
-            Start Free
-          </Link>
-
-          <Link href="/login" className="btn-secondary px-8 py-3 text-base flex items-center gap-2">
-            <Play size={18} />
-            Sign In & Explore
-          </Link>
-        </motion.div>
-
-        {/* Highlight Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.7 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-5xl mx-auto mb-14"
-        >
-          {HERO_HIGHLIGHTS.map((item) => (
-            <div
-              key={item.label}
-              className="bg-white/90 border border-gray-100 rounded-3xl px-6 py-5 text-left shadow-xl"
-            >
-              <p className="text-3xl font-semibold">{item.value}</p>
-              <p className="text-base font-medium">{item.label}</p>
-              <p className="text-sm text-gray-500 mt-1">{item.meta}</p>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1 }}
-          className="flex flex-col items-center"
-        >
-          <span className="caption mb-2 text-gray-500">
-            Scroll to explore
-          </span>
-
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <ChevronDown size={24} />
-          </motion.div>
-        </motion.div>
-
+        </div>
       </div>
-      {/* CONTENT END */}
     </section>
   )
 }
