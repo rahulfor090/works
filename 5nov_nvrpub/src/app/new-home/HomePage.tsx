@@ -70,6 +70,28 @@ const HomePage = (): JSX.Element => {
       <Testimonials />
       <MostViewed />
       <Newsletter />
+      
+      {/* Advertisement Banner - Below Newsletter */}
+      {banner && (
+        <div className="w-full bg-white py-8">
+          <div className="mx-auto max-w-7xl flex justify-center">
+            <a 
+              href={banner.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <img
+                src={banner.image}
+                alt={banner.title || "Advertisement"}
+                className="object-cover block hover:opacity-90 transition-opacity cursor-pointer"
+                style={{ width: '468px', height: '60px' }}
+              />
+            </a>
+          </div>
+        </div>
+      )}
+      
       <SiteFooter />
     </div>
   );
