@@ -206,9 +206,10 @@ const HeroSlider = forwardRef<HeroSliderHandle, HeroSliderProps>(({ onSlideChang
             custom={direction}
           >
             <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-[1600ms]"
+              className="absolute inset-0 bg-cover bg-center transition-transform"
               style={{
-                backgroundImage: `url(${resolveImageSrc(activeSlide?.image)})`
+                backgroundImage: `url(${resolveImageSrc(activeSlide?.image)})`,
+                transitionDuration: '1600ms'
               }}
             />
           </motion.div>
