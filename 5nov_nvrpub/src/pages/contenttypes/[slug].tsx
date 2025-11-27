@@ -147,11 +147,9 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                 </Stack>
               </motion.div>
             </Grid>
-            
             {/* Decorative Image/Graphic could go here in the other grid column */}
           </Grid>
         </Container>
-
         {/* Content Section */}
         <Container maxWidth="lg" sx={{ mt: 8 }}>
           {/* Categories Filter */}
@@ -213,7 +211,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
 
                 return (
                   <Grid item xs={12} sm={6} md={4} lg={3} key={content.id}>
-                    <Link href={`/content/book/${content.isbn}`} style={{ textDecoration: 'none' }}>
+                    <Link href={contenttype === 'journals' ? `/content/journal/${content.id}` : `/content/book/${content.isbn}`} style={{ textDecoration: 'none' }}>
                       <StyledCard
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -246,7 +244,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                             }}
                           />
                           <Chip
-                            label={content.subject || 'General'}
+                            label={content.subjectcategory || 'General'}
                             size="small"
                             sx={{
                               position: 'absolute',
@@ -278,7 +276,6 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                           >
                             {content.title}
                           </Typography>
-                          
                           <Typography
                             variant="body2"
                             sx={{
