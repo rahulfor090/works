@@ -35,6 +35,7 @@ import {
   ToggleButtonGroup,
   Drawer,
   Chip,
+  TextField,
 } from '@mui/material'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import BookmarkIcon from '@mui/icons-material/Bookmark'
@@ -47,6 +48,7 @@ import ShareIcon from '@mui/icons-material/Share'
 import SettingsIcon from '@mui/icons-material/Settings'
 import TextFieldsIcon from '@mui/icons-material/TextFields'
 import LightModeIcon from '@mui/icons-material/LightMode'
+import DeleteIcon from '@mui/icons-material/Delete'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import ContrastIcon from '@mui/icons-material/Contrast'
 import { Menu, MenuItem, ListItemIcon } from '@mui/material'
@@ -198,6 +200,8 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
 
   const themeColors = getThemeColors()
 
+
+
   // Enhanced Image Modal State
   const [imgZoom, setImgZoom] = React.useState(1)
   const [imgPan, setImgPan] = React.useState({ x: 0, y: 0 })
@@ -232,16 +236,26 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
     }
   }
 
-  const handleMouseUp = (): void => setIsDragging(false)
+  const handleImageMouseUp = (): void => setIsDragging(false)
 
 
   // User authentication state
-  const [, setUser] = React.useState<{ email?: string; isPremium?: boolean } | null>(null)
+  const [user, setUser] = React.useState<{ email?: string; isPremium?: boolean } | null>(null)
   const [isLocked, setIsLocked] = React.useState(true)
 
   // Check user authentication and premium status
   React.useEffect(() => {
     if (typeof window === 'undefined') return
+
+    // Always try to load user first
+    let loadedUser = null
+    try {
+      const userStr = window.localStorage.getItem('user')
+      if (userStr) {
+        loadedUser = JSON.parse(userStr)
+        setUser(loadedUser)
+      }
+    } catch { }
 
     // Determine if chapter should be locked based on chapter number
     // Unlock: preliminary, index, and chapter 1
@@ -263,18 +277,11 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
 
     // For chapters 2 and above, check user authentication
     if (chapterNumber && chapterNumber >= 2) {
-      try {
-        const userStr = window.localStorage.getItem('user')
-        if (userStr) {
-          const userData = JSON.parse(userStr)
-          setUser(userData)
-          // Only superuser@gmail.com gets full access
-          const isSuperUser = userData.email === 'superuser@gmail.com'
-          setIsLocked(!isSuperUser)
-        } else {
-          setIsLocked(true)
-        }
-      } catch {
+      if (loadedUser) {
+        // Only superuser@gmail.com gets full access
+        const isSuperUser = loadedUser.email === 'superuser@gmail.com'
+        setIsLocked(!isSuperUser)
+      } else {
         setIsLocked(true)
       }
     } else {
@@ -359,6 +366,236 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
     
     return html
   }, [topTab, html])
+
+  // Highlights State
+  const [highlights, setHighlights] = React.useState<any[]>([])
+  const [selection, setSelection] = React.useState<{text: string, range: Range} | null>(null)
+  const [highlightPopoverAnchor, setHighlightPopoverAnchor] = React.useState<HTMLElement | null>(null)
+  const [noteDialogOpen, setNoteDialogOpen] = React.useState(false)
+  const [noteText, setNoteText] = React.useState('')
+  const [activeHighlight, setActiveHighlight] = React.useState<any | null>(null) // For showing note on hover
+
+  // Fetch highlights
+  const fetchHighlights = async () => {
+    if (!user?.email) return
+    try {
+      // Fetch highlights for ALL chapters of this book to show indicators in TOC
+      // We can filter for current chapter in the render logic
+      const res = await fetch(`/api/highlights?user_email=${user.email}&isbn=${isbn}`)
+      if (res.ok) {
+        const data = await res.json()
+        setHighlights(data)
+      }
+    } catch (e) {
+      console.error('Error fetching highlights', e)
+    }
+  }
+
+  React.useEffect(() => {
+    fetchHighlights()
+  }, [user, isbn]) // Removed 'ch' dependency to fetch all book highlights
+
+  // Filter highlights for current chapter
+  const currentChapterHighlights = React.useMemo(() => {
+    return highlights.filter(h => h.chapter_slug === ch)
+  }, [highlights, ch])
+
+  // Handle Selection
+  const handleMouseUp = (e: any) => {
+    const sel = window.getSelection()
+    if (sel && sel.toString().trim().length > 0 && contentRef.current?.contains(sel.anchorNode)) {
+      const range = sel.getRangeAt(0)
+      const rect = range.getBoundingClientRect()
+      
+      // Position exactly above the center of the selection
+      const clientX = rect.left + (rect.width / 2)
+      const clientY = rect.top
+
+      // Create a virtual element for the popover
+      const virtualEl = {
+        getBoundingClientRect: () => ({
+          top: clientY,
+          left: clientX,
+          bottom: clientY,
+          right: clientX,
+          width: 0,
+          height: 0,
+        }),
+        clientWidth: 0,
+        clientHeight: 0,
+      }
+      setSelection({ text: sel.toString(), range })
+      setHighlightPopoverAnchor(virtualEl as any)
+    } else {
+      // Only clear if we are not clicking inside the popover
+      // But since popover is outside, we might need to be careful.
+      // For now, let's rely on the Popover's onClose or click away.
+      // Actually, standard behavior is to clear selection on click elsewhere.
+      // We'll handle closing in the Popover actions.
+    }
+  }
+
+  // Save Highlight
+  const saveHighlight = async () => {
+    console.log('Attempting to save highlight...', { user, selection, noteText })
+    
+    if (!selection) {
+      console.error('No selection found')
+      return
+    }
+    
+    if (!user?.email) {
+      console.error('No user email found')
+      alert('You must be logged in to save notes.')
+      return
+    }
+
+    try {
+      const payload = {
+        user_email: user.email,
+        isbn,
+        chapter_slug: ch,
+        selected_text: selection.text,
+        note: noteText,
+        color: 'yellow' // Default color
+      }
+      
+      console.log('Sending payload:', payload)
+
+      const res = await fetch('/api/highlights', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      
+      if (res.ok) {
+        console.log('Highlight saved successfully')
+        setNoteDialogOpen(false)
+        setNoteText('')
+        setHighlightPopoverAnchor(null)
+        setSelection(null)
+        fetchHighlights() // Refresh
+        window.getSelection()?.removeAllRanges()
+      } else {
+        const errorData = await res.json()
+        console.error('Failed to save highlight:', errorData)
+        alert(`Failed to save: ${errorData.message || 'Unknown error'}`)
+      }
+    } catch (e) {
+      console.error('Error saving highlight', e)
+      alert('An error occurred while saving the note.')
+    }
+  }
+
+  // Delete Highlight
+  const deleteHighlight = async (id: number) => {
+    if (!user?.email) return
+    if (!confirm('Are you sure you want to delete this note?')) return
+
+    try {
+      const res = await fetch('/api/highlights', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          user_email: user.email
+        })
+      })
+
+      if (res.ok) {
+        setActiveHighlight(null)
+        fetchHighlights() // Refresh
+      } else {
+        alert('Failed to delete highlight')
+      }
+    } catch (e) {
+      console.error('Error deleting highlight', e)
+      alert('An error occurred while deleting the note.')
+    }
+  }
+
+  // Apply Highlights
+  React.useEffect(() => {
+    if (!contentRef.current) return
+    
+    const container = contentRef.current
+
+    const cleanupHighlights = () => {
+        const spans = container.querySelectorAll('.highlight-span')
+        spans.forEach(span => {
+            while (span.firstChild) {
+                if (span.firstChild.nodeType === Node.TEXT_NODE) {
+                    span.parentNode?.insertBefore(span.firstChild, span)
+                } else {
+                    span.removeChild(span.firstChild)
+                }
+            }
+            span.remove()
+        })
+        container.normalize()
+    }
+
+    if (currentChapterHighlights.length === 0) {
+        cleanupHighlights()
+        return
+    }
+
+    cleanupHighlights()
+    
+    currentChapterHighlights.forEach(h => {
+       const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null)
+       let node;
+       while(node = walker.nextNode()) {
+           if (node.nodeValue && node.nodeValue.includes(h.selected_text)) {
+               if (node.parentElement?.classList.contains('highlight-span')) continue;
+
+               const index = node.nodeValue.indexOf(h.selected_text)
+               if (index !== -1) {
+                   const range = document.createRange()
+                   range.setStart(node, index)
+                   range.setEnd(node, index + h.selected_text.length)
+                   
+                   const span = document.createElement('span')
+                   span.className = 'highlight-span'
+                   
+                   let highlightColor = h.color || 'yellow'
+                   if (highlightColor === 'yellow') {
+                       if (theme === 'dark') highlightColor = 'rgba(255, 255, 0, 0.3)'
+                       else if (theme === 'sepia') highlightColor = 'rgba(255, 215, 0, 0.4)'
+                       else highlightColor = 'rgba(255, 255, 0, 0.4)'
+                   }
+
+                   span.style.backgroundColor = highlightColor
+                   span.style.cursor = 'pointer'
+                   span.style.position = 'relative'
+                   
+                   span.onclick = (e) => {
+                       e.stopPropagation()
+                       setActiveHighlight({ ...h, anchor: e.currentTarget })
+                   }
+                   span.onmouseenter = (e) => {
+                       setActiveHighlight({ ...h, anchor: e.currentTarget })
+                   }
+                   
+                   try {
+                       range.surroundContents(span)
+                       
+                       const icon = document.createElement('span')
+                       icon.style.display = 'inline-flex'
+                       icon.style.alignItems = 'center'
+                       icon.style.marginLeft = '2px'
+                       icon.style.verticalAlign = 'super'
+                       icon.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="${themeColors.accent}"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>`
+                       span.appendChild(icon)
+                   } catch (e) { }
+               }
+           }
+       }
+    })
+
+    return () => cleanupHighlights()
+    
+  }, [currentChapterHighlights, filteredHtml, topTab, theme, themeColors])
 
   // compute previous/next chapter for top navigation
   const prevNext = React.useMemo(() => {
@@ -631,7 +868,16 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                     {isActive ? <CircleIcon sx={{ fontSize: 8 }} /> : <Typography variant="caption" sx={{ color: themeColors.text, opacity: 0.5 }}>{idx + 1}</Typography>}
                   </ListItemIcon>
                   <ListItemText 
-                    primary={c.title} 
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {c.title}
+                        {highlights.some(h => h.chapter_slug === String(c.slug).split('/').pop()) && (
+                          <Tooltip title="Has notes">
+                            <BookmarkIcon sx={{ fontSize: 14, color: '#FF6B6B' }} />
+                          </Tooltip>
+                        )}
+                      </Box>
+                    }
                     primaryTypographyProps={{ variant: 'body2', fontWeight: isActive ? 600 : 400 }}
                   />
                   {isActive && <Chip size="small" label="Reading" color="primary" sx={{ height: 20, fontSize: '0.65rem' }} />}
@@ -1511,6 +1757,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                         ref={contentRef}
                         className="chapter-html"
                         dangerouslySetInnerHTML={{ __html: filteredHtml }}
+                        onMouseUp={handleMouseUp}
                       />
                     </Box>
                   </Box>
@@ -1580,8 +1827,8 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                   }}
                   onMouseDown={handleMouseDown}
                   onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
+                  onMouseUp={handleImageMouseUp}
+                  onMouseLeave={handleImageMouseUp}
                 >
                   <img
                     src={imageModalSrc}
@@ -1618,19 +1865,23 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
               PaperProps={{
                 sx: {
                   borderRadius: '1.5rem',
-                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                  boxShadow: themeColors.shadow,
+                  backgroundColor: themeColors.uiBg,
+                  color: themeColors.uiText,
+                  border: themeColors.glassBorder,
+                  backdropFilter: 'blur(10px)'
                 }
               }}
             >
-              <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Cite This Chapter</Typography>
+              <DialogTitle sx={{ borderBottom: `1px solid ${themeColors.border}`, px: 4, py: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: themeColors.heading }}>Cite This Chapter</Typography>
               </DialogTitle>
               <DialogContent sx={{ px: 4, py: 4 }}>
-                <Paper variant="outlined" sx={{ p: 3, backgroundColor: '#F8FAFC', borderRadius: '1rem', border: '1px solid #E2E8F0' }}>
-                  <Typography variant="body1" sx={{ fontFamily: 'Georgia, serif', color: '#334155', lineHeight: 1.6 }}>{citationText}</Typography>
+                <Paper variant="outlined" sx={{ p: 3, backgroundColor: themeColors.bg, borderRadius: '1rem', border: `1px solid ${themeColors.border}` }}>
+                  <Typography variant="body1" sx={{ fontFamily: 'Georgia, serif', color: themeColors.text, lineHeight: 1.6 }}>{citationText}</Typography>
                 </Paper>
               </DialogContent>
-              <DialogActions sx={{ px: 4, pb: 4, borderTop: '1px solid #E2E8F0', pt: 3 }}>
+              <DialogActions sx={{ px: 4, pb: 4, borderTop: `1px solid ${themeColors.border}`, pt: 3 }}>
                 <Button
                   variant="contained"
                   component="a"
@@ -1639,14 +1890,15 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                   sx={{
                     textTransform: 'none',
                     borderRadius: '2rem',
-                    background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
-                    boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
+                    backgroundColor: themeColors.accent,
+                    color: '#fff',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     fontWeight: 600,
                     px: 4,
                     py: 1,
                     '&:hover': {
-                      background: 'linear-gradient(to right, #FF5252, #FF7043)',
-                      boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+                      backgroundColor: themeColors.link,
+                      boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
                     }
                   }}
                 >
@@ -1663,24 +1915,28 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
               PaperProps={{
                 sx: {
                   borderRadius: '1.5rem',
-                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                  boxShadow: themeColors.shadow,
+                  backgroundColor: themeColors.uiBg,
+                  color: themeColors.uiText,
+                  border: themeColors.glassBorder,
+                  backdropFilter: 'blur(10px)'
                 }
               }}
             >
-              <DialogTitle sx={{ borderBottom: '1px solid #E2E8F0', px: 4, py: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A2540' }}>Share This Chapter</Typography>
+              <DialogTitle sx={{ borderBottom: `1px solid ${themeColors.border}`, px: 4, py: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: themeColors.heading }}>Share This Chapter</Typography>
               </DialogTitle>
               <DialogContent sx={{ px: 4, py: 4 }}>
-                <Typography variant="body1" sx={{ mb: 2, color: '#475569' }}>
+                <Typography variant="body1" sx={{ mb: 2, color: themeColors.text }}>
                   Click <strong>Copy Link</strong> button to copy the content permanent URL.
                 </Typography>
-                <Paper variant="outlined" sx={{ p: 2, mb: 3, backgroundColor: '#F0F9FF', borderColor: '#BAE6FD', borderRadius: '0.75rem' }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ color: '#0369A1' }}>
+                <Paper variant="outlined" sx={{ p: 2, mb: 3, backgroundColor: themeColors.activeItemBg, borderColor: themeColors.link, borderRadius: '0.75rem' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ color: themeColors.link }}>
                     This link can be shared with users that are connected to the institution’s/school’s network and they will automatically have access to the content.
                   </Typography>
                 </Paper>
 
-                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: '#0A2540' }}>Share on social media</Typography>
+                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: themeColors.heading }}>Share on social media</Typography>
                 <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                   <IconButton
                     component="a"
@@ -1688,7 +1944,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Share on Facebook"
-                    sx={{ color: '#1877F2', backgroundColor: '#E7F5FF', '&:hover': { backgroundColor: '#D0EBFF' } }}
+                    sx={{ color: '#1877F2', backgroundColor: themeColors.hoverItemBg, '&:hover': { backgroundColor: themeColors.activeItemBg } }}
                   >
                     <FacebookIcon />
                   </IconButton>
@@ -1698,7 +1954,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Share on X"
-                    sx={{ color: '#000000', backgroundColor: '#F1F5F9', '&:hover': { backgroundColor: '#E2E8F0' } }}
+                    sx={{ color: themeColors.text, backgroundColor: themeColors.hoverItemBg, '&:hover': { backgroundColor: themeColors.activeItemBg } }}
                   >
                     <TwitterIcon />
                   </IconButton>
@@ -1708,13 +1964,13 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Share on LinkedIn"
-                    sx={{ color: '#0A66C2', backgroundColor: '#E8F4F9', '&:hover': { backgroundColor: '#D0E8F2' } }}
+                    sx={{ color: '#0A66C2', backgroundColor: themeColors.hoverItemBg, '&:hover': { backgroundColor: themeColors.activeItemBg } }}
                   >
                     <LinkedInIcon />
                   </IconButton>
                 </Box>
               </DialogContent>
-              <DialogActions sx={{ px: 4, pb: 4, borderTop: '1px solid #E2E8F0', pt: 3 }}>
+              <DialogActions sx={{ px: 4, pb: 4, borderTop: `1px solid ${themeColors.border}`, pt: 3 }}>
                 <Button
                   variant="contained"
                   onClick={() => {
@@ -1725,14 +1981,15 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                   sx={{
                     textTransform: 'none',
                     borderRadius: '2rem',
-                    background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
-                    boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
+                    backgroundColor: themeColors.accent,
+                    color: '#fff',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     fontWeight: 600,
                     px: 4,
                     py: 1,
                     '&:hover': {
-                      background: 'linear-gradient(to right, #FF5252, #FF7043)',
-                      boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+                      backgroundColor: themeColors.link,
+                      boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
                     }
                   }}
                 >
@@ -1740,6 +1997,149 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                 </Button>
               </DialogActions>
             </Dialog>
+
+            {/* Highlight Menu Popover */}
+            <Popover
+              open={Boolean(highlightPopoverAnchor)}
+              anchorEl={highlightPopoverAnchor}
+              onClose={() => {
+                setHighlightPopoverAnchor(null)
+                setSelection(null)
+                window.getSelection()?.removeAllRanges()
+              }}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              PaperProps={{
+                sx: {
+                  p: 0.5,
+                  borderRadius: '50px',
+                  boxShadow: themeColors.shadow,
+                  display: 'flex',
+                  gap: 1,
+                  backgroundColor: themeColors.uiBg,
+                  color: themeColors.uiText,
+                  border: themeColors.glassBorder,
+                  backdropFilter: 'blur(10px)'
+                }
+              }}
+            >
+              <Tooltip title="Highlight & Add Note">
+                <IconButton 
+                  onClick={() => {
+                    setNoteDialogOpen(true)
+                    setHighlightPopoverAnchor(null)
+                  }}
+                  size="small"
+                  sx={{ color: themeColors.accent }}
+                >
+                  <BookmarkIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Popover>
+
+            {/* Add Note Dialog */}
+            <Dialog
+              open={noteDialogOpen}
+              onClose={() => setNoteDialogOpen(false)}
+              maxWidth="sm"
+              fullWidth
+              PaperProps={{
+                sx: {
+                  backgroundColor: themeColors.uiBg,
+                  color: themeColors.uiText,
+                  border: themeColors.glassBorder,
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: '1rem',
+                  boxShadow: themeColors.shadow
+                }
+              }}
+            >
+              <DialogTitle sx={{ color: themeColors.heading }}>Add Note</DialogTitle>
+              <DialogContent>
+                <Typography variant="body2" sx={{ mb: 2, fontStyle: 'italic', color: themeColors.text }}>
+                  &quot;{selection?.text}&quot;
+                </Typography>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  label="Your Note"
+                  fullWidth
+                  multiline
+                  rows={3}
+                  variant="outlined"
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      color: themeColors.text,
+                      '& fieldset': { borderColor: themeColors.border },
+                      '&:hover fieldset': { borderColor: themeColors.link },
+                      '&.Mui-focused fieldset': { borderColor: themeColors.link },
+                    },
+                    '& .MuiInputLabel-root': { color: themeColors.text, opacity: 0.7 },
+                    '& .MuiInputLabel-root.Mui-focused': { color: themeColors.link, opacity: 1 }
+                  }}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setNoteDialogOpen(false)} sx={{ color: themeColors.text }}>Cancel</Button>
+                <Button onClick={saveHighlight} variant="contained" sx={{ backgroundColor: themeColors.link, color: '#fff', '&:hover': { backgroundColor: themeColors.accent } }}>
+                  Save
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+            {/* View Note Popover */}
+            <Popover
+              open={Boolean(activeHighlight)}
+              anchorEl={activeHighlight?.anchor}
+              onClose={() => setActiveHighlight(null)}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              sx={{ pointerEvents: 'auto' }}
+              PaperProps={{
+                sx: {
+                  p: 2,
+                  maxWidth: 300,
+                  borderRadius: '1rem',
+                  boxShadow: themeColors.shadow,
+                  backgroundColor: themeColors.uiBg,
+                  border: themeColors.glassBorder,
+                  backdropFilter: 'blur(10px)'
+                }
+              }}
+            >
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
+                <Box>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5, color: themeColors.heading }}>
+                    Note
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: themeColors.text }}>
+                    {activeHighlight?.note || 'No note content'}
+                  </Typography>
+                </Box>
+                <IconButton 
+                  size="small" 
+                  onClick={() => activeHighlight?.id && deleteHighlight(activeHighlight.id)}
+                  sx={{ color: '#EF4444', mt: -0.5, mr: -0.5, '&:hover': { backgroundColor: themeColors.hoverItemBg } }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            </Popover>
+
             <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: '' })} message={snackbar.message} />
           </Grid>
         </Grid>

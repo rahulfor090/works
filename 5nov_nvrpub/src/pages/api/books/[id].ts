@@ -30,8 +30,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     `)
 
     // Add missing columns for existing deployments
-    try { await query('ALTER TABLE books ADD COLUMN print_isbn VARCHAR(32) NULL') } catch {}
-    try { await query('ALTER TABLE books ADD COLUMN keywords TEXT NULL') } catch {}
+    try {
+      const [columns] = await query(`
+        SELECT COLUMN_NAME 
+        FROM information_schema.COLUMNS 
+        WHERE TABLE_SCHEMA = DATABASE() 
+        AND TABLE_NAME = 'books' 
+        AND COLUMN_NAME IN ('print_isbn', 'keywords')
+      `)
+      const existingColumns = (columns as any[]).map(c => c.COLUMN_NAME)
+
+      if (!existingColumns.includes('print_isbn')) {
+        await query('ALTER TABLE books ADD COLUMN print_isbn VARCHAR(32) NULL')
+      }
+      if (!existingColumns.includes('keywords')) {
+        await query('ALTER TABLE books ADD COLUMN keywords TEXT NULL')
+      }
+    } catch (e) {
+      console.error('Error checking/adding columns:', e)
+    }
 
     await query(`
       CREATE TABLE IF NOT EXISTS chapters (
