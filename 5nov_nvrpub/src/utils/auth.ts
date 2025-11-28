@@ -18,8 +18,8 @@ export const useAuth = () => {
       // Only run on client side
       if (typeof window === 'undefined') return
 
-      // Check if token exists in localStorage
-      const token = localStorage.getItem('adminToken')
+      // Check if token exists in sessionStorage (clears on browser close)
+      const token = sessionStorage.getItem('adminToken')
       
       if (!token) {
         // Redirect to login if no token
@@ -42,7 +42,7 @@ export const usePermissions = () => {
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-        const token = localStorage.getItem('adminToken')
+        const token = sessionStorage.getItem('adminToken')
         console.log('Fetching permissions with token:', token ? 'Token exists' : 'No token')
         
         const response = await fetch('/api/admin/permissions', {
@@ -93,13 +93,14 @@ export const hasPermission = (permissions: Permissions, resource: string, action
 
 export const isAuthenticated = (): boolean => {
   if (typeof window === 'undefined') return false
-  const token = localStorage.getItem('adminToken')
+  const token = sessionStorage.getItem('adminToken')
   return !!token
 }
 
 export const logout = () => {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('adminToken')
+    sessionStorage.removeItem('adminToken')
+    sessionStorage.removeItem('adminUser')
     // Clear cookie by calling logout API
     fetch('/api/auth/logout', { method: 'POST' })
   }

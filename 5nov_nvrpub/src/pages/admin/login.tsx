@@ -40,13 +40,13 @@ const AdminLogin = () => {
       const data = await response.json()
 
       if (data.success) {
-        // Store token/session
+        // Store token/session in sessionStorage (clears on browser close)
         if (data.token) {
-          localStorage.setItem('adminToken', data.token)
+          sessionStorage.setItem('adminToken', data.token)
         }
-        // Store user information
+        // Store user information in sessionStorage
         if (data.user) {
-          localStorage.setItem('adminUser', JSON.stringify(data.user))
+          sessionStorage.setItem('adminUser', JSON.stringify(data.user))
         }
         router.push('/admin')
       } else {
