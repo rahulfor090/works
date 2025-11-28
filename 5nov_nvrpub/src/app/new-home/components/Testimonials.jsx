@@ -12,7 +12,17 @@ const Testimonials = () => {
         const response = await fetch('/api/testimonials');
         if (response.ok) {
           const data = await response.json();
-          setTestimonials(data);
+          console.log('Testimonials data:', data);
+          // Ensure data is an array
+          if (Array.isArray(data)) {
+            setTestimonials(data);
+          } else if (data && Array.isArray(data.data)) {
+            setTestimonials(data.data);
+          } else {
+            console.error('Unexpected data format:', data);
+          }
+        } else {
+          console.error('Failed to fetch testimonials:', response.status);
         }
       } catch (error) {
         console.error('Error fetching testimonials:', error);
