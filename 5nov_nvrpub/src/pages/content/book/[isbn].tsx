@@ -273,9 +273,9 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
       <Head>
         <title>{title} | Book</title>
       </Head>
-      
+
       {/* Hero Section */}
-      <Box sx={{ 
+      <Box sx={{
         background: 'linear-gradient(180deg, #F0F9FF 0%, #FFF 100%)',
         pt: { xs: 4, md: 8 },
         pb: { xs: 6, md: 10 },
@@ -287,18 +287,19 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
             {/* Left: Cover Image */}
             <Grid item xs={12} md={4} lg={3.5}>
               <Box sx={{ position: 'relative', mx: 'auto', maxWidth: '300px' }}>
-                <Box 
-                  component="img" 
-                  src={cover} 
-                  alt={title} 
-                  sx={{ 
-                    width: '100%', 
+                <Box
+                  component="img"
+                  src={cover}
+                  alt={title}
+                  sx={{
+                    width: '100%',
                     borderRadius: '1.5rem',
                     boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
                     transform: 'rotate(-2deg)',
                     transition: 'transform 0.3s ease',
+                    willChange: 'transform',
                     '&:hover': { transform: 'rotate(0deg) scale(1.02)' }
-                  }} 
+                  }}
                 />
               </Box>
             </Grid>
@@ -308,9 +309,9 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {/* Badges */}
                 <Stack direction="row" spacing={1}>
-                  <Chip 
-                    label="Book" 
-                    sx={{ 
+                  <Chip
+                    label="Book"
+                    sx={{
                       background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
                       color: 'white',
                       fontWeight: 700,
@@ -319,14 +320,14 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                       fontSize: '0.75rem',
                       height: '28px',
                       boxShadow: '0 4px 12px rgba(255, 107, 107, 0.3)'
-                    }} 
+                    }}
                   />
                 </Stack>
 
                 {/* Title */}
-                <Typography variant="h1" sx={{ 
-                  fontFamily: '"Georgia", serif', 
-                  fontWeight: 700, 
+                <Typography variant="h1" sx={{
+                  fontFamily: '"Georgia", serif',
+                  fontWeight: 700,
                   color: '#0A2540',
                   fontSize: { xs: '2.5rem', md: '3.5rem' },
                   lineHeight: 1.1
@@ -336,13 +337,13 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
 
                 {/* Author */}
                 {author && (
-                  <Typography variant="h5" sx={{ color: '#64748B', fontWeight: 500 }}>
+                  <Typography variant="h5" sx={{ color: '#475569', fontWeight: 500 }}>
                     by {author}
                   </Typography>
                 )}
 
                 {/* Stats / Meta */}
-                <Stack direction="row" spacing={3} sx={{ my: 2, color: '#64748B' }} divider={<Divider orientation="vertical" flexItem />}>
+                <Stack direction="row" spacing={3} sx={{ my: 2, color: '#475569' }} divider={<Divider orientation="vertical" flexItem />}>
                   <Box>
                     <Typography variant="caption" display="block" sx={{ textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>ISBN</Typography>
                     <Typography variant="subtitle2" color="#0A2540" fontWeight={600}>{isbn}</Typography>
@@ -355,7 +356,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
 
                 {/* Description */}
                 {book?.description && (
-                  <Typography variant="body1" sx={{ color: '#475569', lineHeight: 1.8, maxWidth: '90%', fontSize: '1.1rem' }}>
+                  <Typography variant="body1" sx={{ color: '#334155', lineHeight: 1.8, maxWidth: '90%', fontSize: '1.1rem' }}>
                     {book.description}
                   </Typography>
                 )}
@@ -363,11 +364,11 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                 {/* Book Keywords */}
                 {book?.keywords && (
                   <Box sx={{ mt: 3 }}>
-                    <Box 
+                    <Box
                       onClick={() => setShowKeywords(!showKeywords)}
-                      sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
                         cursor: 'pointer',
                         mb: 1,
                         userSelect: 'none',
@@ -377,20 +378,20 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                       <Typography variant="subtitle2" sx={{ color: '#0A2540', fontWeight: 600 }}>
                         Keywords
                       </Typography>
-                      {showKeywords ? <ExpandLessIcon fontSize="small" sx={{ ml: 0.5, color: '#64748B' }} /> : <ExpandMoreIcon fontSize="small" sx={{ ml: 0.5, color: '#64748B' }} />}
+                      {showKeywords ? <ExpandLessIcon fontSize="small" sx={{ ml: 0.5, color: '#475569' }} /> : <ExpandMoreIcon fontSize="small" sx={{ ml: 0.5, color: '#475569' }} />}
                     </Box>
                     <Collapse in={showKeywords}>
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                         {book.keywords.split(',').map((k, i) => (
-                          <Chip 
-                            key={i} 
-                            label={k.trim()} 
-                            size="small" 
-                            sx={{ 
-                              backgroundColor: '#F1F5F9', 
-                              color: '#64748B',
+                          <Chip
+                            key={i}
+                            label={k.trim()}
+                            size="small"
+                            sx={{
+                              backgroundColor: '#F1F5F9',
+                              color: '#475569',
                               border: '1px solid #E2E8F0'
-                            }} 
+                            }}
                           />
                         ))}
                       </Box>
@@ -401,22 +402,22 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                 {/* Actions Toolbar */}
                 <Stack direction="row" spacing={2} sx={{ mt: 2 }} alignItems="center">
                   <Tooltip title="Refer to Friend">
-                    <IconButton onClick={handleReferFriend} sx={{ color: '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
+                    <IconButton onClick={handleReferFriend} sx={{ color: '#475569', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
                       <PersonAddAlt1Icon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Recommend to Librarian">
-                    <IconButton onClick={handleRecommendLibrarian} sx={{ color: '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
+                    <IconButton onClick={handleRecommendLibrarian} sx={{ color: '#475569', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
                       <SchoolIcon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Share This Page">
-                    <IconButton onClick={handleSharePage} sx={{ color: '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
+                    <IconButton onClick={handleSharePage} sx={{ color: '#475569', border: '1px solid #E2E8F0', '&:hover': { color: '#0A2540', borderColor: '#0A2540', background: 'transparent' } }}>
                       <ShareIcon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={favorite ? 'Remove from favourites' : 'Add to favourites'}>
-                    <IconButton onClick={toggleFavorite} sx={{ color: favorite ? '#EF4444' : '#64748B', border: '1px solid #E2E8F0', '&:hover': { color: '#EF4444', borderColor: '#EF4444', background: 'transparent' } }}>
+                    <IconButton onClick={toggleFavorite} sx={{ color: favorite ? '#EF4444' : '#475569', border: '1px solid #E2E8F0', '&:hover': { color: '#EF4444', borderColor: '#EF4444', background: 'transparent' } }}>
                       {favorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                     </IconButton>
                   </Tooltip>
@@ -464,7 +465,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
             borderBottom: '1px solid #E2E8F0',
             '& .MuiTab-root': {
               fontWeight: 600,
-              color: '#64748B',
+              color: '#475569',
               textTransform: 'none',
               fontSize: '1.1rem',
               px: 4,
@@ -522,16 +523,28 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                   }
                 }}
               >
-                <AccordionSummary 
-                  expandIcon={<ExpandMoreIcon sx={{ color: '#64748B' }} />} 
-                  sx={{ 
-                    backgroundColor: '#fff',
-                    borderBottom: (expandAll || !!expanded[sIdx]) ? '1px solid #F1F5F9' : 'none',
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon sx={{ color: (expandAll || !!expanded[sIdx]) ? '#3B82F6' : '#64748B' }} />}
+                  sx={{
+                    backgroundColor: (expandAll || !!expanded[sIdx]) ? '#F0F9FF' : '#fff',
+                    borderBottom: (expandAll || !!expanded[sIdx]) ? '1px solid #E0F2FE' : 'none',
+                    borderLeft: (expandAll || !!expanded[sIdx]) ? '4px solid #3B82F6' : '4px solid transparent',
                     px: 3,
-                    py: 1
+                    py: 2,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      backgroundColor: (expandAll || !!expanded[sIdx]) ? '#F0F9FF' : '#F8FAFC',
+                    }
                   }}
                 >
-                  <Typography sx={{ fontWeight: 700, color: '#0A2540', fontSize: '1.1rem' }}>{sec.title}</Typography>
+                  <Typography sx={{
+                    fontWeight: 700,
+                    color: (expandAll || !!expanded[sIdx]) ? '#0A2540' : '#334155',
+                    fontSize: '1.15rem',
+                    letterSpacing: '-0.01em'
+                  }}>
+                    {sec.title}
+                  </Typography>
                 </AccordionSummary>
                 <AccordionDetails sx={{ p: 0 }}>
                   <List disablePadding>
@@ -543,33 +556,37 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                       const shouldShowUnlock = !shouldShowLock
 
                       return (
-                        <ListItem 
-                          key={`${sec.title}-${idx}`} 
-                          sx={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                        <ListItem
+                          key={`${sec.title}-${idx}`}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
                             gap: 2,
                             py: 2,
                             px: 3,
                             borderBottom: '1px solid #F8FAFC',
                             '&:last-child': { borderBottom: 'none' },
-                            transition: 'background-color 0.2s',
-                            '&:hover': { backgroundColor: '#F8FAFC' }
+                            transition: 'all 0.2s ease',
+                            '&:hover': {
+                              backgroundColor: '#F8FAFC',
+                              transform: 'translateX(6px)'
+                            }
                           }}
                         >
                           {ch.slug ? (
                             <>
                               <NextLink href={ch.slug} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
-                                <Box sx={{ 
-                                  width: 32, 
-                                  height: 32, 
-                                  borderRadius: '50%', 
-                                  bgcolor: '#F1F5F9', 
-                                  display: 'flex', 
-                                  alignItems: 'center', 
+                                <Box sx={{
+                                  width: 32,
+                                  height: 32,
+                                  borderRadius: '50%',
+                                  background: 'linear-gradient(to right, #3B82F6, #2563EB)',
+                                  boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.3)',
+                                  display: 'flex',
+                                  alignItems: 'center',
                                   justifyContent: 'center',
                                   mr: 2,
-                                  color: '#64748B',
+                                  color: 'white',
                                   fontWeight: 600,
                                   fontSize: '0.875rem',
                                   flexShrink: 0
@@ -586,28 +603,6 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                                   }}>
                                     {ch.title}
                                   </Typography>
-                                  {ch.keywords && (
-                                    <Box sx={{ mt: 1 }}>
-                                      <Typography variant="caption" sx={{ color: '#64748B', fontWeight: 600, display: 'block', mb: 0.5 }}>
-                                        Keywords:
-                                      </Typography>
-                                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        {ch.keywords.split(',').map((k, i) => (
-                                          <Chip 
-                                            key={i} 
-                                            label={k.trim()} 
-                                            size="small" 
-                                            sx={{ 
-                                              fontSize: '0.7rem', 
-                                              height: '20px', 
-                                              backgroundColor: '#F1F5F9', 
-                                              color: '#64748B' 
-                                            }} 
-                                          />
-                                        ))}
-                                      </Box>
-                                    </Box>
-                                  )}
                                 </Box>
                               </NextLink>
                               {shouldShowLock && (
@@ -629,7 +624,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
                                     size="small"
-                                    sx={{ color: '#EF4444', ml: 1 }}
+                                    sx={{ color: '#FF6B6B', ml: 1 }}
                                   >
                                     <PictureAsPdfIcon />
                                   </IconButton>
@@ -638,16 +633,17 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                             </>
                           ) : (
                             <>
-                              <Box sx={{ 
-                                width: 32, 
-                                height: 32, 
-                                borderRadius: '50%', 
-                                bgcolor: '#F1F5F9', 
-                                display: 'flex', 
-                                alignItems: 'center', 
+                              <Box sx={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: '50%',
+                                background: 'linear-gradient(to right, #3B82F6, #2563EB)',
+                                boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.3)',
+                                display: 'flex',
+                                alignItems: 'center',
                                 justifyContent: 'center',
                                 mr: 2,
-                                color: '#64748B',
+                                color: 'white',
                                 fontWeight: 600,
                                 fontSize: '0.875rem',
                                 flexShrink: 0
@@ -658,31 +654,6 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                                 <Typography sx={{ color: '#94A3B8' }}>
                                   {ch.title}
                                 </Typography>
-                                {ch.keywords && (
-                                  <Box sx={{ mt: 1 }}>
-                                    <Typography variant="caption" sx={{ color: '#94A3B8', fontWeight: 600, display: 'block', mb: 0.5 }}>
-                                      Keywords:
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                      {ch.keywords.split(',').map((k, i) => (
-                                        <Chip 
-                                          key={i} 
-                                          label={k.trim()} 
-                                          size="small" 
-                                          sx={{ 
-                                            fontSize: '0.7rem', 
-                                            height: '20px', 
-                                            backgroundColor: '#F1F5F9', 
-                                            color: '#94A3B8',
-                                            borderColor: '#E2E8F0',
-                                            borderStyle: 'solid',
-                                            borderWidth: '1px'
-                                          }} 
-                                        />
-                                      ))}
-                                    </Box>
-                                  </Box>
-                                )}
                               </Box>
                               {shouldShowLock && (
                                 <Tooltip title="Premium content - Login required">
@@ -703,7 +674,7 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
                                     size="small"
-                                    sx={{ color: '#EF4444', ml: 1 }}
+                                    sx={{ color: '#FF6B6B', ml: 1 }}
                                   >
                                     <PictureAsPdfIcon />
                                   </IconButton>
@@ -726,11 +697,11 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
             {casesCount > 0 ? (
               <List disablePadding>
                 {sections.find(s => s.title === 'Cases')?.chapters.map((c, idx) => (
-                  <ListItem 
-                    key={idx} 
-                    sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
+                  <ListItem
+                    key={idx}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
                       gap: 2,
                       py: 2,
                       px: 3,
@@ -741,13 +712,13 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                     }}
                   >
                     <NextLink href={c.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
-                      <Box sx={{ 
-                        width: 40, 
-                        height: 40, 
-                        borderRadius: '50%', 
-                        bgcolor: '#F0F9FF', 
-                        display: 'flex', 
-                        alignItems: 'center', 
+                      <Box sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        bgcolor: '#F0F9FF',
+                        display: 'flex',
+                        alignItems: 'center',
                         justifyContent: 'center',
                         mr: 2,
                         color: '#0A2540',
@@ -778,11 +749,11 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
             {videosCount > 0 ? (
               <List disablePadding>
                 {sections.find(s => s.title === 'Videos')?.chapters.map((video, idx) => (
-                  <ListItem 
-                    key={idx} 
-                    sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
+                  <ListItem
+                    key={idx}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
                       gap: 2,
                       py: 2,
                       px: 3,
@@ -793,13 +764,13 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
                     }}
                   >
                     <NextLink href={video.slug || '#'} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', alignItems: 'center' }}>
-                      <Box sx={{ 
-                        width: 40, 
-                        height: 40, 
-                        borderRadius: '50%', 
-                        bgcolor: '#F0F9FF', 
-                        display: 'flex', 
-                        alignItems: 'center', 
+                      <Box sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        bgcolor: '#F0F9FF',
+                        display: 'flex',
+                        alignItems: 'center',
                         justifyContent: 'center',
                         mr: 2,
                         color: '#0A2540',
@@ -1312,18 +1283,23 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
       // Check for PDF
       let pdfUrl: string | null = null
-      if (filePath) {
+
+      if (chapterData['chapter-pdf']) {
+        pdfUrl = chapterData['chapter-pdf']
+      }
+
+      if (!pdfUrl && filePath) {
         const siblingPdfPath = filePath.replace(/\.html$/, '.pdf')
         const dir = path.dirname(filePath)
         const filename = path.basename(siblingPdfPath)
         const subdirPdfPath = path.join(dir, 'PDF', filename)
 
         let finalPdfPath: string | null = null
-        
+
         if (fs.existsSync(siblingPdfPath)) {
-            finalPdfPath = siblingPdfPath
+          finalPdfPath = siblingPdfPath
         } else if (fs.existsSync(subdirPdfPath)) {
-            finalPdfPath = subdirPdfPath
+          finalPdfPath = subdirPdfPath
         }
 
         if (finalPdfPath) {

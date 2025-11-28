@@ -26,7 +26,7 @@ const TestimonialsNew: React.FC = () => {
         setLoading(true)
         const response = await fetch('/api/testimonials')
         const data = await response.json()
-        
+
         // Map database fields to component format
         const formattedTestimonials: Testimonial[] = (data || []).map((item: any) => {
           // Parse professional field to extract role and hospital
@@ -34,7 +34,7 @@ const TestimonialsNew: React.FC = () => {
           const professionalParts = item.professional ? item.professional.split(',').map((p: string) => p.trim()) : []
           const role = professionalParts[0] || item.professional || ''
           const hospital = professionalParts.slice(1).join(', ') || ''
-          
+
           return {
             id: item.id,
             name: item.userName || '',
@@ -45,7 +45,7 @@ const TestimonialsNew: React.FC = () => {
             rating: 5 // Default rating since it's not in DB
           }
         })
-        
+
         setTestimonials(formattedTestimonials)
       } catch (error) {
         console.error('Error fetching testimonials:', error)
@@ -54,7 +54,7 @@ const TestimonialsNew: React.FC = () => {
         setLoading(false)
       }
     }
-    
+
     fetchTestimonials()
   }, [])
 
