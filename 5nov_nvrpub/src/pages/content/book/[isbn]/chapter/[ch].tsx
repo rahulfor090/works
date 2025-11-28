@@ -37,7 +37,7 @@ import {
   Chip,
   Alert,
   TextField,
-        
+
 } from '@mui/material'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import BookmarkIcon from '@mui/icons-material/Bookmark'
@@ -109,7 +109,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
   const [imageModalOpen, setImageModalOpen] = React.useState(false)
   const [imageModalSrc, setImageModalSrc] = React.useState<string>('')
   const contentRef = React.useRef<HTMLDivElement | null>(null)
-  
+
   // AI Reader state
   const [isReading, setIsReading] = React.useState(false)
   const [speechSynthesis, setSpeechSynthesis] = React.useState<SpeechSynthesis | null>(null)
@@ -298,7 +298,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
     if (typeof window === 'undefined') return
 
     // Always try to load user first
-    let loadedUser = null
+    let loadedUser: { email?: string; isPremium?: boolean } | null = null
     try {
       const userStr = window.localStorage.getItem('user')
       if (userStr) {
@@ -419,7 +419,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
 
   // Highlights State
   const [highlights, setHighlights] = React.useState<any[]>([])
-  const [selection, setSelection] = React.useState<{text: string, range: Range} | null>(null)
+  const [selection, setSelection] = React.useState<{ text: string, range: Range } | null>(null)
   const [highlightPopoverAnchor, setHighlightPopoverAnchor] = React.useState<HTMLElement | null>(null)
   const [noteDialogOpen, setNoteDialogOpen] = React.useState(false)
   const [noteText, setNoteText] = React.useState('')
@@ -456,7 +456,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
     if (sel && sel.toString().trim().length > 0 && contentRef.current?.contains(sel.anchorNode)) {
       const range = sel.getRangeAt(0)
       const rect = range.getBoundingClientRect()
-      
+
       // Position exactly above the center of the selection
       const clientX = rect.left + (rect.width / 2)
       const clientY = rect.top
@@ -488,12 +488,12 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
   // Save Highlight
   const saveHighlight = async () => {
     console.log('Attempting to save highlight...', { user, selection, noteText })
-    
+
     if (!selection) {
       console.error('No selection found')
       return
     }
-    
+
     if (!user?.email) {
       console.error('No user email found')
       alert('You must be logged in to save notes.')
@@ -509,7 +509,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
         note: noteText,
         color: 'yellow' // Default color
       }
-      
+
       console.log('Sending payload:', payload)
 
       const res = await fetch('/api/highlights', {
@@ -517,7 +517,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       })
-      
+
       if (res.ok) {
         console.log('Highlight saved successfully')
         setNoteDialogOpen(false)
@@ -567,84 +567,84 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
   // Apply Highlights
   React.useEffect(() => {
     if (!contentRef.current) return
-    
+
     const container = contentRef.current
 
     const cleanupHighlights = () => {
-        const spans = container.querySelectorAll('.highlight-span')
-        spans.forEach(span => {
-            while (span.firstChild) {
-                if (span.firstChild.nodeType === Node.TEXT_NODE) {
-                    span.parentNode?.insertBefore(span.firstChild, span)
-                } else {
-                    span.removeChild(span.firstChild)
-                }
-            }
-            span.remove()
-        })
-        container.normalize()
+      const spans = container.querySelectorAll('.highlight-span')
+      spans.forEach(span => {
+        while (span.firstChild) {
+          if (span.firstChild.nodeType === Node.TEXT_NODE) {
+            span.parentNode?.insertBefore(span.firstChild, span)
+          } else {
+            span.removeChild(span.firstChild)
+          }
+        }
+        span.remove()
+      })
+      container.normalize()
     }
 
     if (currentChapterHighlights.length === 0) {
-        cleanupHighlights()
-        return
+      cleanupHighlights()
+      return
     }
 
     cleanupHighlights()
-    
+
     currentChapterHighlights.forEach(h => {
-       const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null)
-       let node;
-       while(node = walker.nextNode()) {
-           if (node.nodeValue && node.nodeValue.includes(h.selected_text)) {
-               if (node.parentElement?.classList.contains('highlight-span')) continue;
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null)
+      let node;
+      while (node = walker.nextNode()) {
+        if (node.nodeValue && node.nodeValue.includes(h.selected_text)) {
+          if (node.parentElement?.classList.contains('highlight-span')) continue;
 
-               const index = node.nodeValue.indexOf(h.selected_text)
-               if (index !== -1) {
-                   const range = document.createRange()
-                   range.setStart(node, index)
-                   range.setEnd(node, index + h.selected_text.length)
-                   
-                   const span = document.createElement('span')
-                   span.className = 'highlight-span'
-                   
-                   let highlightColor = h.color || 'yellow'
-                   if (highlightColor === 'yellow') {
-                       if (theme === 'dark') highlightColor = 'rgba(255, 255, 0, 0.3)'
-                       else if (theme === 'sepia') highlightColor = 'rgba(255, 215, 0, 0.4)'
-                       else highlightColor = 'rgba(255, 255, 0, 0.4)'
-                   }
+          const index = node.nodeValue.indexOf(h.selected_text)
+          if (index !== -1) {
+            const range = document.createRange()
+            range.setStart(node, index)
+            range.setEnd(node, index + h.selected_text.length)
 
-                   span.style.backgroundColor = highlightColor
-                   span.style.cursor = 'pointer'
-                   span.style.position = 'relative'
-                   
-                   span.onclick = (e) => {
-                       e.stopPropagation()
-                       setActiveHighlight({ ...h, anchor: e.currentTarget })
-                   }
-                   span.onmouseenter = (e) => {
-                       setActiveHighlight({ ...h, anchor: e.currentTarget })
-                   }
-                   
-                   try {
-                       range.surroundContents(span)
-                       
-                       const icon = document.createElement('span')
-                       icon.style.display = 'inline-flex'
-                       icon.style.alignItems = 'center'
-                       icon.style.marginLeft = '2px'
-                       icon.style.verticalAlign = 'super'
-                       icon.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="${themeColors.accent}"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>`
-                       span.appendChild(icon)
-                   } catch (e) { }
-               }
-           }
-       }
+            const span = document.createElement('span')
+            span.className = 'highlight-span'
+
+            let highlightColor = h.color || 'yellow'
+            if (highlightColor === 'yellow') {
+              if (theme === 'dark') highlightColor = 'rgba(255, 255, 0, 0.3)'
+              else if (theme === 'sepia') highlightColor = 'rgba(255, 215, 0, 0.4)'
+              else highlightColor = 'rgba(255, 255, 0, 0.4)'
+            }
+
+            span.style.backgroundColor = highlightColor
+            span.style.cursor = 'pointer'
+            span.style.position = 'relative'
+
+            span.onclick = (e) => {
+              e.stopPropagation()
+              setActiveHighlight({ ...h, anchor: e.currentTarget })
+            }
+            span.onmouseenter = (e) => {
+              setActiveHighlight({ ...h, anchor: e.currentTarget })
+            }
+
+            try {
+              range.surroundContents(span)
+
+              const icon = document.createElement('span')
+              icon.style.display = 'inline-flex'
+              icon.style.alignItems = 'center'
+              icon.style.marginLeft = '2px'
+              icon.style.verticalAlign = 'super'
+              icon.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="${themeColors.accent}"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>`
+              span.appendChild(icon)
+            } catch (e) { }
+          }
+        }
+      }
     })
 
     return () => cleanupHighlights()
-    
+
   }, [currentChapterHighlights, filteredHtml, topTab, theme, themeColors])
 
   // compute previous/next chapter for top navigation
@@ -759,7 +759,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
 
       // Extract text content from the HTML
       const textContent = contentElement.innerText || contentElement.textContent || ''
-      
+
       if (!textContent.trim()) {
         setSnackbar({ open: true, message: 'No content to read' })
         return
@@ -770,7 +770,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
       utterance.rate = 1.0 // Normal speed
       utterance.pitch = 1.0 // Normal pitch
       utterance.volume = 1.0 // Full volume
-      
+
       // Handle end of speech
       utterance.onend = () => {
         setIsReading(false)
@@ -917,7 +917,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                   <ListItemIcon sx={{ minWidth: 36 }}>
                     {isActive ? <CircleIcon sx={{ fontSize: 8 }} /> : <Typography variant="caption" sx={{ color: themeColors.text, opacity: 0.5 }}>{idx + 1}</Typography>}
                   </ListItemIcon>
-                  <ListItemText 
+                  <ListItemText
                     primary={
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {c.title}
@@ -1474,24 +1474,16 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                   </Tooltip>
                   <IconButton aria-label="more options" onClick={openOptionsMenu} size="small" sx={{ color: themeColors.uiText, '&:hover': { color: themeColors.link, backgroundColor: themeColors.hoverItemBg } }}>
                     <MoreVertIcon />
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Tooltip title={isReading ? "Stop AI Reader" : "Start AI Reader"}>
-                  <IconButton onClick={handleAIReader} size="small" sx={{ 
-                    color: isReading ? themeColors.accent : themeColors.uiText, 
-                    transition: 'all 0.2s',
-                    '&:hover': { color: themeColors.link, backgroundColor: themeColors.hoverItemBg } 
-                  }}>
-                    {isReading ? <VolumeOffIcon /> : <VolumeUpIcon />}
                   </IconButton>
-                </Tooltip>
-                <Tooltip title="Reader Settings">
-                  <IconButton onClick={handleSettingsClick} size="small" sx={{ 
-                    color: themeColors.uiText, 
-                    transition: 'all 0.2s',
-                    '&:hover': { color: themeColors.link, backgroundColor: themeColors.hoverItemBg, transform: 'rotate(45deg)' } 
-                  }}>
-                    <SettingsIcon />
-                  </IconButton>
+                  <Tooltip title={isReading ? "Stop AI Reader" : "Start AI Reader"}>
+                    <IconButton onClick={handleAIReader} size="small" sx={{
+                      color: isReading ? themeColors.accent : themeColors.uiText,
+                      transition: 'all 0.2s',
+                      '&:hover': { color: themeColors.link, backgroundColor: themeColors.hoverItemBg }
+                    }}>
+                      {isReading ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                    </IconButton>
+                  </Tooltip>
                 </Box>
                 <Menu
                   anchorEl={optionsAnchorEl}
@@ -2122,480 +2114,6 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
 
               <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: '' })} message={snackbar.message} />
             </Grid>
-                    },
-                    '& .chapter-html ul, & .chapter-html ol': {
-                      marginBottom: '1.5em',
-                      paddingLeft: '2em',
-                      color: themeColors.text
-                    },
-                    '& .chapter-html li': {
-                      marginBottom: '0.75em',
-                      fontSize: `${fontSize}rem`,
-                      lineHeight: 1.7
-                    },
-                    '& .chapter-html blockquote': {
-                      borderLeft: `4px solid ${themeColors.accent}`,
-                      padding: '1.5em 2em',
-                      margin: '2em 0',
-                      fontStyle: 'italic',
-                      color: themeColors.blockquote,
-                      backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-                      borderRadius: '0 1rem 1rem 0'
-                    },
-                    '& .chapter-html table': {
-                      width: '100%',
-                      display: 'block',
-                      overflowX: 'auto',
-                      borderCollapse: 'separate',
-                      borderSpacing: 0,
-                      margin: '3em 0',
-                      fontSize: `${fontSize * 0.95}rem`,
-                      border: `1px solid ${themeColors.border}`,
-                      borderRadius: '16px',
-                      boxShadow: themeColors.shadow,
-                      overflow: 'hidden',
-                      backgroundColor: themeColors.bg
-                    },
-                    '& .chapter-html thead': {
-                      backgroundColor: themeColors.activeItemBg,
-                    },
-                    '& .chapter-html th': {
-                      color: themeColors.heading,
-                      fontWeight: 700,
-                      textAlign: 'left',
-                      padding: '1.25rem 1.5rem',
-                      borderBottom: `1px solid ${themeColors.border}`,
-                      borderRight: `1px solid ${themeColors.border}`,
-                      whiteSpace: 'nowrap',
-                      fontSize: '0.8rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                      backgroundColor: themeColors.activeItemBg
-                    },
-                    '& .chapter-html th:last-child': {
-                      borderRight: 'none'
-                    },
-                    '& .chapter-html tbody tr:nth-of-type(even)': {
-                      backgroundColor: themeColors.hoverItemBg
-                    },
-                    '& .chapter-html td': {
-                      padding: '1.25rem 1.5rem',
-                      borderBottom: `1px solid ${themeColors.border}`,
-                      borderRight: `1px solid ${themeColors.border}`,
-                      color: themeColors.text,
-                      verticalAlign: 'top',
-                      lineHeight: 1.6,
-                      minWidth: '140px'
-                    },
-                    '& .chapter-html td:last-child': {
-                      borderRight: 'none'
-                    },
-                    '& .chapter-html tr:last-of-type td': {
-                      borderBottom: 'none'
-                    },
-                    '& .chapter-html tr:hover td': {
-                      backgroundColor: themeColors.activeItemBg,
-                      transition: 'background-color 0.2s'
-                    }
-                  }}>
-                    <Box sx={{
-                      width: '100%',
-                      maxWidth: '1200px',
-                      backgroundColor: themeColors.bg,
-                      padding: { xs: '30px', md: '60px' },
-                      boxShadow: themeColors.shadow,
-                      borderRadius: '8px',
-                      transition: 'background-color 0.3s ease, color 0.3s ease',
-                      margin: '0 auto'
-                    }}>
-                      <div
-                        ref={contentRef}
-                        className="chapter-html"
-                        dangerouslySetInnerHTML={{ __html: filteredHtml }}
-                        onMouseUp={handleMouseUp}
-                      />
-                    </Box>
-                  </Box>
-                </Box>
-              </Box>
-              </>
-            )}
-            </Paper>
-
-            <Fab
-              size="medium"
-              onClick={() => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-              sx={{
-                position: 'fixed',
-                bottom: 32,
-                right: 32,
-                background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
-                color: 'white',
-                boxShadow: '0 10px 25px rgba(255, 107, 107, 0.4)',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                '&:hover': {
-                  transform: 'translateY(-4px) scale(1.05)',
-                  boxShadow: '0 15px 35px rgba(255, 107, 107, 0.5)',
-                }
-              }}
-            >
-              <ArrowUpwardIcon />
-            </Fab>
-
-            <Dialog
-              open={imageModalOpen}
-              onClose={() => setImageModalOpen(false)}
-              maxWidth={false}
-              fullScreen
-              PaperProps={{
-                sx: {
-                  backgroundColor: 'rgba(0,0,0,0.95)',
-                  backdropFilter: 'blur(10px)'
-                }
-              }}
-            >
-              <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                {/* Modal Header */}
-                <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
-                  <Typography variant="subtitle1" sx={{ color: 'white', opacity: 0.8 }}>
-                    {imgCaption ? (imgCaption.length > 60 ? imgCaption.substring(0, 60) + '...' : imgCaption) : 'Figure Viewer'}
-                  </Typography>
-                  <Stack direction="row" spacing={1}>
-                    <IconButton onClick={handleZoomOut} sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.1)' }}><ZoomOutIcon /></IconButton>
-                    <IconButton onClick={handleResetZoom} sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.1)' }}><RestartAltIcon /></IconButton>
-                    <IconButton onClick={handleZoomIn} sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.1)' }}><ZoomInIcon /></IconButton>
-                    <IconButton onClick={() => setImageModalOpen(false)} sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.2)', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}>
-                      <CloseIcon />
-                    </IconButton>
-                  </Stack>
-                </Box>
-
-                {/* Main Image Area */}
-                <Box 
-                  sx={{ 
-                    flex: 1, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    overflow: 'hidden',
-                    cursor: imgZoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default'
-                  }}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleImageMouseUp}
-                  onMouseLeave={handleImageMouseUp}
-                >
-                  <img
-                    src={imageModalSrc}
-                    alt="Chapter figure"
-                    style={{
-                      maxWidth: '100%',
-                      maxHeight: '100%',
-                      objectFit: 'contain',
-                      transform: `scale(${imgZoom}) translate(${imgPan.x / imgZoom}px, ${imgPan.y / imgZoom}px)`,
-                      transition: isDragging ? 'none' : 'transform 0.2s ease-out'
-                    }}
-                    draggable={false}
-                  />
-                </Box>
-
-                {/* Caption Panel */}
-                {imgCaption && (
-                  <Box sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.05)', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                    <Container maxWidth="md">
-                      <Typography variant="body1" sx={{ color: 'white', textAlign: 'center', lineHeight: 1.6 }}>
-                        {imgCaption}
-                      </Typography>
-                    </Container>
-                  </Box>
-                )}
-              </Box>
-            </Dialog>
-
-            <Dialog
-              open={citeOpen}
-              onClose={() => setCiteOpen(false)}
-              maxWidth="md"
-              fullWidth
-              PaperProps={{
-                sx: {
-                  borderRadius: '1.5rem',
-                  boxShadow: themeColors.shadow,
-                  backgroundColor: themeColors.uiBg,
-                  color: themeColors.uiText,
-                  border: themeColors.glassBorder,
-                  backdropFilter: 'blur(10px)'
-                }
-              }}
-            >
-              <DialogTitle sx={{ borderBottom: `1px solid ${themeColors.border}`, px: 4, py: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: themeColors.heading }}>Cite This Chapter</Typography>
-              </DialogTitle>
-              <DialogContent sx={{ px: 4, py: 4 }}>
-                <Paper variant="outlined" sx={{ p: 3, backgroundColor: themeColors.bg, borderRadius: '1rem', border: `1px solid ${themeColors.border}` }}>
-                  <Typography variant="body1" sx={{ fontFamily: 'Georgia, serif', color: themeColors.text, lineHeight: 1.6 }}>{citationText}</Typography>
-                </Paper>
-              </DialogContent>
-              <DialogActions sx={{ px: 4, pb: 4, borderTop: `1px solid ${themeColors.border}`, pt: 3 }}>
-                <Button
-                  variant="contained"
-                  component="a"
-                  href={risHref}
-                  download={`citation-${isbn}.ris`}
-                  sx={{
-                    textTransform: 'none',
-                    borderRadius: '2rem',
-                    backgroundColor: themeColors.accent,
-                    color: '#fff',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    fontWeight: 600,
-                    px: 4,
-                    py: 1,
-                    '&:hover': {
-                      backgroundColor: themeColors.link,
-                      boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
-                    }
-                  }}
-                >
-                  Download RIS
-                </Button>
-              </DialogActions>
-            </Dialog>
-
-            <Dialog
-              open={shareOpen}
-              onClose={() => setShareOpen(false)}
-              maxWidth="md"
-              fullWidth
-              PaperProps={{
-                sx: {
-                  borderRadius: '1.5rem',
-                  boxShadow: themeColors.shadow,
-                  backgroundColor: themeColors.uiBg,
-                  color: themeColors.uiText,
-                  border: themeColors.glassBorder,
-                  backdropFilter: 'blur(10px)'
-                }
-              }}
-            >
-              <DialogTitle sx={{ borderBottom: `1px solid ${themeColors.border}`, px: 4, py: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: themeColors.heading }}>Share This Chapter</Typography>
-              </DialogTitle>
-              <DialogContent sx={{ px: 4, py: 4 }}>
-                <Typography variant="body1" sx={{ mb: 2, color: themeColors.text }}>
-                  Click <strong>Copy Link</strong> button to copy the content permanent URL.
-                </Typography>
-                <Paper variant="outlined" sx={{ p: 2, mb: 3, backgroundColor: themeColors.activeItemBg, borderColor: themeColors.link, borderRadius: '0.75rem' }}>
-                  <Typography variant="body2" color="text.secondary" sx={{ color: themeColors.link }}>
-                    This link can be shared with users that are connected to the institution’s/school’s network and they will automatically have access to the content.
-                  </Typography>
-                </Paper>
-
-                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, color: themeColors.heading }}>Share on social media</Typography>
-                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                  <IconButton
-                    component="a"
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Share on Facebook"
-                    sx={{ color: '#1877F2', backgroundColor: themeColors.hoverItemBg, '&:hover': { backgroundColor: themeColors.activeItemBg } }}
-                  >
-                    <FacebookIcon />
-                  </IconButton>
-                  <IconButton
-                    component="a"
-                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(title)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Share on X"
-                    sx={{ color: themeColors.text, backgroundColor: themeColors.hoverItemBg, '&:hover': { backgroundColor: themeColors.activeItemBg } }}
-                  >
-                    <TwitterIcon />
-                  </IconButton>
-                  <IconButton
-                    component="a"
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Share on LinkedIn"
-                    sx={{ color: '#0A66C2', backgroundColor: themeColors.hoverItemBg, '&:hover': { backgroundColor: themeColors.activeItemBg } }}
-                  >
-                    <LinkedInIcon />
-                  </IconButton>
-                </Box>
-              </DialogContent>
-              <DialogActions sx={{ px: 4, pb: 4, borderTop: `1px solid ${themeColors.border}`, pt: 3 }}>
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    if (navigator.clipboard && shareUrl) {
-                      navigator.clipboard.writeText(shareUrl).then(() => setSnackbar({ open: true, message: 'Link copied' })).catch(() => null)
-                    }
-                  }}
-                  sx={{
-                    textTransform: 'none',
-                    borderRadius: '2rem',
-                    backgroundColor: themeColors.accent,
-                    color: '#fff',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    fontWeight: 600,
-                    px: 4,
-                    py: 1,
-                    '&:hover': {
-                      backgroundColor: themeColors.link,
-                      boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
-                    }
-                  }}
-                >
-                  Copy Link
-                </Button>
-              </DialogActions>
-            </Dialog>
-
-            {/* Highlight Menu Popover */}
-            <Popover
-              open={Boolean(highlightPopoverAnchor)}
-              anchorEl={highlightPopoverAnchor}
-              onClose={() => {
-                setHighlightPopoverAnchor(null)
-                setSelection(null)
-                window.getSelection()?.removeAllRanges()
-              }}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              PaperProps={{
-                sx: {
-                  p: 0.5,
-                  borderRadius: '50px',
-                  boxShadow: themeColors.shadow,
-                  display: 'flex',
-                  gap: 1,
-                  backgroundColor: themeColors.uiBg,
-                  color: themeColors.uiText,
-                  border: themeColors.glassBorder,
-                  backdropFilter: 'blur(10px)'
-                }
-              }}
-            >
-              <Tooltip title="Highlight & Add Note">
-                <IconButton 
-                  onClick={() => {
-                    setNoteDialogOpen(true)
-                    setHighlightPopoverAnchor(null)
-                  }}
-                  size="small"
-                  sx={{ color: themeColors.accent }}
-                >
-                  <BookmarkIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Popover>
-
-            {/* Add Note Dialog */}
-            <Dialog
-              open={noteDialogOpen}
-              onClose={() => setNoteDialogOpen(false)}
-              maxWidth="sm"
-              fullWidth
-              PaperProps={{
-                sx: {
-                  backgroundColor: themeColors.uiBg,
-                  color: themeColors.uiText,
-                  border: themeColors.glassBorder,
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: '1rem',
-                  boxShadow: themeColors.shadow
-                }
-              }}
-            >
-              <DialogTitle sx={{ color: themeColors.heading }}>Add Note</DialogTitle>
-              <DialogContent>
-                <Typography variant="body2" sx={{ mb: 2, fontStyle: 'italic', color: themeColors.text }}>
-                  &quot;{selection?.text}&quot;
-                </Typography>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  label="Your Note"
-                  fullWidth
-                  multiline
-                  rows={3}
-                  variant="outlined"
-                  value={noteText}
-                  onChange={(e) => setNoteText(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      color: themeColors.text,
-                      '& fieldset': { borderColor: themeColors.border },
-                      '&:hover fieldset': { borderColor: themeColors.link },
-                      '&.Mui-focused fieldset': { borderColor: themeColors.link },
-                    },
-                    '& .MuiInputLabel-root': { color: themeColors.text, opacity: 0.7 },
-                    '& .MuiInputLabel-root.Mui-focused': { color: themeColors.link, opacity: 1 }
-                  }}
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setNoteDialogOpen(false)} sx={{ color: themeColors.text }}>Cancel</Button>
-                <Button onClick={saveHighlight} variant="contained" sx={{ backgroundColor: themeColors.link, color: '#fff', '&:hover': { backgroundColor: themeColors.accent } }}>
-                  Save
-                </Button>
-              </DialogActions>
-            </Dialog>
-
-            {/* View Note Popover */}
-            <Popover
-              open={Boolean(activeHighlight)}
-              anchorEl={activeHighlight?.anchor}
-              onClose={() => setActiveHighlight(null)}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              sx={{ pointerEvents: 'auto' }}
-              PaperProps={{
-                sx: {
-                  p: 2,
-                  maxWidth: 300,
-                  borderRadius: '1rem',
-                  boxShadow: themeColors.shadow,
-                  backgroundColor: themeColors.uiBg,
-                  border: themeColors.glassBorder,
-                  backdropFilter: 'blur(10px)'
-                }
-              }}
-            >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
-                <Box>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5, color: themeColors.heading }}>
-                    Note
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: themeColors.text }}>
-                    {activeHighlight?.note || 'No note content'}
-                  </Typography>
-                </Box>
-                <IconButton 
-                  size="small" 
-                  onClick={() => activeHighlight?.id && deleteHighlight(activeHighlight.id)}
-                  sx={{ color: '#EF4444', mt: -0.5, mr: -0.5, '&:hover': { backgroundColor: themeColors.hoverItemBg } }}
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            </Popover>
-
-            <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: '' })} message={snackbar.message} />
           </Grid>
         </Container>
       </Box>
@@ -2604,37 +2122,38 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const { isbn, ch } = ctx.query
-  const isbnStr = String(isbn || '')
-  const chStr = String(ch || '')
+  const { isbn: isbnParam, ch: chParam } = ctx.params || {}
+  const isbnStr = String(isbnParam || '')
+  const chStr = String(chParam || '')
+
   const proto = ctx.req.headers['x-forwarded-proto'] || 'http'
-  const host = ctx.req.headers.host || 'localhost:3000'
-  const base = `${proto}://${host}`
+        const host = ctx.req.headers.host || 'localhost:3000'
+        const base = `${proto}://${host}`
 
-  let videoUrl: string | undefined
-  let title = `Chapter ${chStr}`
+        let videoUrl: string | undefined
+        let title = `Chapter ${chStr}`
 
-  // Resolve HTML URL for chapter/preliminary/index and verify existence
-  let htmlPathPublic = ''
-  let htmlFsPath = ''
-  if (chStr === 'preliminary') {
-    htmlPathPublic = `/books/${isbnStr}/preliminary/prelims.html`
+        // Resolve HTML URL for chapter/preliminary/index and verify existence
+        let htmlPathPublic = ''
+        let htmlFsPath = ''
+        if (chStr === 'preliminary') {
+          htmlPathPublic = `/books/${isbnStr}/preliminary/prelims.html`
     htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'preliminary', 'prelims.html')
   } else if (chStr === 'index') {
-    htmlPathPublic = `/books/${isbnStr}/index/index.html`
+          htmlPathPublic = `/books/${isbnStr}/index/index.html`
     htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'index', 'index.html')
   } else if (chStr.toLowerCase().startsWith('case')) {
     // Handle cases
     const caseId = chStr
-    htmlPathPublic = `/books/${isbnStr}/cases/${caseId}.html`
-    htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'cases', `${caseId}.html`)
+        htmlPathPublic = `/books/${isbnStr}/cases/${caseId}.html`
+        htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'cases', `${caseId}.html`)
   } else if (chStr.toLowerCase().startsWith('video-')) {
     // Handle videos
     const videoId = chStr.replace(/^video-/, '')
-    // Try to find video in JSON
-    try {
+        // Try to find video in JSON
+        try {
       const jsonPath = path.join(process.cwd(), 'public', 'books', isbnStr, `${isbnStr}.json`)
-      if (fs.existsSync(jsonPath)) {
+        if (fs.existsSync(jsonPath)) {
         const jsonContent = fs.readFileSync(jsonPath, 'utf-8')
         const bookData = JSON.parse(jsonContent)
         const video = bookData.videos?.find((v: any) => (v.video_id || '') === videoId)
@@ -2644,88 +2163,88 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         }
       }
     } catch (e) {
-      console.error('Error loading video data:', e)
-    }
+          console.error('Error loading video data:', e)
+        }
   } else {
     const m = /^ch(\d+)$/i.exec(chStr)
-    const chNum = m ? m[1] : String(chStr)
+        const chNum = m ? m[1] : String(chStr)
 
     // Try to resolve the file path
     // 1. Try as "ch{number}.html" (standard format)
     // 2. Try as "{chStr}.html" (exact match)
 
-    let candidate = `ch${chNum}.html`
-    let fsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'chapter', candidate)
+        let candidate = `ch${chNum}.html`
+        let fsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'chapter', candidate)
 
-    if (!fs.existsSync(fsPath)) {
-      // Try exact match
-      candidate = `${chStr}.html`
+        if (!fs.existsSync(fsPath)) {
+          // Try exact match
+          candidate = `${chStr}.html`
       fsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'chapter', candidate)
     }
 
-    htmlPathPublic = `/books/${isbnStr}/chapter/${candidate}`
-    htmlFsPath = fsPath
+        htmlPathPublic = `/books/${isbnStr}/chapter/${candidate}`
+        htmlFsPath = fsPath
   }
-  try {
+        try {
     if (!videoUrl && !fs.existsSync(htmlFsPath)) {
-      return { notFound: true }
+      return {notFound: true }
     }
   } catch { }
 
   // Read HTML content to render inline
-  let html = ''
-  try {
-    html = fs.readFileSync(htmlFsPath, 'utf-8')
-  } catch { }
+        let html = ''
+        try {
+          html = fs.readFileSync(htmlFsPath, 'utf-8')
+        } catch { }
 
   // Rewrite relative image paths from "XML/..." to "/XML/..."
   const rewriteRelativeXmlImagePaths = (s: string): string => s.replace(/(<img[^>]+src=)(["'])(?!https?:|\/\/|\/)(XML\/[^"']+)(\2)/gi, (_m, p1, q, p, q2) => `${p1}${q}/${p}${q2}`)
-  html = rewriteRelativeXmlImagePaths(html)
+        html = rewriteRelativeXmlImagePaths(html)
 
   // Rewrite /MediumImage/ and /LargeImage/ paths to /books/{isbn}/chapter/MediumImage/ and /books/{isbn}/chapter/LargeImage/
   const rewriteImagePaths = (s: string): string => {
-    let out = s
-    // Rewrite /MediumImage/ paths
-    out = out.replace(/(<img[^>]+src=)(["'])\/MediumImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/MediumImage/${filename}${q2}`)
-    // Rewrite /LargeImage/ paths
-    out = out.replace(/(<img[^>]+src=)(["'])\/LargeImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/LargeImage/${filename}${q2}`)
-    return out
+          let out = s
+        // Rewrite /MediumImage/ paths
+        out = out.replace(/(<img[^>]+src=)(["'])\/MediumImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/MediumImage/${filename}${q2}`)
+        // Rewrite /LargeImage/ paths
+        out = out.replace(/(<img[^>]+src=)(["'])\/LargeImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/LargeImage/${filename}${q2}`)
+        return out
   }
-  html = rewriteImagePaths(html)
+        html = rewriteImagePaths(html)
 
   // Rewrite chapter navigation links to app routes under /content/book/{isbn}/chapter/{...}
   const rewriteChapterLinks = (s: string): string => {
-    let out = s
+          let out = s
     // Absolute chapter links like "/{isbn}/chapter/ch4" or "/{isbn}/chapter/ch4.html"
-    out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/chapter\\/ch(\\d+)(?:\\.html)?\\2`, 'gi'), (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
+        out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/chapter\\/ch(\\d+)(?:\\.html)?\\2`, 'gi'), (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
     // Absolute short chapter links like "/{isbn}/ch4"
-    out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/ch(\\d+)\\2`, 'gi'), (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
-    // Relative chapter links like "ch4.html"
-    out = out.replace(/(<a[^>]+href=)(["'])ch(\d+)\.html\2/gi, (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
-    // Relative links like "../chapter/ch4.html"
-    out = out.replace(/(<a[^>]+href=)(["'])\.\.\/chapter\/ch(\d+)\.html\2/gi, (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
-    // Preliminary and Index (absolute)
-    out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/preliminary\\2`, 'gi'), (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/preliminary${q}`)
-    out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/index\\2`, 'gi'), (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/index${q}`)
-    // Preliminary and Index (relative)
-    out = out.replace(/(<a[^>]+href=)(["'])\.\.\/preliminary\/prelims\.html\2/gi, (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/preliminary${q}`)
-    out = out.replace(/(<a[^>]+href=)(["'])\.\.\/index\/index\.html\2/gi, (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/index${q}`)
-    return out
+        out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/ch(\\d+)\\2`, 'gi'), (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
+        // Relative chapter links like "ch4.html"
+        out = out.replace(/(<a[^>]+href=)(["'])ch(\d+)\.html\2/gi, (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
+        // Relative links like "../chapter/ch4.html"
+        out = out.replace(/(<a[^>]+href=)(["'])\.\.\/chapter\/ch(\d+)\.html\2/gi, (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
+        // Preliminary and Index (absolute)
+        out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/preliminary\\2`, 'gi'), (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/preliminary${q}`)
+        out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/index\\2`, 'gi'), (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/index${q}`)
+        // Preliminary and Index (relative)
+        out = out.replace(/(<a[^>]+href=)(["'])\.\.\/preliminary\/prelims\.html\2/gi, (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/preliminary${q}`)
+        out = out.replace(/(<a[^>]+href=)(["'])\.\.\/index\/index\.html\2/gi, (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/index${q}`)
+        return out
   }
-  html = rewriteChapterLinks(html)
+        html = rewriteChapterLinks(html)
 
-  // Compute title from toc.html when possible
-  if (!videoUrl) {
+        // Compute title from toc.html when possible
+        if (!videoUrl) {
     try {
       const tocPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'toc.html')
-      if (fs.existsSync(tocPath)) {
+        if (fs.existsSync(tocPath)) {
         const html = fs.readFileSync(tocPath, 'utf-8')
         if (chStr === 'preliminary') {
           const prelimMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary(?:/prelims\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))
-          if (prelimMatch) title = prelimMatch[1].trim()
+        if (prelimMatch) title = prelimMatch[1].trim()
         } else if (chStr === 'index') {
           const indexMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))
-          if (indexMatch) title = indexMatch[1].trim()
+        if (indexMatch) title = indexMatch[1].trim()
         } else if (chStr.toLowerCase().startsWith('case')) {
           // Try to find title for case in TOC if present, otherwise default
           // Cases might not be in TOC, so we might need to rely on default or fetch from JSON if needed.
@@ -2733,96 +2252,96 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
           title = chStr.replace(/^case/i, 'Case ')
         } else {
           const chNumForTitle = (/^ch(\d+)$/i.exec(chStr)?.[1]) || chStr
-          const m = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch${chNumForTitle}\"[^>]*>([^<]+)<\/a>`, 'i'))
-          if (m) title = m[1].trim()
+        const m = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch${chNumForTitle}\"[^>]*>([^<]+)<\/a>`, 'i'))
+        if (m) title = m[1].trim()
         }
       }
     } catch { }
   }
 
-  // Check for corresponding PDF
-  let pdfUrl: string | null = null
-  try {
-    let pdfFilename = ''
-    if (chStr === 'preliminary' || chStr === 'index' || chStr.startsWith('video-')) {
-      // No PDF for these usually
-    } else if (chStr.toLowerCase().startsWith('case')) {
-      pdfFilename = `${chStr}.pdf`
-    } else {
+        // Check for corresponding PDF
+        let pdfUrl: string | null = null
+        try {
+          let pdfFilename = ''
+        if (chStr === 'preliminary' || chStr === 'index' || chStr.startsWith('video-')) {
+          // No PDF for these usually
+        } else if (chStr.toLowerCase().startsWith('case')) {
+          pdfFilename = `${chStr}.pdf`
+        } else {
       const m = /^ch(\d+)$/i.exec(chStr)
-      const chNum = m ? m[1] : chStr
-      pdfFilename = `ch${chNum}.pdf`
+        const chNum = m ? m[1] : chStr
+        pdfFilename = `ch${chNum}.pdf`
     }
 
-    if (pdfFilename) {
+        if (pdfFilename) {
       const pdfFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'chapter', pdfFilename)
-      if (fs.existsSync(pdfFsPath)) {
-        pdfUrl = `/books/${isbnStr}/chapter/${pdfFilename}`
-      }
+        if (fs.existsSync(pdfFsPath)) {
+          pdfUrl = `/books/${isbnStr}/chapter/${pdfFilename}`
+        }
     }
   } catch { }
 
   // (client-side menu handlers are defined inside the component)
 
-  // Fetch book meta (supports numeric id or ISBN) to render header
-  let book: Book | null = null
-  try {
+        // Fetch book meta (supports numeric id or ISBN) to render header
+        let book: Book | null = null
+        try {
     const isNumericId = /^\d+$/.test(isbnStr)
-    const metaUrl = isNumericId
-      ? `${base}/api/books/${encodeURIComponent(isbnStr)}`
-      : `${base}/api/books/print_isbn/${encodeURIComponent(isbnStr)}`
-    const metaRes = await fetch(metaUrl)
-    const metaJson = metaRes.ok ? await metaRes.json() : null
-    book = metaJson?.book || null
+        const metaUrl = isNumericId
+        ? `${base}/api/books/${encodeURIComponent(isbnStr)}`
+        : `${base}/api/books/print_isbn/${encodeURIComponent(isbnStr)}`
+        const metaRes = await fetch(metaUrl)
+        const metaJson = metaRes.ok ? await metaRes.json() : null
+        book = metaJson?.book || null
   } catch { }
 
 
   // Build chapters list from TOC for sidebar navigation
-  const chapters: Chapter[] = []
-  try {
+        const chapters: Chapter[] = []
+        try {
     const tocPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'toc.html')
-    if (fs.existsSync(tocPath)) {
+        if (fs.existsSync(tocPath)) {
       const html = fs.readFileSync(tocPath, 'utf-8')
-      const items: { index: number, item: Chapter }[] = []
-      let m: RegExpExecArray | null
+        const items: {index: number, item: Chapter }[] = []
+        let m: RegExpExecArray | null
 
-      // Prelims
-      const prelimRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary(?:/prelims\\.html)?\"[^>]*>([^<]+)<\/a>`, 'gi')
-      while ((m = prelimRegex.exec(html)) !== null) {
-        items.push({ index: m.index, item: { number: null, title: m[1].trim(), slug: `/content/book/${isbnStr}/chapter/preliminary` } })
-      }
+        // Prelims
+        const prelimRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary(?:/prelims\\.html)?\"[^>]*>([^<]+)<\/a>`, 'gi')
+        while ((m = prelimRegex.exec(html)) !== null) {
+          items.push({ index: m.index, item: { number: null, title: m[1].trim(), slug: `/content/book/${isbnStr}/chapter/preliminary` } })
+        }
 
       // Chapters
-      const chapterRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch(\\d+)\"[^>]*>([^<]+)<\/a>`, 'gi')
-      while ((m = chapterRegex.exec(html)) !== null) {
+        const chapterRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch(\\d+)\"[^>]*>([^<]+)<\/a>`, 'gi')
+        while ((m = chapterRegex.exec(html)) !== null) {
         const num = Number(m[1])
         const titleCh = (m[2] || `Chapter ${num}`).replace(/\s+/g, ' ').trim()
-        items.push({ index: m.index, item: { number: Number.isNaN(num) ? null : num, title: titleCh, slug: `/content/book/${isbnStr}/chapter/${m[1]}` } })
+        items.push({index: m.index, item: {number: Number.isNaN(num) ? null : num, title: titleCh, slug: `/content/book/${isbnStr}/chapter/${m[1]}` } })
       }
 
-      // Cases
-      const caseRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/cases\/([^"]+)\"[^>]*>([^<]+)<\/a>`, 'gi')
-      while ((m = caseRegex.exec(html)) !== null) {
+        // Cases
+        const caseRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/cases\/([^"]+)\"[^>]*>([^<]+)<\/a>`, 'gi')
+        while ((m = caseRegex.exec(html)) !== null) {
         const caseFile = m[1]
         const caseId = caseFile.replace(/\.html$/, '')
         const titleCase = (m[2] || caseId).replace(/\s+/g, ' ').trim()
-        items.push({ index: m.index, item: { number: null, title: titleCase, slug: `/content/book/${isbnStr}/chapter/${caseId}` } })
+        items.push({index: m.index, item: {number: null, title: titleCase, slug: `/content/book/${isbnStr}/chapter/${caseId}` } })
       }
 
-      // Index
-      const indexRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'gi')
-      while ((m = indexRegex.exec(html)) !== null) {
-        items.push({ index: m.index, item: { number: null, title: m[1].trim(), slug: `/content/book/${isbnStr}/chapter/index` } })
-      }
+        // Index
+        const indexRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'gi')
+        while ((m = indexRegex.exec(html)) !== null) {
+          items.push({ index: m.index, item: { number: null, title: m[1].trim(), slug: `/content/book/${isbnStr}/chapter/index` } })
+        }
 
       items.sort((a, b) => a.index - b.index)
       items.forEach(x => chapters.push(x.item))
     }
 
-    // Also add videos to the sidebar if they exist in JSON
-    try {
+        // Also add videos to the sidebar if they exist in JSON
+        try {
       const jsonPath = path.join(process.cwd(), 'public', 'books', isbnStr, `${isbnStr}.json`)
-      if (fs.existsSync(jsonPath)) {
+        if (fs.existsSync(jsonPath)) {
         const jsonContent = fs.readFileSync(jsonPath, 'utf-8')
         const bookData = JSON.parse(jsonContent)
         if (bookData.videos && Array.isArray(bookData.videos)) {
@@ -2841,9 +2360,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   } catch { }
 
 
-  return { props: { isbn: isbnStr, ch: chStr, title, html, htmlUrl: htmlPathPublic, pdfUrl, chapters, book, videoUrl: videoUrl || null } }
+        return {props: {isbn: isbnStr, ch: chStr, title, html, htmlUrl: htmlPathPublic, pdfUrl, chapters, book, videoUrl: videoUrl || null } }
 }
 
 ChapterViewerPage.getLayout = (page) => <MainLayout>{page}</MainLayout>
 
-export default ChapterViewerPage
+        export default ChapterViewerPage
