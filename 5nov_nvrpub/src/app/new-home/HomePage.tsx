@@ -1,16 +1,18 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import SiteNavbar from '@/components/layout/SiteNavbar';
-import Hero from './components/Hero';
-import StatsSection from './components/StatsSection';
-import NewReleases from './components/NewReleases';
 
-import Specialties from './components/Specialties';
-import Testimonials from './components/Testimonials';
-import MostViewed from './components/MostViewed';
-import Newsletter from './components/Newsletter';
-import SiteFooter from '@/components/layout/SiteFooter';
+// Dynamic imports for heavy components (below the fold)
+const Hero = dynamic(() => import('./components/Hero'), { ssr: true });
+const StatsSection = dynamic(() => import('./components/StatsSection'), { ssr: false });
+const NewReleases = dynamic(() => import('./components/NewReleases'), { ssr: false });
+const Specialties = dynamic(() => import('./components/Specialties'), { ssr: false });
+const Testimonials = dynamic(() => import('./components/Testimonials'), { ssr: false });
+const MostViewed = dynamic(() => import('./components/MostViewed'), { ssr: false });
+const Newsletter = dynamic(() => import('./components/Newsletter'), { ssr: false });
+const SiteFooter = dynamic(() => import('@/components/layout/SiteFooter'), { ssr: true });
 
 interface BannerData {
   id: number;
