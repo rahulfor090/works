@@ -54,6 +54,7 @@ const AlertsPage: NextPageWithLayout = () => {
   const [subjectcategories, setSubjectcategories] = React.useState<Array<{ id: number; name: string }>>([])
   const [selectedCategoryIds, setSelectedCategoryIds] = React.useState<number[]>([])
   const [alertName, setAlertName] = React.useState('')
+  const [savedAlerts, setSavedAlerts] = React.useState<any[]>([])
 
   React.useEffect(() => {
     const userStr = typeof window !== 'undefined' ? localStorage.getItem('user') : null
@@ -72,7 +73,7 @@ const AlertsPage: NextPageWithLayout = () => {
       if (storedCats) setSelectedCategoryIds(JSON.parse(storedCats))
       const storedName = localStorage.getItem(`alerts:user:${parsed.email}:name`)
       if (storedName) setAlertName(storedName)
-    } catch {}
+    } catch { }
     (async () => {
       try {
         const res = await fetch('/api/subjectcategories')
@@ -80,7 +81,7 @@ const AlertsPage: NextPageWithLayout = () => {
           const data = await res.json()
           setSubjectcategories((data || []).map((sc: any) => ({ id: sc.id, name: sc.name })))
         }
-      } catch {}
+      } catch { }
     })()
     setAuthChecked(true)
   }, [])
@@ -126,7 +127,20 @@ const AlertsPage: NextPageWithLayout = () => {
           body: JSON.stringify(payload),
         })
       }
-    } catch {}
+    } catch { }
+
+    // Add to local session state
+    const newAlert = {
+      id: Date.now(),
+      name: alertName || 'My Alert',
+      frequency: preferences.frequency,
+      categories: selectedCategoryIds.map(id => subjectcategories.find(s => s.id === id)?.name).filter(Boolean),
+      keywords: alerts.filter(a => a.type === 'Keyword').map(a => a.term),
+      authors: alerts.filter(a => a.type === 'Author').map(a => a.term),
+      timestamp: new Date().toLocaleString()
+    }
+    setSavedAlerts(prev => [newAlert, ...prev])
+
     setSnackOpen(true)
   }
 
@@ -160,6 +174,45 @@ const AlertsPage: NextPageWithLayout = () => {
       <Box sx={{ pt: { xs: 6, md: 8 }, pb: 8, backgroundColor: 'background.default', minHeight: '100vh' }}>
         <Container maxWidth="md">
           {Header}
+
+          {savedAlerts.length > 0 && (
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" sx={{ mb: 2 }}>Recently Subscribed Alerts</Typography>
+              {savedAlerts.map((alert) => (
+                <Paper key={alert.id} sx={{ p: 2, mb: 2, borderLeft: '4px solid', borderColor: 'primary.main' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 600 }}>{alert.name}</Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        Frequency: {alert.frequency} | Created: {alert.timestamp}
+                      </Typography>
+
+                      {alert.categories.length > 0 && (
+                        <Box sx={{ mb: 0.5 }}>
+                          <Typography variant="subtitle2" component="span" sx={{ mr: 1 }}>Categories:</Typography>
+                          {alert.categories.map((c: string, i: number) => (
+                            <Chip key={i} label={c} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
+                          ))}
+                        </Box>
+                      )}
+
+                      {(alert.keywords.length > 0 || alert.authors.length > 0) && (
+                        <Box>
+                          <Typography variant="subtitle2" component="span" sx={{ mr: 1 }}>Terms:</Typography>
+                          {alert.keywords.map((k: string, i: number) => (
+                            <Chip key={`k-${i}`} label={`Keyword: ${k}`} size="small" variant="outlined" sx={{ mr: 0.5, mb: 0.5 }} />
+                          ))}
+                          {alert.authors.map((a: string, i: number) => (
+                            <Chip key={`a-${i}`} label={`Author: ${a}`} size="small" variant="outlined" sx={{ mr: 0.5, mb: 0.5 }} />
+                          ))}
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
+          )}
 
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -214,7 +267,7 @@ const AlertsPage: NextPageWithLayout = () => {
                     </Select>
                   </FormControl>
 
-                  
+
                 </Box>
 
                 <Box sx={{ mt: 4 }}>
