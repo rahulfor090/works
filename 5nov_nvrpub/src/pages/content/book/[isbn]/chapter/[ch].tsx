@@ -64,6 +64,10 @@ import ZoomInIcon from '@mui/icons-material/ZoomIn'
 import ZoomOutIcon from '@mui/icons-material/ZoomOut'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import CircleIcon from '@mui/icons-material/Circle'
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver'
+import StopCircleIcon from '@mui/icons-material/StopCircle'
+import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import VolumeOffIcon from '@mui/icons-material/VolumeOff'
 
 type Chapter = { number?: number | null; title: string; slug: string }
 
@@ -98,6 +102,10 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
   const [imageModalOpen, setImageModalOpen] = React.useState(false)
   const [imageModalSrc, setImageModalSrc] = React.useState<string>('')
   const contentRef = React.useRef<HTMLDivElement | null>(null)
+  
+  // AI Reader state
+  const [isReading, setIsReading] = React.useState(false)
+  const [speechSynthesis, setSpeechSynthesis] = React.useState<SpeechSynthesis | null>(null)
   const scrollRef = React.useRef<HTMLDivElement | null>(null)
   const [readProgress, setReadProgress] = React.useState(0)
   const [citeOpen, setCiteOpen] = React.useState(false)
@@ -438,6 +446,70 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
       return newFullscreen
     })
   }
+
+  // Initialize speech synthesis
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      setSpeechSynthesis(window.speechSynthesis)
+    }
+  }, [])
+
+  // AI Reader functions
+  const handleAIReader = (): void => {
+    if (!speechSynthesis) {
+      setSnackbar({ open: true, message: 'Text-to-speech is not supported in your browser' })
+      return
+    }
+
+    if (isReading) {
+      // Stop reading
+      speechSynthesis.cancel()
+      setIsReading(false)
+    } else {
+      // Start reading
+      const contentElement = contentRef.current
+      if (!contentElement) return
+
+      // Extract text content from the HTML
+      const textContent = contentElement.innerText || contentElement.textContent || ''
+      
+      if (!textContent.trim()) {
+        setSnackbar({ open: true, message: 'No content to read' })
+        return
+      }
+
+      // Create speech utterance
+      const utterance = new SpeechSynthesisUtterance(textContent)
+      utterance.rate = 1.0 // Normal speed
+      utterance.pitch = 1.0 // Normal pitch
+      utterance.volume = 1.0 // Full volume
+      
+      // Handle end of speech
+      utterance.onend = () => {
+        setIsReading(false)
+      }
+
+      utterance.onerror = (event) => {
+        setIsReading(false)
+        // Only show error if it's not a cancellation (which happens when user clicks stop)
+        if (event.error !== 'canceled' && event.error !== 'interrupted') {
+          setSnackbar({ open: true, message: 'An error occurred while reading' })
+        }
+      }
+
+      speechSynthesis.speak(utterance)
+      setIsReading(true)
+    }
+  }
+
+  // Stop reading when component unmounts
+  React.useEffect(() => {
+    return () => {
+      if (speechSynthesis) {
+        speechSynthesis.cancel()
+      }
+    }
+  }, [speechSynthesis])
 
   const storageKeyBookmark = `bookmark:${isbn}:${ch}`
 
@@ -937,6 +1009,15 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
               </Box>
 
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Tooltip title={isReading ? "Stop AI Reader" : "Start AI Reader"}>
+                  <IconButton onClick={handleAIReader} size="small" sx={{ 
+                    color: isReading ? themeColors.accent : themeColors.uiText, 
+                    transition: 'all 0.2s',
+                    '&:hover': { color: themeColors.link, backgroundColor: themeColors.hoverItemBg } 
+                  }}>
+                    {isReading ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                  </IconButton>
+                </Tooltip>
                 <Tooltip title="Reader Settings">
                   <IconButton onClick={handleSettingsClick} size="small" sx={{ 
                     color: themeColors.uiText, 
