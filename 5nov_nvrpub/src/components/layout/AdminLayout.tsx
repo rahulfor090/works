@@ -86,7 +86,7 @@ const AdminLayout = ({ children, title = 'Admin Dashboard', breadcrumbs = [] }: 
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const userStr = localStorage.getItem('adminUser');
+      const userStr = sessionStorage.getItem('adminUser');
       if (userStr) {
         try {
           setCurrentUser(JSON.parse(userStr));
@@ -105,7 +105,8 @@ const AdminLayout = ({ children, title = 'Admin Dashboard', breadcrumbs = [] }: 
       await fetch('/api/auth/logout', { method: 'POST' });
 
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('adminUser');
+        sessionStorage.removeItem('adminUser');
+        sessionStorage.removeItem('adminToken');
       }
       router.push('/admin/login');
     } catch (err) {
@@ -141,8 +142,8 @@ const AdminLayout = ({ children, title = 'Admin Dashboard', breadcrumbs = [] }: 
 
   const userSubmenuItems = [
     { label: 'Users', href: '/admin/users', icon: <PeopleIcon /> },
-    { label: 'Roles', href: '/admin/roles', icon: <SecurityIcon /> },
-    { label: 'Role Privileges', href: '/admin/role-privileges', icon: <SecurityIcon /> },
+    { label: 'Roles', href: '/admin/users/roles', icon: <SecurityIcon /> },
+    { label: 'Role Privileges', href: '/admin/users/role-privileges', icon: <SecurityIcon /> },
   ];
 
   const bookSubmenuItems = [

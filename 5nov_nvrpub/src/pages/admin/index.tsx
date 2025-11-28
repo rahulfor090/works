@@ -1,31 +1,50 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import AdminLayout from '@/components/layout/AdminLayout'
-import {
-  Avatar,
-  Box,
-  Grid,
-  LinearProgress,
-  List,
-  ListItem,
-  ListItemText,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-  Button,
-} from '@mui/material'
+import dynamic from 'next/dynamic'
+import { Box, Grid, Button } from '@mui/material'
 import NextLink from 'next/link'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import InsightsIcon from '@mui/icons-material/Insights'
 import StarIcon from '@mui/icons-material/Star'
 import TodayIcon from '@mui/icons-material/Today'
 import CategoryIcon from '@mui/icons-material/Category'
-import ScheduleIcon from '@mui/icons-material/Schedule'
 import { Content } from '@/interfaces/content'
 import { useAuth } from '@/utils/auth'
+import { ComponentLoader } from '@/components/loaders'
+
+// Dynamic imports for heavy components
+const AdminLayout = dynamic(() => import('@/components/layout/AdminLayout'), {
+  loading: () => <div>Loading admin panel...</div>,
+  ssr: false,
+})
+
+const DashboardStats = dynamic(() => import('@/components/admin/DashboardStats'), {
+  loading: () => <ComponentLoader type="skeleton" height="120px" />,
+  ssr: false,
+})
+
+const DailyUpdatesChart = dynamic(() => import('@/components/admin/DailyUpdatesChart'), {
+  loading: () => <ComponentLoader type="skeleton" height="200px" />,
+  ssr: false,
+})
+
+const MonthlyManagedChart = dynamic(() => import('@/components/admin/MonthlyManagedChart'), {
+  loading: () => <ComponentLoader type="skeleton" height="200px" />,
+  ssr: false,
+})
+
+const MostViewedTable = dynamic(() => import('@/components/admin/MostViewedTable'), {
+  loading: () => <ComponentLoader type="skeleton" height="400px" />,
+  ssr: false,
+})
+
+const TopCategoriesList = dynamic(() => import('@/components/admin/TopCategoriesList'), {
+  loading: () => <ComponentLoader type="skeleton" height="200px" />,
+  ssr: false,
+})
+
+const RecentUpdatesList = dynamic(() => import('@/components/admin/RecentUpdatesList'), {
+  loading: () => <ComponentLoader type="skeleton" height="200px" />,
+  ssr: false,
+})
 
 interface DailyPoint {
   label: string
@@ -94,7 +113,7 @@ const AdminHome = () => {
         .sort((a, b) => (b.ratingCount || 0) - (a.ratingCount || 0))
         .slice(0, 8)
         .map((row) => ({
-          id: row.id,
+          id: row.id || 0,
           title: row.title,
           category: row.subjectcategory || 'General',
           views: row.ratingCount || 0,
@@ -172,250 +191,33 @@ const AdminHome = () => {
       .slice(-6)
   }, [contents])
 
-  const renderSparkline = (data: DailyPoint[], color = '#268bbb') => {
-    if (!data.length) return null
-    const max = Math.max(...data.map((point) => point.value), 1)
-    const stepX = data.length > 1 ? 100 / (data.length - 1) : 100
-    const points = data.map((point, idx) => `${idx * stepX},${120 - (point.value / max) * 120}`).join(' ')
-    const area = `0,120 ${points} ${stepX * (data.length - 1)},120`
-
-    return (
-      <svg viewBox="0 0 100 120" width="100%" height="120">
-        <defs>
-          <linearGradient id="sparklineGradient" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity={0.25} />
-            <stop offset="100%" stopColor={color} stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <polyline points={area} fill="url(#sparklineGradient)" />
-        <polyline points={points} fill="none" stroke={color} strokeWidth={2.6} strokeLinecap="round" />
-        {data.map((point, idx) => (
-          <circle key={point.label} cx={idx * stepX} cy={120 - (point.value / max) * 120} r={1.8} fill={color} />
-        ))}
-      </svg>
-    )
-  }
-
   return (
     <AdminLayout title="Admin Dashboard">
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button component={NextLink} href="/admin/webapi" variant="contained" color="primary">WebAPI</Button>
+          <Button component={NextLink} href="/admin/webapi" variant="contained" color="primary">
+            WebAPI
+          </Button>
         </Box>
-        <Grid container spacing={3}>
-          {stats.map((stat) => (
-            <Grid key={stat.label} item xs={12} sm={6} lg={3}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 3,
-                  borderRadius: 3,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 2,
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Avatar sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>{stat.icon}</Avatar>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {stat.label}
-                    </Typography>
-                    <Typography variant="h5" fontWeight={700}>
-                      {stat.value}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
+
+        <DashboardStats stats={stats} />
 
         <Grid container spacing={3}>
           <Grid item xs={12} lg={8}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 4,
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    Daily Updates
-                  </Typography>
-                  <Typography variant="h5" fontWeight={700}>
-                    Last 14 Days
-                  </Typography>
-                </Box>
-              </Box>
-              <Box>{renderSparkline(dailyUpdates)}</Box>
-            </Paper>
+            <DailyUpdatesChart data={dailyUpdates} />
           </Grid>
 
           <Grid item xs={12} lg={4}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 4,
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-              }}
-            >
-              <Typography variant="subtitle2" color="text.secondary">
-                Monthly Managed Content
-              </Typography>
-              <Typography variant="h5" fontWeight={700}>
-                {monthlyManaged.reduce((acc, [, count]) => acc + count, 0)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Last 6 months trend
-              </Typography>
-              <Box sx={{ display: 'grid', gridAutoFlow: 'column', gap: 2, alignItems: 'end' }}>
-                {monthlyManaged.map(([month, count]) => (
-                  <Box key={month} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        maxWidth: 36,
-                        bgcolor: 'primary.main',
-                        borderRadius: 2,
-                        minHeight: 40,
-                        height: `${Math.max(25, Math.min(140, count * 12))}px`,
-                        opacity: 0.8,
-                      }}
-                    />
-                    <Typography variant="caption" color="text.secondary">
-                      {month}
-                    </Typography>
-                    <Typography variant="caption" fontWeight={600}>
-                      {count}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Paper>
+            <MonthlyManagedChart data={monthlyManaged} />
           </Grid>
 
           <Grid item xs={12} lg={8}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-              }}
-            >
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                Most Viewed (Top 8)
-              </Typography>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Content Title</TableCell>
-                    <TableCell>Category</TableCell>
-                    <TableCell>Views</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sortedMostViewed.map((row) => (
-                    <TableRow key={row.id} hover>
-                      <TableCell sx={{ fontWeight: 600 }}>{row.title}</TableCell>
-                      <TableCell>{row.category}</TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <LinearProgress
-                            variant="determinate"
-                            value={
-                              Math.min(
-                                100,
-                                (row.views / Math.max(1, sortedMostViewed[0]?.views || 1)) * 100
-                              )
-                            }
-                            sx={{ flexGrow: 1, height: 6, borderRadius: 3 }}
-                          />
-                          <Typography variant="body2" color="text.secondary">
-                            {row.views}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Paper>
+            <MostViewedTable data={sortedMostViewed} />
           </Grid>
 
           <Grid item xs={12} lg={4}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-                mb: 3,
-              }}
-            >
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                Top Categories
-              </Typography>
-              <List dense>
-                {topCategories.map(([category, count]) => (
-                  <ListItem key={category} secondaryAction={<Typography fontWeight={600}>{count}</Typography>}>
-                    <ListItemText primary={category} />
-                  </ListItem>
-                ))}
-              </List>
-            </Paper>
-
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-              }}
-            >
-              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-                Recent Updates
-              </Typography>
-              <List dense>
-                {recentUpdates.map((item) => (
-                  <ListItem key={item.title} alignItems="flex-start">
-                    <ListItemText
-                      primary={
-                        <Typography variant="body2" fontWeight={600}>
-                          {item.title}
-                        </Typography>
-                      }
-                      secondary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <ScheduleIcon sx={{ fontSize: 16 }} />
-                          <Typography variant="caption" color="text.secondary">
-                            {item.time}
-                          </Typography>
-                        </Box>
-                      }
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Paper>
+            <TopCategoriesList data={topCategories} />
+            <RecentUpdatesList data={recentUpdates} />
           </Grid>
         </Grid>
       </Box>

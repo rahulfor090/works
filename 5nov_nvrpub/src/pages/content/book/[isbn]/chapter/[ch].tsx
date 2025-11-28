@@ -35,7 +35,9 @@ import {
   ToggleButtonGroup,
   Drawer,
   Chip,
+  Alert,
   TextField,
+
 } from '@mui/material'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import BookmarkIcon from '@mui/icons-material/Bookmark'
@@ -66,7 +68,14 @@ import CloseIcon from '@mui/icons-material/Close'
 import ZoomInIcon from '@mui/icons-material/ZoomIn'
 import ZoomOutIcon from '@mui/icons-material/ZoomOut'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
+
 import CircleIcon from '@mui/icons-material/Circle'
+import SummarizeIcon from '@mui/icons-material/Summarize'
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver'
+import StopCircleIcon from '@mui/icons-material/StopCircle'
+import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import VolumeOffIcon from '@mui/icons-material/VolumeOff'
 
 type Chapter = { number?: number | null; title: string; slug: string }
 
@@ -101,6 +110,10 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
   const [imageModalOpen, setImageModalOpen] = React.useState(false)
   const [imageModalSrc, setImageModalSrc] = React.useState<string>('')
   const contentRef = React.useRef<HTMLDivElement | null>(null)
+
+  // AI Reader state
+  const [isReading, setIsReading] = React.useState(false)
+  const [speechSynthesis, setSpeechSynthesis] = React.useState<SpeechSynthesis | null>(null)
   const scrollRef = React.useRef<HTMLDivElement | null>(null)
   const [readProgress, setReadProgress] = React.useState(0)
   const [citeOpen, setCiteOpen] = React.useState(false)
@@ -110,7 +123,52 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
   const [shareUrl, setShareUrl] = React.useState('')
   const [snackbar, setSnackbar] = React.useState<{ open: boolean; message: string }>({ open: false, message: '' })
   const [isFullscreen, setIsFullscreen] = React.useState(false)
+
   const paperRef = React.useRef<HTMLDivElement | null>(null)
+
+  // Summary State
+  const [summaryOpen, setSummaryOpen] = React.useState(false)
+  const [summaryLoading, setSummaryLoading] = React.useState(false)
+  const [summaryText, setSummaryText] = React.useState('')
+  const [summaryError, setSummaryError] = React.useState('')
+
+  const handleSummarize = async () => {
+    if (!html) return
+    setSummaryOpen(true)
+    if (summaryText) return // Don't regenerate if already exists
+
+    setSummaryLoading(true)
+    setSummaryError('')
+
+    try {
+      // Extract text from HTML
+      const tempDiv = document.createElement('div')
+      tempDiv.innerHTML = html
+      const textContent = tempDiv.textContent || ''
+
+      // Limit text to 10k chars to reduce token usage and stay within free tier limits
+      const truncatedText = textContent.slice(0, 10000)
+
+      const res = await fetch('/api/gemini/summary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: truncatedText })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to generate summary')
+      }
+
+      setSummaryText(data.summary)
+    } catch (err: any) {
+      console.error('Summary error:', err)
+      setSummaryError(err.message || 'Failed to generate summary. Please try again.')
+    } finally {
+      setSummaryLoading(false)
+    }
+  }
 
   // Reader Settings
   const [settingsAnchorEl, setSettingsAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -241,7 +299,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
     if (typeof window === 'undefined') return
 
     // Always try to load user first
-    let loadedUser = null
+    let loadedUser: { email?: string; isPremium?: boolean } | null = null
     try {
       const userStr = window.localStorage.getItem('user')
       if (userStr) {
@@ -393,6 +451,11 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
     if (sel && sel.toString().trim().length > 0 && contentRef.current?.contains(sel.anchorNode)) {
       const range = sel.getRangeAt(0)
       const rect = range.getBoundingClientRect()
+      // Position exactly above the center of the selection
+      const clientX = rect.left + (rect.width / 2)
+      const clientY = rect.top
+
+
       // Create a virtual element for the popover
       const virtualEl = {
         getBoundingClientRect: () => rect,
@@ -521,23 +584,38 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
 
   // Apply Highlights
   React.useEffect(() => {
-    if (!contentRef.current || highlights.length === 0) return
+
+    if (!contentRef.current) return
 
     const container = contentRef.current
 
-    // Naive implementation: Find text and wrap it.
-    // Note: This runs every time highlights change or content changes.
-    // We should be careful not to double-wrap.
-    // A simple way is to re-render the content, but we can't easily do that here.
-    // So we'll just try to apply highlights to the existing DOM.
-    // To avoid double wrapping, we can check if it's already wrapped.
+    const cleanupHighlights = () => {
+      const spans = container.querySelectorAll('.highlight-span')
+      spans.forEach(span => {
+        while (span.firstChild) {
+          if (span.firstChild.nodeType === Node.TEXT_NODE) {
+            span.parentNode?.insertBefore(span.firstChild, span)
+          } else {
+            span.removeChild(span.firstChild)
+          }
+        }
+        span.remove()
+      })
+      container.normalize()
+    }
 
-    highlights.forEach(h => {
+    if (currentChapterHighlights.length === 0) {
+      cleanupHighlights()
+      return
+    }
+
+    cleanupHighlights()
+
+    currentChapterHighlights.forEach(h => {
       const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null)
       let node;
       while (node = walker.nextNode()) {
         if (node.nodeValue && node.nodeValue.includes(h.selected_text)) {
-          // Check if parent is already a highlight span
           if (node.parentElement?.classList.contains('highlight-span')) continue;
 
           const index = node.nodeValue.indexOf(h.selected_text)
@@ -548,27 +626,46 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
 
             const span = document.createElement('span')
             span.className = 'highlight-span'
-            span.style.backgroundColor = h.color || 'yellow'
+
+            let highlightColor = h.color || 'yellow'
+            if (highlightColor === 'yellow') {
+              if (theme === 'dark') highlightColor = 'rgba(255, 255, 0, 0.3)'
+              else if (theme === 'sepia') highlightColor = 'rgba(255, 215, 0, 0.4)'
+              else highlightColor = 'rgba(255, 255, 0, 0.4)'
+            }
+
+            span.style.backgroundColor = highlightColor
             span.style.cursor = 'pointer'
             span.style.position = 'relative'
 
-            // Add event listeners for tooltip
             span.onclick = (e) => {
-              e.stopPropagation() // Prevent triggering other clicks
+              e.stopPropagation()
+              setActiveHighlight({ ...h, anchor: e.currentTarget })
+            }
+            span.onmouseenter = (e) => {
               setActiveHighlight({ ...h, anchor: e.currentTarget })
             }
 
             try {
               range.surroundContents(span)
-            } catch (e) {
-              // Ignore errors
-            }
+
+              const icon = document.createElement('span')
+              icon.style.display = 'inline-flex'
+              icon.style.alignItems = 'center'
+              icon.style.marginLeft = '2px'
+              icon.style.verticalAlign = 'super'
+              icon.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="${themeColors.accent}"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>`
+              span.appendChild(icon)
+            } catch (e) { }
           }
         }
       }
     })
 
-  }, [highlights, filteredHtml, topTab])
+    return () => cleanupHighlights()
+
+  }, [currentChapterHighlights, filteredHtml, topTab, theme, themeColors])
+
 
   // compute previous/next chapter for top navigation
   const prevNext = React.useMemo(() => {
@@ -656,6 +753,70 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
       return newFullscreen
     })
   }
+
+  // Initialize speech synthesis
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      setSpeechSynthesis(window.speechSynthesis)
+    }
+  }, [])
+
+  // AI Reader functions
+  const handleAIReader = (): void => {
+    if (!speechSynthesis) {
+      setSnackbar({ open: true, message: 'Text-to-speech is not supported in your browser' })
+      return
+    }
+
+    if (isReading) {
+      // Stop reading
+      speechSynthesis.cancel()
+      setIsReading(false)
+    } else {
+      // Start reading
+      const contentElement = contentRef.current
+      if (!contentElement) return
+
+      // Extract text content from the HTML
+      const textContent = contentElement.innerText || contentElement.textContent || ''
+
+      if (!textContent.trim()) {
+        setSnackbar({ open: true, message: 'No content to read' })
+        return
+      }
+
+      // Create speech utterance
+      const utterance = new SpeechSynthesisUtterance(textContent)
+      utterance.rate = 1.0 // Normal speed
+      utterance.pitch = 1.0 // Normal pitch
+      utterance.volume = 1.0 // Full volume
+
+      // Handle end of speech
+      utterance.onend = () => {
+        setIsReading(false)
+      }
+
+      utterance.onerror = (event) => {
+        setIsReading(false)
+        // Only show error if it's not a cancellation (which happens when user clicks stop)
+        if (event.error !== 'canceled' && event.error !== 'interrupted') {
+          setSnackbar({ open: true, message: 'An error occurred while reading' })
+        }
+      }
+
+      speechSynthesis.speak(utterance)
+      setIsReading(true)
+    }
+  }
+
+  // Stop reading when component unmounts
+  React.useEffect(() => {
+    return () => {
+      if (speechSynthesis) {
+        speechSynthesis.cancel()
+      }
+    }
+  }, [speechSynthesis])
 
   const storageKeyBookmark = `bookmark:${isbn}:${ch}`
 
@@ -777,7 +938,19 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                     {isActive ? <CircleIcon sx={{ fontSize: 8 }} /> : <Typography variant="caption" sx={{ color: themeColors.text, opacity: 0.5 }}>{idx + 1}</Typography>}
                   </ListItemIcon>
                   <ListItemText
+
                     primary={c.title}
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {c.title}
+                        {highlights.some(h => h.chapter_slug === String(c.slug).split('/').pop()) && (
+                          <Tooltip title="Has notes">
+                            <BookmarkIcon sx={{ fontSize: 14, color: '#FF6B6B' }} />
+                          </Tooltip>
+                        )}
+                      </Box>
+                    }
+
                     primaryTypographyProps={{ variant: 'body2', fontWeight: isActive ? 600 : 400 }}
                   />
                   {isActive && <Chip size="small" label="Reading" color="primary" sx={{ height: 20, fontSize: '0.65rem' }} />}
@@ -896,12 +1069,14 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                               if (navigator.clipboard) {
                                 navigator.clipboard.writeText(isbn).then(() => setSnackbar({ open: true, message: 'ISBN copied' })).catch(() => null)
                               }
+
                             }}
                             sx={{
                               color: themeColors.text,
                               border: `1px solid ${themeColors.border}`,
                               '&:hover': { borderColor: themeColors.text, color: themeColors.heading }
                             }}
+
                           >
                             <ContentCopyIcon fontSize="small" />
                           </IconButton>
@@ -1091,6 +1266,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
               </Grid>
             )}
 
+
             <Grid item xs={12} md={isFullscreen ? 12 : 9}>
               <Paper
                 elevation={0}
@@ -1154,6 +1330,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                   )}
                 </Box>
 
+
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Tooltip title="Reader Settings">
                     <IconButton onClick={handleSettingsClick} size="small" sx={{
@@ -1185,6 +1362,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                         border: '1px solid rgba(255,255,255,0.1)',
                         background: theme === 'dark' ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                         backdropFilter: 'blur(20px)'
+
                       }
                     }}
                   >
@@ -1243,7 +1421,6 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                         <ToggleButton value="sans" sx={{ fontFamily: '"Inter", sans-serif', color: theme === 'dark' ? '#e2e8f0' : '#334155' }}>Sans</ToggleButton>
                       </ToggleButtonGroup>
                     </Box>
-
                     <Box>
                       <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 700, color: theme === 'dark' ? '#94a3b8' : '#64748B', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Theme</Typography>
                       <ToggleButtonGroup
@@ -1311,9 +1488,30 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                       <PictureAsPdfIcon />
                     </IconButton>
                   </Tooltip>
+                  <Tooltip title="Generate AI Summary">
+                    <IconButton
+                      onClick={handleSummarize}
+                      size="small"
+                      sx={{
+                        color: themeColors.uiText,
+                        '&:hover': { color: '#8B5CF6', backgroundColor: '#F3E8FF' }
+                      }}
+                    >
+                      <SummarizeIcon />
+                    </IconButton>
+                  </Tooltip>
                   <IconButton aria-label="more options" onClick={openOptionsMenu} size="small" sx={{ color: themeColors.uiText, '&:hover': { color: themeColors.link, backgroundColor: themeColors.hoverItemBg } }}>
                     <MoreVertIcon />
                   </IconButton>
+                  <Tooltip title={isReading ? "Stop AI Reader" : "Start AI Reader"}>
+                    <IconButton onClick={handleAIReader} size="small" sx={{
+                      color: isReading ? themeColors.accent : themeColors.uiText,
+                      transition: 'all 0.2s',
+                      '&:hover': { color: themeColors.link, backgroundColor: themeColors.hoverItemBg }
+                    }}>
+                      {isReading ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                    </IconButton>
+                  </Tooltip>
                 </Box>
                 <Menu
                   anchorEl={optionsAnchorEl}
@@ -1648,7 +1846,6 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                               ref={contentRef}
                               className="chapter-html"
                               dangerouslySetInnerHTML={{ __html: filteredHtml }}
-                              onMouseUp={handleMouseUp}
                             />
                           </Box>
                         </Box>
@@ -1718,8 +1915,8 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                     }}
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
-                    onMouseUp={handleImageMouseUp}
-                    onMouseLeave={handleImageMouseUp}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
                   >
                     <img
                       src={imageModalSrc}
@@ -1878,6 +2075,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                   </Button>
                 </DialogActions>
               </Dialog>
+
 
               {/* Highlight Menu Popover */}
               <Popover
@@ -2069,6 +2267,75 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                   <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: '' })} message={snackbar.message} />
                 </Grid>
             </Grid>
+
+              {/* Summary Dialog */}
+              <Dialog
+                open={summaryOpen}
+                onClose={() => setSummaryOpen(false)}
+                maxWidth="md"
+                fullWidth
+                PaperProps={{
+                  sx: {
+                    borderRadius: '1.5rem',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    background: theme === 'dark' ? '#1e293b' : '#ffffff',
+                    color: theme === 'dark' ? '#f8fafc' : '#0f172a'
+                  }
+                }}
+              >
+                <DialogTitle sx={{
+                  borderBottom: `1px solid ${theme === 'dark' ? '#334155' : '#E2E8F0'}`,
+                  px: 4,
+                  py: 3,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5
+                }}>
+                  <AutoAwesomeIcon sx={{ color: '#8B5CF6' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>Chapter Summary</Typography>
+                  {summaryLoading && (
+                    <Typography variant="caption" sx={{ ml: 'auto', color: theme === 'dark' ? '#94a3b8' : '#64748b' }}>
+                      Generating summary with AI...
+                    </Typography>
+                  )}
+                </DialogTitle>
+                <DialogContent sx={{ px: 4, py: 4, minHeight: '200px' }}>
+                  {summaryLoading ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4, gap: 2 }}>
+                      <LinearProgress sx={{ width: '100%', maxWidth: 300, borderRadius: 1, height: 6, bgcolor: theme === 'dark' ? '#334155' : '#e2e8f0', '& .MuiLinearProgress-bar': { bgcolor: '#8B5CF6' } }} />
+                      <Typography variant="body2" color="text.secondary">Analyzing chapter content...</Typography>
+                    </Box>
+                  ) : summaryError ? (
+                    <Alert severity="error" sx={{ borderRadius: 2 }}>{summaryError}</Alert>
+                  ) : (
+                    <Typography variant="body1" sx={{
+                      lineHeight: 1.8,
+                      color: theme === 'dark' ? '#cbd5e1' : '#334155',
+                      whiteSpace: 'pre-wrap'
+                    }}>
+                      {summaryText}
+                    </Typography>
+                  )}
+                </DialogContent>
+                <DialogActions sx={{ px: 4, pb: 4, borderTop: `1px solid ${theme === 'dark' ? '#334155' : '#E2E8F0'}`, pt: 3 }}>
+                  <Button
+                    onClick={() => setSummaryOpen(false)}
+                    sx={{
+                      borderRadius: '100px',
+                      px: 3,
+                      color: theme === 'dark' ? '#cbd5e1' : '#64748b',
+                      '&:hover': { bgcolor: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }
+                    }}
+                  >
+                    Close
+                  </Button>
+                </DialogActions>
+              </Dialog>
+
+              <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: '' })} message={snackbar.message} />
+            </Grid>
+          </Grid>
+
         </Container>
       </Box>
     </>
@@ -2076,37 +2343,38 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const { isbn, ch } = ctx.query
-  const isbnStr = String(isbn || '')
-  const chStr = String(ch || '')
+  const { isbn: isbnParam, ch: chParam } = ctx.params || {}
+  const isbnStr = String(isbnParam || '')
+  const chStr = String(chParam || '')
+
   const proto = ctx.req.headers['x-forwarded-proto'] || 'http'
-  const host = ctx.req.headers.host || 'localhost:3000'
-  const base = `${proto}://${host}`
+        const host = ctx.req.headers.host || 'localhost:3000'
+        const base = `${proto}://${host}`
 
-  let videoUrl: string | undefined
-  let title = `Chapter ${chStr}`
+        let videoUrl: string | undefined
+        let title = `Chapter ${chStr}`
 
-  // Resolve HTML URL for chapter/preliminary/index and verify existence
-  let htmlPathPublic = ''
-  let htmlFsPath = ''
-  if (chStr === 'preliminary') {
-    htmlPathPublic = `/books/${isbnStr}/preliminary/prelims.html`
+        // Resolve HTML URL for chapter/preliminary/index and verify existence
+        let htmlPathPublic = ''
+        let htmlFsPath = ''
+        if (chStr === 'preliminary') {
+          htmlPathPublic = `/books/${isbnStr}/preliminary/prelims.html`
     htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'preliminary', 'prelims.html')
   } else if (chStr === 'index') {
-    htmlPathPublic = `/books/${isbnStr}/index/index.html`
+          htmlPathPublic = `/books/${isbnStr}/index/index.html`
     htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'index', 'index.html')
   } else if (chStr.toLowerCase().startsWith('case')) {
     // Handle cases
     const caseId = chStr
-    htmlPathPublic = `/books/${isbnStr}/cases/${caseId}.html`
-    htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'cases', `${caseId}.html`)
+        htmlPathPublic = `/books/${isbnStr}/cases/${caseId}.html`
+        htmlFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'cases', `${caseId}.html`)
   } else if (chStr.toLowerCase().startsWith('video-')) {
     // Handle videos
     const videoId = chStr.replace(/^video-/, '')
-    // Try to find video in JSON
-    try {
+        // Try to find video in JSON
+        try {
       const jsonPath = path.join(process.cwd(), 'public', 'books', isbnStr, `${isbnStr}.json`)
-      if (fs.existsSync(jsonPath)) {
+        if (fs.existsSync(jsonPath)) {
         const jsonContent = fs.readFileSync(jsonPath, 'utf-8')
         const bookData = JSON.parse(jsonContent)
         const video = bookData.videos?.find((v: any) => (v.video_id || '') === videoId)
@@ -2116,88 +2384,94 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         }
       }
     } catch (e) {
-      console.error('Error loading video data:', e)
-    }
+          console.error('Error loading video data:', e)
+        }
   } else {
     const m = /^ch(\d+)$/i.exec(chStr)
-    const chNum = m ? m[1] : String(chStr)
+
+        const chNum = m ? m[1] : String(chStr)
+
 
     // Try to resolve the file path
     // 1. Try as "ch{number}.html" (standard format)
     // 2. Try as "{chStr}.html" (exact match)
 
-    let candidate = `ch${chNum}.html`
-    let fsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'chapter', candidate)
 
-    if (!fs.existsSync(fsPath)) {
-      // Try exact match
-      candidate = `${chStr}.html`
+        let candidate = `ch${chNum}.html`
+        let fsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'chapter', candidate)
+
+        if (!fs.existsSync(fsPath)) {
+          // Try exact match
+          candidate = `${chStr}.html`
+
       fsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'chapter', candidate)
     }
 
-    htmlPathPublic = `/books/${isbnStr}/chapter/${candidate}`
-    htmlFsPath = fsPath
+        htmlPathPublic = `/books/${isbnStr}/chapter/${candidate}`
+        htmlFsPath = fsPath
   }
-  try {
+        try {
     if (!videoUrl && !fs.existsSync(htmlFsPath)) {
-      return { notFound: true }
+      return {notFound: true }
     }
   } catch { }
 
   // Read HTML content to render inline
-  let html = ''
-  try {
-    html = fs.readFileSync(htmlFsPath, 'utf-8')
-  } catch { }
+        let html = ''
+        try {
+          html = fs.readFileSync(htmlFsPath, 'utf-8')
+        } catch { }
 
   // Rewrite relative image paths from "XML/..." to "/XML/..."
   const rewriteRelativeXmlImagePaths = (s: string): string => s.replace(/(<img[^>]+src=)(["'])(?!https?:|\/\/|\/)(XML\/[^"']+)(\2)/gi, (_m, p1, q, p, q2) => `${p1}${q}/${p}${q2}`)
-  html = rewriteRelativeXmlImagePaths(html)
+        html = rewriteRelativeXmlImagePaths(html)
 
   // Rewrite /MediumImage/ and /LargeImage/ paths to /books/{isbn}/chapter/MediumImage/ and /books/{isbn}/chapter/LargeImage/
   const rewriteImagePaths = (s: string): string => {
-    let out = s
-    // Rewrite /MediumImage/ paths
-    out = out.replace(/(<img[^>]+src=)(["'])\/MediumImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/MediumImage/${filename}${q2}`)
-    // Rewrite /LargeImage/ paths
-    out = out.replace(/(<img[^>]+src=)(["'])\/LargeImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/LargeImage/${filename}${q2}`)
-    return out
+          let out = s
+        // Rewrite /MediumImage/ paths
+        out = out.replace(/(<img[^>]+src=)(["'])\/MediumImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/MediumImage/${filename}${q2}`)
+        // Rewrite /LargeImage/ paths
+        out = out.replace(/(<img[^>]+src=)(["'])\/LargeImage\/([^"']+)(\2)/gi, (_m, p1, q, filename, q2) => `${p1}${q}/books/${isbnStr}/chapter/LargeImage/${filename}${q2}`)
+        return out
   }
-  html = rewriteImagePaths(html)
+        html = rewriteImagePaths(html)
 
   // Rewrite chapter navigation links to app routes under /content/book/{isbn}/chapter/{...}
   const rewriteChapterLinks = (s: string): string => {
-    let out = s
+          let out = s
     // Absolute chapter links like "/{isbn}/chapter/ch4" or "/{isbn}/chapter/ch4.html"
-    out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/chapter\\/ch(\\d+)(?:\\.html)?\\2`, 'gi'), (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
+        out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/chapter\\/ch(\\d+)(?:\\.html)?\\2`, 'gi'), (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
     // Absolute short chapter links like "/{isbn}/ch4"
-    out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/ch(\\d+)\\2`, 'gi'), (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
-    // Relative chapter links like "ch4.html"
-    out = out.replace(/(<a[^>]+href=)(["'])ch(\d+)\.html\2/gi, (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
-    // Relative links like "../chapter/ch4.html"
-    out = out.replace(/(<a[^>]+href=)(["'])\.\.\/chapter\/ch(\d+)\.html\2/gi, (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
-    // Preliminary and Index (absolute)
-    out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/preliminary\\2`, 'gi'), (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/preliminary${q}`)
-    out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/index\\2`, 'gi'), (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/index${q}`)
-    // Preliminary and Index (relative)
-    out = out.replace(/(<a[^>]+href=)(["'])\.\.\/preliminary\/prelims\.html\2/gi, (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/preliminary${q}`)
-    out = out.replace(/(<a[^>]+href=)(["'])\.\.\/index\/index\.html\2/gi, (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/index${q}`)
-    return out
+        out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/ch(\\d+)\\2`, 'gi'), (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
+        // Relative chapter links like "ch4.html"
+        out = out.replace(/(<a[^>]+href=)(["'])ch(\d+)\.html\2/gi, (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
+        // Relative links like "../chapter/ch4.html"
+        out = out.replace(/(<a[^>]+href=)(["'])\.\.\/chapter\/ch(\d+)\.html\2/gi, (_m, p1, q, num) => `${p1}${q}/content/book/${isbnStr}/chapter/${num}${q}`)
+        // Preliminary and Index (absolute)
+        out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/preliminary\\2`, 'gi'), (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/preliminary${q}`)
+        out = out.replace(new RegExp(`(<a[^>]+href=)(["'])\\/${isbnStr}\\/index\\2`, 'gi'), (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/index${q}`)
+        // Preliminary and Index (relative)
+        out = out.replace(/(<a[^>]+href=)(["'])\.\.\/preliminary\/prelims\.html\2/gi, (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/preliminary${q}`)
+        out = out.replace(/(<a[^>]+href=)(["'])\.\.\/index\/index\.html\2/gi, (_m, p1, q) => `${p1}${q}/content/book/${isbnStr}/chapter/index${q}`)
+        return out
   }
-  html = rewriteChapterLinks(html)
+        html = rewriteChapterLinks(html)
 
-  // Compute title from toc.html when possible
-  if (!videoUrl) {
+
+        // Compute title from toc.html when possible
+        if (!videoUrl) {
     try {
       const tocPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'toc.html')
-      if (fs.existsSync(tocPath)) {
+        if (fs.existsSync(tocPath)) {
         const html = fs.readFileSync(tocPath, 'utf-8')
         if (chStr === 'preliminary') {
           const prelimMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary(?:/prelims\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))
-          if (prelimMatch) title = prelimMatch[1].trim()
+        if (prelimMatch) title = prelimMatch[1].trim()
         } else if (chStr === 'index') {
           const indexMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))
-          if (indexMatch) title = indexMatch[1].trim()
+        if (indexMatch) title = indexMatch[1].trim()
+
         } else if (chStr.toLowerCase().startsWith('case')) {
           // Try to find title for case in TOC if present, otherwise default
           // Cases might not be in TOC, so we might need to rely on default or fetch from JSON if needed.
@@ -2205,96 +2479,108 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
           title = chStr.replace(/^case/i, 'Case ')
         } else {
           const chNumForTitle = (/^ch(\d+)$/i.exec(chStr)?.[1]) || chStr
-          const m = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch${chNumForTitle}\"[^>]*>([^<]+)<\/a>`, 'i'))
-          if (m) title = m[1].trim()
+
+        const m = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch${chNumForTitle}\"[^>]*>([^<]+)<\/a>`, 'i'))
+        if (m) title = m[1].trim()
+
         }
       }
     } catch { }
   }
 
-  // Check for corresponding PDF
-  let pdfUrl: string | null = null
-  try {
-    let pdfFilename = ''
-    if (chStr === 'preliminary' || chStr === 'index' || chStr.startsWith('video-')) {
-      // No PDF for these usually
-    } else if (chStr.toLowerCase().startsWith('case')) {
-      pdfFilename = `${chStr}.pdf`
-    } else {
+
+        // Check for corresponding PDF
+        let pdfUrl: string | null = null
+        try {
+          let pdfFilename = ''
+        if (chStr === 'preliminary' || chStr === 'index' || chStr.startsWith('video-')) {
+          // No PDF for these usually
+        } else if (chStr.toLowerCase().startsWith('case')) {
+          pdfFilename = `${chStr}.pdf`
+        } else {
       const m = /^ch(\d+)$/i.exec(chStr)
-      const chNum = m ? m[1] : chStr
-      pdfFilename = `ch${chNum}.pdf`
+        const chNum = m ? m[1] : chStr
+        pdfFilename = `ch${chNum}.pdf`
     }
 
-    if (pdfFilename) {
+        if (pdfFilename) {
       const pdfFsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'chapter', pdfFilename)
-      if (fs.existsSync(pdfFsPath)) {
-        pdfUrl = `/books/${isbnStr}/chapter/${pdfFilename}`
-      }
+        if (fs.existsSync(pdfFsPath)) {
+          pdfUrl = `/books/${isbnStr}/chapter/${pdfFilename}`
+        }
+
     }
   } catch { }
 
   // (client-side menu handlers are defined inside the component)
 
-  // Fetch book meta (supports numeric id or ISBN) to render header
-  let book: Book | null = null
-  try {
+        // Fetch book meta (supports numeric id or ISBN) to render header
+        let book: Book | null = null
+        try {
     const isNumericId = /^\d+$/.test(isbnStr)
-    const metaUrl = isNumericId
-      ? `${base}/api/books/${encodeURIComponent(isbnStr)}`
-      : `${base}/api/books/print_isbn/${encodeURIComponent(isbnStr)}`
-    const metaRes = await fetch(metaUrl)
-    const metaJson = metaRes.ok ? await metaRes.json() : null
-    book = metaJson?.book || null
+        const metaUrl = isNumericId
+        ? `${base}/api/books/${encodeURIComponent(isbnStr)}`
+        : `${base}/api/books/print_isbn/${encodeURIComponent(isbnStr)}`
+        const metaRes = await fetch(metaUrl)
+        const metaJson = metaRes.ok ? await metaRes.json() : null
+        book = metaJson?.book || null
   } catch { }
 
 
   // Build chapters list from TOC for sidebar navigation
-  const chapters: Chapter[] = []
-  try {
-    const tocPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'toc.html')
-    if (fs.existsSync(tocPath)) {
-      const html = fs.readFileSync(tocPath, 'utf-8')
-      const items: { index: number, item: Chapter }[] = []
-      let m: RegExpExecArray | null
 
-      // Prelims
-      const prelimRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary(?:/prelims\\.html)?\"[^>]*>([^<]+)<\/a>`, 'gi')
-      while ((m = prelimRegex.exec(html)) !== null) {
-        items.push({ index: m.index, item: { number: null, title: m[1].trim(), slug: `/content/book/${isbnStr}/chapter/preliminary` } })
-      }
+        const chapters: Chapter[] = []
+        try {
+    const tocPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'toc.html')
+        if (fs.existsSync(tocPath)) {
+
+      const html = fs.readFileSync(tocPath, 'utf-8')
+        const items: {index: number, item: Chapter }[] = []
+        let m: RegExpExecArray | null
+
+
+        // Prelims
+        const prelimRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary(?:/prelims\\.html)?\"[^>]*>([^<]+)<\/a>`, 'gi')
+        while ((m = prelimRegex.exec(html)) !== null) {
+          items.push({ index: m.index, item: { number: null, title: m[1].trim(), slug: `/content/book/${isbnStr}/chapter/preliminary` } })
+        }
+
 
       // Chapters
-      const chapterRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch(\\d+)\"[^>]*>([^<]+)<\/a>`, 'gi')
-      while ((m = chapterRegex.exec(html)) !== null) {
+        const chapterRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch(\\d+)\"[^>]*>([^<]+)<\/a>`, 'gi')
+        while ((m = chapterRegex.exec(html)) !== null) {
         const num = Number(m[1])
         const titleCh = (m[2] || `Chapter ${num}`).replace(/\s+/g, ' ').trim()
-        items.push({ index: m.index, item: { number: Number.isNaN(num) ? null : num, title: titleCh, slug: `/content/book/${isbnStr}/chapter/${m[1]}` } })
+        items.push({index: m.index, item: {number: Number.isNaN(num) ? null : num, title: titleCh, slug: `/content/book/${isbnStr}/chapter/${m[1]}` } })
       }
 
-      // Cases
-      const caseRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/cases\/([^"]+)\"[^>]*>([^<]+)<\/a>`, 'gi')
-      while ((m = caseRegex.exec(html)) !== null) {
+        // Cases
+        const caseRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/cases\/([^"]+)\"[^>]*>([^<]+)<\/a>`, 'gi')
+        while ((m = caseRegex.exec(html)) !== null) {
         const caseFile = m[1]
         const caseId = caseFile.replace(/\.html$/, '')
         const titleCase = (m[2] || caseId).replace(/\s+/g, ' ').trim()
-        items.push({ index: m.index, item: { number: null, title: titleCase, slug: `/content/book/${isbnStr}/chapter/${caseId}` } })
+        items.push({index: m.index, item: {number: null, title: titleCase, slug: `/content/book/${isbnStr}/chapter/${caseId}` } })
       }
 
-      // Index
-      const indexRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'gi')
-      while ((m = indexRegex.exec(html)) !== null) {
-        items.push({ index: m.index, item: { number: null, title: m[1].trim(), slug: `/content/book/${isbnStr}/chapter/index` } })
-      }
+
+        // Index
+        const indexRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'gi')
+        while ((m = indexRegex.exec(html)) !== null) {
+          items.push({ index: m.index, item: { number: null, title: m[1].trim(), slug: `/content/book/${isbnStr}/chapter/index` } })
+        }
+
 
       items.sort((a, b) => a.index - b.index)
       items.forEach(x => chapters.push(x.item))
     }
 
-    // Also add videos to the sidebar if they exist in JSON
-    try {
+
+        // Also add videos to the sidebar if they exist in JSON
+        try {
+
       const jsonPath = path.join(process.cwd(), 'public', 'books', isbnStr, `${isbnStr}.json`)
-      if (fs.existsSync(jsonPath)) {
+        if (fs.existsSync(jsonPath)) {
         const jsonContent = fs.readFileSync(jsonPath, 'utf-8')
         const bookData = JSON.parse(jsonContent)
         if (bookData.videos && Array.isArray(bookData.videos)) {
@@ -2313,9 +2599,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   } catch { }
 
 
-  return { props: { isbn: isbnStr, ch: chStr, title, html, htmlUrl: htmlPathPublic, pdfUrl, chapters, book, videoUrl: videoUrl || null } }
+        return {props: {isbn: isbnStr, ch: chStr, title, html, htmlUrl: htmlPathPublic, pdfUrl, chapters, book, videoUrl: videoUrl || null } }
 }
 
 ChapterViewerPage.getLayout = (page) => <MainLayout>{page}</MainLayout>
 
-export default ChapterViewerPage
+        export default ChapterViewerPage

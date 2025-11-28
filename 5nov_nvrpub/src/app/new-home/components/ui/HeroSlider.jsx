@@ -168,7 +168,8 @@ const HeroSlider = () => {
             custom={direction}
           >
             <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-[1600ms] group-hover:scale-105"
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
+              style={{ transitionDuration: '1600ms' }}
               style={{
                 backgroundImage: `url(${resolveImageSrc(activeSlide?.image)})`
               }}

@@ -1,50 +1,52 @@
 import React, { useState, useEffect } from 'react'
 import { GetServerSideProps } from 'next'
 import Head from 'next/head'
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Paper,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  FormControlLabel,
-  Checkbox,
-  TextField,
-  InputAdornment,
-  Tabs,
-  Tab,
-  Card,
-  CardContent,
-  CardMedia,
-  Button,
-  Chip,
-  Pagination,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Switch,
-  IconButton,
-  Divider,
-  Badge,
-} from '@mui/material'
-import {
-  ExpandMore as ExpandMoreIcon,
-  Search as SearchIcon,
-  BookmarkBorder as BookmarkIcon,
-  Engineering as EngineeringIcon,
-  Functions as FunctionsIcon,
-  Assessment as AssessmentIcon,
-  TableChart as TableChartIcon,
-  BarChart as BarChartIcon,
-  Save as SaveIcon,
-} from '@mui/icons-material'
+import dynamic from 'next/dynamic'
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
+import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
+import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import Pagination from '@mui/material/Pagination'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import SearchIcon from '@mui/icons-material/Search'
 import Link from 'next/link'
-import { MainLayout } from '@/components/layout'
 import { Content } from '@/interfaces/content'
+
+// Dynamic imports for heavy MUI components
+const Accordion = dynamic(() => import('@mui/material/Accordion'))
+const AccordionSummary = dynamic(() => import('@mui/material/AccordionSummary'))
+const AccordionDetails = dynamic(() => import('@mui/material/AccordionDetails'))
+const FormControlLabel = dynamic(() => import('@mui/material/FormControlLabel'))
+const Checkbox = dynamic(() => import('@mui/material/Checkbox'))
+const Tabs = dynamic(() => import('@mui/material/Tabs'))
+const Tab = dynamic(() => import('@mui/material/Tab'))
+const Select = dynamic(() => import('@mui/material/Select'))
+const MenuItem = dynamic(() => import('@mui/material/MenuItem'))
+const FormControl = dynamic(() => import('@mui/material/FormControl'))
+const InputLabel = dynamic(() => import('@mui/material/InputLabel'))
+const Switch = dynamic(() => import('@mui/material/Switch'))
+const IconButton = dynamic(() => import('@mui/material/IconButton'))
+const Divider = dynamic(() => import('@mui/material/Divider'))
+const Badge = dynamic(() => import('@mui/material/Badge'))
+
+const MainLayout = dynamic(() => import('@/components/layout').then(mod => ({ default: mod.MainLayout })))
+
+// Dynamic icon imports
+const ExpandMoreIcon = dynamic(() => import('@mui/icons-material/ExpandMore'))
+const BookmarkIcon = dynamic(() => import('@mui/icons-material/BookmarkBorder'))
+const EngineeringIcon = dynamic(() => import('@mui/icons-material/Engineering'))
+const FunctionsIcon = dynamic(() => import('@mui/icons-material/Functions'))
+const AssessmentIcon = dynamic(() => import('@mui/icons-material/Assessment'))
+const TableChartIcon = dynamic(() => import('@mui/icons-material/TableChart'))
+const BarChartIcon = dynamic(() => import('@mui/icons-material/BarChart'))
+const SaveIcon = dynamic(() => import('@mui/icons-material/Save'))
 
 interface SearchPageProps {
   query: string
