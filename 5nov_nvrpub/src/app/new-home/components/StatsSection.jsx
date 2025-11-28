@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { BookOpen, Video, FileText, Briefcase } from 'lucide-react';
 import { mockData } from '../mock';
 
@@ -11,6 +12,14 @@ const iconMap = {
 
 const StatsSection = () => {
   const [stats, setStats] = useState(mockData.stats);
+
+  // Map labels to their respective URLs
+  const linkMap = {
+    'Books': '/contenttypes/books',
+    'Videos': '/contenttypes/videos',
+    'Journals': '/contenttypes/journals',
+    'Cases': '/contenttypes/cases'
+  };
 
   useEffect(() => {
     const fetchBookCount = async () => {
@@ -41,10 +50,12 @@ const StatsSection = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10">
             {stats.map((stat, index) => {
               const Icon = iconMap[stat.icon];
+              const link = linkMap[stat.label] || '#';
               return (
-                <div
+                <Link
                   key={stat.id}
-                  className="bg-gradient-to-br from-[#0A2540] to-[#1E3A8A] p-8 text-center group hover:from-[#1E3A8A] hover:to-[#3B82F6] transition-all duration-300 cursor-pointer"
+                  href={link}
+                  className="bg-gradient-to-br from-[#0A2540] to-[#1E3A8A] p-8 text-center group hover:from-[#1E3A8A] hover:to-[#3B82F6] transition-all duration-300 cursor-pointer block"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="flex flex-col items-center space-y-3">
@@ -58,7 +69,7 @@ const StatsSection = () => {
                       {stat.label}
                     </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
