@@ -489,15 +489,28 @@ const BookDetailPage: NextPageWithLayout<Props> = ({ isbn, book, sections, video
 
         {tab === 0 && (
           <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+              <Typography variant="h5" sx={{ fontWeight: 700, color: '#0A2540' }}>
+                Table of Contents
+              </Typography>
               <Button
-                variant="text"
+                variant="contained"
                 onClick={toggleExpandCollapse}
                 sx={{
                   textTransform: 'none',
-                  color: '#0A2540',
+                  background: 'linear-gradient(to right, #3B82F6, #2563EB)',
+                  color: 'white',
                   fontWeight: 600,
-                  '&:hover': { background: 'transparent', textDecoration: 'underline' }
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: '2rem',
+                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+                  '&:hover': {
+                    background: 'linear-gradient(to right, #2563EB, #1D4ED8)',
+                    boxShadow: '0 8px 20px rgba(59, 130, 246, 0.4)',
+                    transform: 'translateY(-2px)'
+                  },
+                  transition: 'all 0.2s ease'
                 }}
               >
                 {expandAll ? 'Collapse All' : 'Expand All'}

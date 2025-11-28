@@ -51,6 +51,7 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import TextFieldsIcon from '@mui/icons-material/TextFields'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import ContrastIcon from '@mui/icons-material/Contrast'
 import { Menu, MenuItem, ListItemIcon } from '@mui/material'
@@ -423,15 +424,14 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
   const [highlightPopoverAnchor, setHighlightPopoverAnchor] = React.useState<HTMLElement | null>(null)
   const [noteDialogOpen, setNoteDialogOpen] = React.useState(false)
   const [noteText, setNoteText] = React.useState('')
+  const [editingHighlightId, setEditingHighlightId] = React.useState<number | null>(null)
   const [activeHighlight, setActiveHighlight] = React.useState<any | null>(null) // For showing note on hover
 
   // Fetch highlights
   const fetchHighlights = async () => {
     if (!user?.email) return
     try {
-      // Fetch highlights for ALL chapters of this book to show indicators in TOC
-      // We can filter for current chapter in the render logic
-      const res = await fetch(`/api/highlights?user_email=${user.email}&isbn=${isbn}`)
+      const res = await fetch(`/api/highlights?user_email=${user.email}&isbn=${isbn}&chapter_slug=${ch}`)
       if (res.ok) {
         const data = await res.json()
         setHighlights(data)
@@ -443,36 +443,24 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
 
   React.useEffect(() => {
     fetchHighlights()
-  }, [user, isbn]) // Removed 'ch' dependency to fetch all book highlights
-
-  // Filter highlights for current chapter
-  const currentChapterHighlights = React.useMemo(() => {
-    return highlights.filter(h => h.chapter_slug === ch)
-  }, [highlights, ch])
+  }, [user, isbn, ch])
 
   // Handle Selection
-  const handleMouseUp = (e: any) => {
+  const handleMouseUp = () => {
     const sel = window.getSelection()
     if (sel && sel.toString().trim().length > 0 && contentRef.current?.contains(sel.anchorNode)) {
       const range = sel.getRangeAt(0)
       const rect = range.getBoundingClientRect()
-
       // Position exactly above the center of the selection
       const clientX = rect.left + (rect.width / 2)
       const clientY = rect.top
 
+
       // Create a virtual element for the popover
       const virtualEl = {
-        getBoundingClientRect: () => ({
-          top: clientY,
-          left: clientX,
-          bottom: clientY,
-          right: clientX,
-          width: 0,
-          height: 0,
-        }),
-        clientWidth: 0,
-        clientHeight: 0,
+        getBoundingClientRect: () => rect,
+        clientWidth: rect.width,
+        clientHeight: rect.height,
       }
       setSelection({ text: sel.toString(), range })
       setHighlightPopoverAnchor(virtualEl as any)
@@ -564,8 +552,39 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
     }
   }
 
+  // Update Highlight
+  const updateHighlight = async () => {
+    if (!editingHighlightId || !user?.email) return
+
+    try {
+      const res = await fetch('/api/highlights', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingHighlightId,
+          user_email: user.email,
+          note: noteText
+        })
+      })
+
+      if (res.ok) {
+        setNoteDialogOpen(false)
+        setNoteText('')
+        setEditingHighlightId(null)
+        setActiveHighlight(null)
+        fetchHighlights() // Refresh
+      } else {
+        alert('Failed to update highlight')
+      }
+    } catch (e) {
+      console.error('Error updating highlight', e)
+      alert('An error occurred while updating the note.')
+    }
+  }
+
   // Apply Highlights
   React.useEffect(() => {
+
     if (!contentRef.current) return
 
     const container = contentRef.current
@@ -646,6 +665,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
     return () => cleanupHighlights()
 
   }, [currentChapterHighlights, filteredHtml, topTab, theme, themeColors])
+
 
   // compute previous/next chapter for top navigation
   const prevNext = React.useMemo(() => {
@@ -918,6 +938,8 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                     {isActive ? <CircleIcon sx={{ fontSize: 8 }} /> : <Typography variant="caption" sx={{ color: themeColors.text, opacity: 0.5 }}>{idx + 1}</Typography>}
                   </ListItemIcon>
                   <ListItemText
+
+                    primary={c.title}
                     primary={
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {c.title}
@@ -928,6 +950,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                         )}
                       </Box>
                     }
+
                     primaryTypographyProps={{ variant: 'body2', fontWeight: isActive ? 600 : 400 }}
                   />
                   {isActive && <Chip size="small" label="Reading" color="primary" sx={{ height: 20, fontSize: '0.65rem' }} />}
@@ -1046,12 +1069,14 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                               if (navigator.clipboard) {
                                 navigator.clipboard.writeText(isbn).then(() => setSnackbar({ open: true, message: 'ISBN copied' })).catch(() => null)
                               }
+
                             }}
                             sx={{
                               color: themeColors.text,
                               border: `1px solid ${themeColors.border}`,
                               '&:hover': { borderColor: themeColors.text, color: themeColors.heading }
                             }}
+
                           >
                             <ContentCopyIcon fontSize="small" />
                           </IconButton>
@@ -1241,6 +1266,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
               </Grid>
             )}
 
+
             <Grid item xs={12} md={isFullscreen ? 12 : 9}>
               <Paper
                 elevation={0}
@@ -1304,6 +1330,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                   )}
                 </Box>
 
+
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Tooltip title="Reader Settings">
                     <IconButton onClick={handleSettingsClick} size="small" sx={{
@@ -1335,6 +1362,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                         border: '1px solid rgba(255,255,255,0.1)',
                         background: theme === 'dark' ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
                         backdropFilter: 'blur(20px)'
+
                       }
                     }}
                   >
@@ -2048,6 +2076,198 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                 </DialogActions>
               </Dialog>
 
+
+              {/* Highlight Menu Popover */}
+              <Popover
+                open={Boolean(highlightPopoverAnchor)}
+                anchorEl={highlightPopoverAnchor}
+                onClose={() => {
+                  setHighlightPopoverAnchor(null)
+                  setSelection(null)
+                  window.getSelection()?.removeAllRanges()
+                }}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      mt: -1,
+                      borderRadius: '12px',
+                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)',
+                      background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                      border: '1px solid rgba(203, 213, 225, 0.5)',
+                      overflow: 'visible',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        bottom: -8,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderLeft: '8px solid transparent',
+                        borderRight: '8px solid transparent',
+                        borderTop: '8px solid #ffffff',
+                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                      }
+                    }
+                  }
+                }}
+              >
+                <Stack direction="row" spacing={0.5} sx={{ p: 1 }}>
+                  <Tooltip title="Add Bookmark / Highlight" arrow>
+                    <IconButton
+                      onClick={() => {
+                        setNoteDialogOpen(true)
+                        setHighlightPopoverAnchor(null)
+                      }}
+                      size="medium"
+                      sx={{
+                        background: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                        color: 'white',
+                        borderRadius: '10px',
+                        px: 1.5,
+                        py: 1,
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #FF5252 0%, #FF7043 100%)',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 12px rgba(255, 107, 107, 0.4)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <BookmarkIcon sx={{ fontSize: 20 }} />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Copy Selected Text" arrow>
+                    <IconButton
+                      onClick={() => {
+                        if (selection?.text) {
+                          navigator.clipboard.writeText(selection.text)
+                            .then(() => {
+                              setSnackbar({ open: true, message: 'Text copied to clipboard' })
+                              setHighlightPopoverAnchor(null)
+                              setSelection(null)
+                              window.getSelection()?.removeAllRanges()
+                            })
+                            .catch(() => setSnackbar({ open: true, message: 'Failed to copy' }))
+                        }
+                      }}
+                      size="medium"
+                      sx={{
+                        background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                        color: 'white',
+                        borderRadius: '10px',
+                        px: 1.5,
+                        py: 1,
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <ContentCopyIcon sx={{ fontSize: 20 }} />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Quote / Share" arrow>
+                    <IconButton
+                      onClick={() => {
+                        if (selection?.text) {
+                          const quoteText = `"${selection.text}" - ${title}`
+                          navigator.clipboard.writeText(quoteText)
+                            .then(() => {
+                              setSnackbar({ open: true, message: 'Quote copied to clipboard' })
+                              setHighlightPopoverAnchor(null)
+                              setSelection(null)
+                              window.getSelection()?.removeAllRanges()
+                            })
+                            .catch(() => setSnackbar({ open: true, message: 'Failed to copy quote' }))
+                        }
+                      }}
+                      size="medium"
+                      sx={{
+                        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                        color: 'white',
+                        borderRadius: '10px',
+                        px: 1.5,
+                        py: 1,
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)'
+                        },
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <FormatQuoteIcon sx={{ fontSize: 20 }} />
+                    </IconButton>
+                    onClose={() => setActiveHighlight(null)}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'center',
+                    }}
+                    sx={{ pointerEvents: 'auto' }}
+                    PaperProps={{
+                      sx: {
+                        p: 2,
+                        maxWidth: 300,
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                        backgroundColor: '#fff'
+                      }
+                    }}
+              >
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                        Note
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 2 }}>
+                        {activeHighlight?.note || 'No note content'}
+                      </Typography>
+                      <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            if (activeHighlight?.id) {
+                              setEditingHighlightId(activeHighlight.id)
+                              setNoteText(activeHighlight.note || '')
+                              setNoteDialogOpen(true)
+                              setActiveHighlight(null)
+                            }
+                          }}
+                          sx={{ color: '#3B82F6' }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={() => activeHighlight?.id && deleteHighlight(activeHighlight.id)}
+                          sx={{ color: '#EF4444' }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  </Popover>
+
+                  <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: '' })} message={snackbar.message} />
+                </Grid>
+            </Grid>
+
               {/* Summary Dialog */}
               <Dialog
                 open={summaryOpen}
@@ -2115,6 +2335,7 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
               <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ open: false, message: '' })} message={snackbar.message} />
             </Grid>
           </Grid>
+
         </Container>
       </Box>
     </>
@@ -2167,11 +2388,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         }
   } else {
     const m = /^ch(\d+)$/i.exec(chStr)
+
         const chNum = m ? m[1] : String(chStr)
+
 
     // Try to resolve the file path
     // 1. Try as "ch{number}.html" (standard format)
     // 2. Try as "{chStr}.html" (exact match)
+
 
         let candidate = `ch${chNum}.html`
         let fsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'chapter', candidate)
@@ -2179,6 +2403,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         if (!fs.existsSync(fsPath)) {
           // Try exact match
           candidate = `${chStr}.html`
+
       fsPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'chapter', candidate)
     }
 
@@ -2233,6 +2458,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   }
         html = rewriteChapterLinks(html)
 
+
         // Compute title from toc.html when possible
         if (!videoUrl) {
     try {
@@ -2245,6 +2471,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         } else if (chStr === 'index') {
           const indexMatch = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'i'))
         if (indexMatch) title = indexMatch[1].trim()
+
         } else if (chStr.toLowerCase().startsWith('case')) {
           // Try to find title for case in TOC if present, otherwise default
           // Cases might not be in TOC, so we might need to rely on default or fetch from JSON if needed.
@@ -2252,12 +2479,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
           title = chStr.replace(/^case/i, 'Case ')
         } else {
           const chNumForTitle = (/^ch(\d+)$/i.exec(chStr)?.[1]) || chStr
+
         const m = html.match(new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch${chNumForTitle}\"[^>]*>([^<]+)<\/a>`, 'i'))
         if (m) title = m[1].trim()
+
         }
       }
     } catch { }
   }
+
 
         // Check for corresponding PDF
         let pdfUrl: string | null = null
@@ -2278,6 +2508,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         if (fs.existsSync(pdfFsPath)) {
           pdfUrl = `/books/${isbnStr}/chapter/${pdfFilename}`
         }
+
     }
   } catch { }
 
@@ -2297,19 +2528,23 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
 
 
   // Build chapters list from TOC for sidebar navigation
+
         const chapters: Chapter[] = []
         try {
     const tocPath = path.join(process.cwd(), 'public', 'books', isbnStr, 'toc.html')
         if (fs.existsSync(tocPath)) {
+
       const html = fs.readFileSync(tocPath, 'utf-8')
         const items: {index: number, item: Chapter }[] = []
         let m: RegExpExecArray | null
+
 
         // Prelims
         const prelimRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/preliminary(?:/prelims\\.html)?\"[^>]*>([^<]+)<\/a>`, 'gi')
         while ((m = prelimRegex.exec(html)) !== null) {
           items.push({ index: m.index, item: { number: null, title: m[1].trim(), slug: `/content/book/${isbnStr}/chapter/preliminary` } })
         }
+
 
       // Chapters
         const chapterRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/ch(\\d+)\"[^>]*>([^<]+)<\/a>`, 'gi')
@@ -2328,18 +2563,22 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
         items.push({index: m.index, item: {number: null, title: titleCase, slug: `/content/book/${isbnStr}/chapter/${caseId}` } })
       }
 
+
         // Index
         const indexRegex = new RegExp(`<a[^>]+href=\"\/${isbnStr}\/index(?:/index\\.html)?\"[^>]*>([^<]+)<\/a>`, 'gi')
         while ((m = indexRegex.exec(html)) !== null) {
           items.push({ index: m.index, item: { number: null, title: m[1].trim(), slug: `/content/book/${isbnStr}/chapter/index` } })
         }
 
+
       items.sort((a, b) => a.index - b.index)
       items.forEach(x => chapters.push(x.item))
     }
 
+
         // Also add videos to the sidebar if they exist in JSON
         try {
+
       const jsonPath = path.join(process.cwd(), 'public', 'books', isbnStr, `${isbnStr}.json`)
         if (fs.existsSync(jsonPath)) {
         const jsonContent = fs.readFileSync(jsonPath, 'utf-8')
