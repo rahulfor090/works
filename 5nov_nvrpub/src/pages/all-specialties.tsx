@@ -63,7 +63,7 @@ const AllSpecialties = () => {
       <section className="pt-32 pb-20 bg-gradient-to-br from-[#F0F9FF] via-white to-[#FFF5F5] relative overflow-hidden min-h-screen">
         {/* Background Decoration */}
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#3B82F6] via-[#FF6B6B] to-[#10B981]"></div>
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-16">
@@ -110,10 +110,11 @@ const AllSpecialties = () => {
                 const color = colors[index % colors.length];
 
                 return (
-                  <div
+                  <a
                     key={specialty.id}
-                    className="group relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden"
-                    style={{ animationDelay: `${index * 50}ms` }}
+                    href={`/contenttypes/books?category=${specialty.id}`}
+                    className="group relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden block"
+                    style={{ animationDelay: `${index * 50}ms`, textDecoration: 'none' }}
                   >
                     {/* Gradient Overlay on Hover */}
                     <div
@@ -159,7 +160,7 @@ const AllSpecialties = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </a>
                 );
               })
             )}

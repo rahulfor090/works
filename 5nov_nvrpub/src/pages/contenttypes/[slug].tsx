@@ -28,6 +28,8 @@ interface Props {
   contenttypeData: any
   contents: Content[]
   subjectcategories: any[]
+  allSubjectcategories: any[]
+  allSubjects: any[]
 }
 
 const FALLBACK_IMAGE = '/images/courses/JMEDS_Cover.jpeg'
@@ -62,22 +64,106 @@ const GradientText = styled('span')(({ theme }) => ({
   WebkitTextFillColor: 'transparent',
 }))
 
-const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, contenttypeData, contents, subjectcategories }) => {
+const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, contenttypeData, contents, subjectcategories, allSubjectcategories, allSubjects }) => {
   const theme = useTheme()
   const [activeSubjectcategory, setActiveSubjectcategory] = useState(0)
 
-  const getFilteredContents = () => {
-    if (activeSubjectcategory === 0) {
-      return contents
+  // Wrapper to debug state changes
+  const handleSetActiveSubject = (value: number) => {
+    console.log('🔵 Setting activeSubjectcategory to:', value)
+    setActiveSubjectcategory(value)
+  }
+
+  // Debug: Log subjects on mount
+  useEffect(() => {
+    console.log('📚 All subjects available:', allSubjects)
+  }, [])
+
+  // Handle category query parameter from URL - auto-select the subject button
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      const categoryId = urlParams.get('category')
+      if (categoryId) {
+        // Find the subject index that matches this category ID
+        const subjectIndex = allSubjects.findIndex(s => s.id === parseInt(categoryId))
+        if (subjectIndex !== -1) {
+          setActiveSubjectcategory(subjectIndex + 1)
+        }
+      }
     }
-    const selectedSubjectcategory = subjectcategories[activeSubjectcategory - 1]
-    return contents.filter((content: Content) => content.subjectcategoryId === selectedSubjectcategory.id)
+  }, [allSubjects])
+
+  // Debug: Log when activeSubjectcategory changes
+  useEffect(() => {
+    console.log('activeSubjectcategory changed to:', activeSubjectcategory)
+    if (activeSubjectcategory > 0 && allSubjects.length > 0) {
+      console.log('Selected subject:', allSubjects[activeSubjectcategory - 1])
+    }
+  }, [activeSubjectcategory, allSubjects])
+
+  const getFilteredContents = () => {
+    let filtered = contents
+
+    // Apply subject filter from buttons if selected
+    if (activeSubjectcategory > 0 && allSubjects.length > 0) {
+      const selectedSubject = allSubjects[activeSubjectcategory - 1]
+
+      // Safety check: if selectedSubject is undefined, return empty array
+      if (!selectedSubject || !selectedSubject.id) {
+        console.error('Invalid subject selected:', activeSubjectcategory, allSubjects)
+        return []
+      }
+
+      // Debug logging
+      if (typeof window !== 'undefined') {
+        console.log('=== FILTERING BOOKS ===')
+        console.log('Selected subject:', selectedSubject)
+        console.log('Selected subject ID:', selectedSubject.id)
+        console.log('Total books before filter:', contents.length)
+      }
+
+      let debugCount = 0
+      filtered = filtered.filter((content: Content) => {
+        const subjectIds = (content as any).subjectcategoryIds
+
+        // Debug first few books
+        if (typeof window !== 'undefined' && debugCount < 3) {
+          console.log(`Book "${content.title}" has subjectIds:`, subjectIds)
+          debugCount++
+        }
+
+        // Ensure subjectIds is an array and not empty
+        if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
+          return false
+        }
+
+        // Check if the selected subject ID is in the book's subject IDs
+        const matches = subjectIds.includes(selectedSubject.id)
+        return matches
+      })
+
+      if (typeof window !== 'undefined') {
+        console.log('Filtered results:', filtered.length, 'out of', contents.length)
+        console.log('===================')
+      }
+    }
+
+    return filtered
   }
 
   const contenttypeName = contenttypeData?.title || contenttype.charAt(0).toUpperCase() + contenttype.slice(1)
   const filteredContents = getFilteredContents()
   const totalContents = contents.length
-  const totalCategories = subjectcategories.length
+  const totalCategories = allSubjects.length
+
+  // Debug: log current state
+  React.useEffect(() => {
+    console.log('Active subject category:', activeSubjectcategory)
+    console.log('Total contents:', contents.length)
+    console.log('Filtered contents:', filteredContents.length)
+    console.log('All subjects:', allSubjects.length)
+  }, [activeSubjectcategory, filteredContents.length])
 
   const heroStats = [
     { label: 'Books available', value: totalContents, icon: <MenuBookIcon /> },
@@ -152,17 +238,17 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
         </Container>
         {/* Content Section */}
         <Container maxWidth="lg" sx={{ mt: 8 }}>
-          {/* Categories Filter */}
-          {subjectcategories.length > 0 && (
+          {/* Subjects Filter */}
+          {allSubjects.length > 0 && (
             <Box sx={{ mb: 6 }}>
               <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
-                <Typography variant="h5" fontWeight={700} sx={{ color: '#0A2540' }}>Browse by Category</Typography>
+                <Typography variant="h5" fontWeight={700} sx={{ color: '#0A2540' }}>Browse by Subject</Typography>
                 <Typography variant="body2" color="text.secondary">{filteredContents.length} results</Typography>
               </Stack>
 
               <Stack direction="row" spacing={1.5} sx={{ overflowX: 'auto', pb: 2, '::-webkit-scrollbar': { display: 'none' } }}>
                 <Button
-                  onClick={() => setActiveSubjectcategory(0)}
+                  onClick={() => handleSetActiveSubject(0)}
                   variant={activeSubjectcategory === 0 ? 'contained' : 'outlined'}
                   sx={{
                     borderRadius: '999px',
@@ -178,26 +264,35 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                 >
                   All Books
                 </Button>
-                {subjectcategories.map((category, index) => (
-                  <Button
-                    key={category.id}
-                    onClick={() => setActiveSubjectcategory(index + 1)}
-                    variant={activeSubjectcategory === index + 1 ? 'contained' : 'outlined'}
-                    sx={{
-                      borderRadius: '999px',
-                      textTransform: 'none',
-                      px: 3,
-                      py: 1,
-                      whiteSpace: 'nowrap',
-                      boxShadow: activeSubjectcategory === index + 1 ? '0 8px 20px rgba(255,107,107,0.25)' : 'none',
-                      background: activeSubjectcategory === index + 1 ? 'linear-gradient(90deg, #FF6B6B 0%, #FF8E53 100%)' : 'transparent',
-                      border: activeSubjectcategory === index + 1 ? 'none' : `1px solid ${theme.palette.divider}`,
-                      color: activeSubjectcategory === index + 1 ? '#fff' : 'text.secondary',
-                    }}
-                  >
-                    {category.title}
-                  </Button>
-                ))}
+                {allSubjects.map((subject, index) => {
+                  const handleClick = () => {
+                    console.log('🔴 Button clicked:', subject.subject, 'Subject ID:', subject.id, 'Index:', index + 1)
+                    handleSetActiveSubject(index + 1)
+                  }
+
+                  return (
+                    <Button
+                      key={subject.id}
+                      onClick={handleClick}
+                      variant={activeSubjectcategory === index + 1 ? 'contained' : 'outlined'}
+                      sx={{
+                        borderRadius: '999px',
+                        textTransform: 'none',
+                        px: 3,
+                        py: 1,
+                        whiteSpace: 'nowrap',
+                        boxShadow: activeSubjectcategory === index + 1 ? '0 8px 20px rgba(255,107,107,0.25)' : 'none',
+                        background: activeSubjectcategory === index + 1 ? 'linear-gradient(90deg, #FF6B6B 0%, #FF8E53 100%)' : 'transparent',
+                        border: activeSubjectcategory === index + 1 ? 'none' : `1px solid ${theme.palette.divider}`,
+                        color: activeSubjectcategory === index + 1 ? '#fff' : 'text.secondary',
+                        cursor: 'pointer',
+                        pointerEvents: 'auto',
+                      }}
+                    >
+                      {subject.subject}
+                    </Button>
+                  )
+                })}
               </Stack>
             </Box>
           )}
@@ -208,6 +303,24 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
               {filteredContents.map((content: Content, index) => {
                 const imageSrc = content.image || content.coverImage || FALLBACK_IMAGE
                 const ratingValue = Math.max(0, Math.min(5, Number(content.rating) || 0))
+
+                // Get the category/subject name to display
+                let categoryName = 'General'
+
+                // First, try to get from subjectcategoryIds array (these are actually subject IDs from the subjects table)
+                const subjectIdsArray = (content as any).subjectcategoryIds || []
+                if (Array.isArray(subjectIdsArray) && subjectIdsArray.length > 0 && allSubjects.length > 0) {
+                  const firstSubjectId = subjectIdsArray[0]
+                  const firstSubject = allSubjects.find(s => s.id === firstSubjectId)
+                  if (firstSubject && firstSubject.subject) {
+                    categoryName = firstSubject.subject
+                  }
+                }
+
+                // If still General, try the category field (from subjectcategory table)
+                if (categoryName === 'General' && (content as any).category) {
+                  categoryName = (content as any).category
+                }
 
                 return (
                   <Grid item xs={12} sm={6} md={4} lg={3} key={content.id}>
@@ -244,7 +357,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
                             }}
                           />
                           <Chip
-                            label={content.subjectcategory || 'General'}
+                            label={categoryName}
                             size="small"
                             sx={{
                               position: 'absolute',
@@ -320,12 +433,17 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
               <Box sx={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
                 <MenuBookIcon sx={{ fontSize: 32, color: 'text.secondary' }} />
               </Box>
-              <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>No books found</Typography>
+              <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
+                {activeSubjectcategory > 0 ? 'No books available' : 'No books found'}
+              </Typography>
               <Typography color="text.secondary" sx={{ mb: 3, maxWidth: 400, mx: 'auto' }}>
-                We couldn't find any books in this category. Try selecting a different category or view all books.
+                {activeSubjectcategory > 0
+                  ? `There are no books available for "${allSubjects[activeSubjectcategory - 1]?.subject}" at the moment. Try selecting a different subject or view all books.`
+                  : 'We couldn\'t find any books. Try selecting a different filter or view all books.'
+                }
               </Typography>
               <Button
-                onClick={() => setActiveSubjectcategory(0)}
+                onClick={() => handleSetActiveSubject(0)}
                 variant="outlined"
                 sx={{ borderRadius: '999px', textTransform: 'none' }}
               >
@@ -341,7 +459,7 @@ const ContenttypeDetailsPage: NextPageWithLayout<Props> = ({ contenttype, conten
 
 ContenttypeDetailsPage.getLayout = (page: React.ReactElement) => <MainLayout>{page}</MainLayout>
 
-export const getServerSideProps: GetServerSideProps = async ({ params, req }) => {
+export const getServerSideProps: GetServerSideProps = async ({ params, req, query }) => {
   const { slug } = params!
   const protocol = req.headers['x-forwarded-proto'] || 'http'
   const host = req.headers.host
@@ -380,6 +498,15 @@ export const getServerSideProps: GetServerSideProps = async ({ params, req }) =>
       const booksPayload = await booksRes.json()
       const allBooks = Array.isArray(booksPayload?.data) ? booksPayload.data : booksPayload
       contents = allBooks
+
+      // Debug: Log sample book data
+      if (contents.length > 0) {
+        console.log('Server: Sample book data:', {
+          title: contents[0].title,
+          subjectcategoryIds: contents[0].subjectcategoryIds,
+          category: contents[0].category
+        })
+      }
     } else {
       const contentsRes = await fetch(`${apiUrl}/api/contents`)
       const allContents = await contentsRes.json()
@@ -390,6 +517,11 @@ export const getServerSideProps: GetServerSideProps = async ({ params, req }) =>
     const subjectcategoriesRes = await fetch(`${apiUrl}/api/subjectcategories`)
     const allSubjectcategories = await subjectcategoriesRes.json()
 
+    // Fetch subjects data for displaying on book cards
+    const subjectsRes = await fetch(`${apiUrl}/api/admin/subjects`)
+    const subjectsData = await subjectsRes.json()
+    const allSubjects = subjectsData.success ? subjectsData.data : []
+
     if (!Array.isArray(allSubjectcategories)) {
       console.error('Failed to fetch subject categories:', allSubjectcategories)
       return {
@@ -398,11 +530,13 @@ export const getServerSideProps: GetServerSideProps = async ({ params, req }) =>
           contenttypeData,
           contents,
           subjectcategories: [],
+          allSubjectcategories: [],
+          allSubjects: [],
         },
       }
     }
 
-    // Get unique subject categories for this content type
+    // Get unique subject categories for this content type (kept for backward compatibility)
     const uniqueIds = new Set(
       contents
         .map((content: any) => Number(content.subjectcategoryId))
@@ -413,12 +547,45 @@ export const getServerSideProps: GetServerSideProps = async ({ params, req }) =>
       contentSubjectcategoryIds.includes(sc.id)
     )
 
+    // Pass all subject categories for lookup purposes (to display category names on cards)
+    const allSubjectcategoriesForLookup = allSubjectcategories
+
+    // Filter subjects to only show those that have books OR match the requested category
+    const uniqueSubjectIds = new Set<number>()
+
+    // Always include the requested category if present
+    if (query.category) {
+      const requestedCategoryId = parseInt(query.category as string)
+      if (!isNaN(requestedCategoryId) && requestedCategoryId > 0) {
+        uniqueSubjectIds.add(requestedCategoryId)
+      }
+    }
+
+    contents.forEach((content: any) => {
+      const subjectIds = content.subjectcategoryIds
+      // Only process if subjectIds is a valid array with items
+      if (Array.isArray(subjectIds) && subjectIds.length > 0) {
+        subjectIds.forEach((id: number) => {
+          if (typeof id === 'number' && id > 0) {
+            uniqueSubjectIds.add(id)
+          }
+        })
+      }
+    })
+    const filteredSubjects = allSubjects.filter((s: any) => uniqueSubjectIds.has(s.id))
+
+    console.log('Server: Total books:', contents.length)
+    console.log('Server: Unique subject IDs found:', Array.from(uniqueSubjectIds))
+    console.log('Server: Filtered subjects:', filteredSubjects.length)
+
     return {
       props: {
         contenttype: slug,
         contenttypeData,
         contents,
         subjectcategories,
+        allSubjectcategories: allSubjectcategoriesForLookup,
+        allSubjects: filteredSubjects,
       },
     }
   } catch (error) {

@@ -90,10 +90,11 @@ const Specialties = () => {
                 const color = colors[index % colors.length];
 
                 return (
-                  <div
+                  <a
                     key={specialty.id}
-                    className="group relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden"
-                    style={{ animationDelay: `${index * 50}ms` }}
+                    href={`/contenttypes/books?category=${specialty.id}`}
+                    className="group relative bg-white rounded-2xl p-6 shadow-sm hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden block"
+                    style={{ animationDelay: `${index * 50}ms`, textDecoration: 'none' }}
                   >
                     {/* Gradient Overlay on Hover */}
                     <div
@@ -139,7 +140,7 @@ const Specialties = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </a>
                 );
               })}
 

@@ -43,6 +43,7 @@ export interface NormalizedAdminBook {
   createdAt: string | null
   subjectcategoryId: number
   subjectcategoryIds: number[]
+  category_id?: number | null
   category: string
   subject: string
   accessType: string
@@ -96,6 +97,7 @@ export const mapAdminBookRow = (book: AdminBookRow): NormalizedAdminBook => {
     createdAt: normalizeDate(book.updated_date || book.created_date),
     subjectcategoryId: subjectcategoryIds[0] || 0,
     subjectcategoryIds,
+    category_id: book.category_id || null,
     category: book.category_name || DEFAULT_BOOK_CATEGORY,
     subject: book.subject_name || 'General',
     accessType: book.access_type || DEFAULT_ACCESS_TYPE,
