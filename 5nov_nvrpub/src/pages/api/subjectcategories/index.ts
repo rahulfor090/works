@@ -4,7 +4,8 @@ import { query } from '@/utils/db'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method === 'GET') {
-      const { isHomepage } = req.query
+      const { isHomepage, ishomepage } = req.query
+      const homepageFilter = isHomepage || ishomepage
 
       let queryStr = `
         SELECT 
@@ -21,9 +22,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       `
       const queryParams: any[] = []
 
-      if (isHomepage !== undefined) {
+      if (homepageFilter !== undefined) {
         queryStr += ` WHERE is_homepage = ?`
-        queryParams.push(Number(isHomepage))
+        queryParams.push(Number(homepageFilter))
       }
 
       queryStr += ` ORDER BY sort_order ASC, subject ASC`

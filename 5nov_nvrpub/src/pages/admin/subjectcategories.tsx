@@ -284,10 +284,58 @@ const AdminSubjectCategories = () => {
         <Paper sx={{ p: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h6">Subjects List</Typography>
-            <Typography variant="body2" color="text.secondary">
-              On Homepage: {subjectCategories.filter(cat => cat.isHomepage === 1).length} | 
-              In Slider: {subjectCategories.filter(cat => cat.isSlider === 1).length}
-            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Button 
+                variant="outlined" 
+                size="small"
+                onClick={async () => {
+                  try {
+                    await Promise.all(
+                      subjectCategories.map(cat => 
+                        fetch(`/api/subjectcategories/${cat.id}`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ ...cat, isHomepage: 1 })
+                        })
+                      )
+                    )
+                    await load()
+                    setSnackbar({ open: true, message: 'All subjects added to homepage', severity: 'success' })
+                  } catch (error) {
+                    setSnackbar({ open: true, message: 'Failed to update subjects', severity: 'error' })
+                  }
+                }}
+              >
+                Check All
+              </Button>
+              <Button 
+                variant="outlined" 
+                size="small"
+                onClick={async () => {
+                  try {
+                    await Promise.all(
+                      subjectCategories.map(cat => 
+                        fetch(`/api/subjectcategories/${cat.id}`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ ...cat, isHomepage: 0 })
+                        })
+                      )
+                    )
+                    await load()
+                    setSnackbar({ open: true, message: 'All subjects removed from homepage', severity: 'success' })
+                  } catch (error) {
+                    setSnackbar({ open: true, message: 'Failed to update subjects', severity: 'error' })
+                  }
+                }}
+              >
+                Uncheck All
+              </Button>
+              <Typography variant="body2" color="text.secondary">
+                On Homepage: {subjectCategories.filter(cat => cat.isHomepage === 1).length} | 
+                In Slider: {subjectCategories.filter(cat => cat.isSlider === 1).length}
+              </Typography>
+            </Box>
           </Box>
           {subjectCategories.length === 0 ? (
             <Typography color="text.secondary">No subjects found. Create your first subject!</Typography>
@@ -335,6 +383,39 @@ const AdminSubjectCategories = () => {
                       <> | Updated: {new Date(subjectCategory.updatedAt).toLocaleDateString()}</>
                     )}
                   </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={Boolean(subjectCategory.isHomepage)}
+                        onChange={async (e) => {
+                          try {
+                            const response = await fetch(`/api/subjectcategories/${subjectCategory.id}`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ 
+                                ...subjectCategory, 
+                                isHomepage: e.target.checked ? 1 : 0 
+                              })
+                            })
+                            if (response.ok) {
+                              await load()
+                              setSnackbar({ 
+                                open: true, 
+                                message: e.target.checked ? 'Added to homepage' : 'Removed from homepage', 
+                                severity: 'success' 
+                              })
+                            }
+                          } catch (error) {
+                            setSnackbar({ open: true, message: 'Failed to update', severity: 'error' })
+                          }
+                        }}
+                      />
+                    }
+                    label="Add to Home"
+                    labelPlacement="start"
+                  />
                 </Box>
                 <Box>
                   <IconButton onClick={() => edit(subjectCategory)} color="primary">
