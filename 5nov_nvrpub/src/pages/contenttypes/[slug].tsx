@@ -350,7 +350,22 @@ export const getServerSideProps: GetServerSideProps = async ({ params, req }) =>
   try {
     // Fetch content type data
     const contenttypeRes = await fetch(`${apiUrl}/api/contenttypes`)
-    const contenttypesData = await contenttypeRes.json()
+    let contenttypesData: any = []
+    try {
+      const raw = await contenttypeRes.json()
+      // Normalize into array
+      if (Array.isArray(raw)) {
+        contenttypesData = raw
+      } else if (raw && Array.isArray(raw.data)) {
+        contenttypesData = raw.data
+      } else {
+        console.warn('Unexpected contenttypes payload shape; using empty array', raw)
+        contenttypesData = []
+      }
+    } catch (e) {
+      console.error('Failed to parse contenttypes response', e)
+      contenttypesData = []
+    }
     let contenttypeData = contenttypesData.find((ct: any) => ct.slug === slug)
 
     // Fallback for books if not in DB
@@ -376,13 +391,40 @@ export const getServerSideProps: GetServerSideProps = async ({ params, req }) =>
     // Fetch data depending on content type (books use dedicated table)
     let contents: any[] = []
     if (slug === 'books') {
-      const booksRes = await fetch(`${apiUrl}/api/books/active`)
-      const booksPayload = await booksRes.json()
-      const allBooks = Array.isArray(booksPayload?.data) ? booksPayload.data : booksPayload
+      let allBooks: any[] = []
+      try {
+        const booksRes = await fetch(`${apiUrl}/api/books/active`)
+        const rawBooks = await booksRes.json()
+        const payloadArray = Array.isArray(rawBooks?.data)
+          ? rawBooks.data
+          : (Array.isArray(rawBooks) ? rawBooks : [])
+        allBooks = payloadArray
+      } catch (e) {
+        console.error('Books API failed, using static fallback:', e)
+        try {
+          const { data: staticData } = await import('@/components/home/data/popular-content.data')
+          allBooks = staticData.filter((c: any) => c.contenttype === 'books')
+        } catch (e2) {
+          console.error('Failed loading static fallback books', e2)
+          allBooks = []
+        }
+      }
       contents = allBooks
     } else {
       const contentsRes = await fetch(`${apiUrl}/api/contents`)
-      const allContents = await contentsRes.json()
+      let allContents: any = []
+      try {
+        const rawContents = await contentsRes.json()
+        if (Array.isArray(rawContents)) allContents = rawContents
+        else if (rawContents && Array.isArray(rawContents.data)) allContents = rawContents.data
+        else {
+          console.warn('Unexpected contents payload shape; using empty array', rawContents)
+          allContents = []
+        }
+      } catch (e) {
+        console.error('Failed to parse contents response', e)
+        allContents = []
+      }
       contents = allContents.filter((content: any) => content.contentTypeId === contenttypeData.id)
     }
 

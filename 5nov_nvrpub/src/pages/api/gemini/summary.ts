@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import fs from 'fs'
+import path from 'path'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
@@ -12,9 +14,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: 'Missing text to summarize' })
     }
 
-    const apiKey = process.env.GEMINI_API_KEY
+    // Resolve API key: prefer env, else try config/gemini.json { "apiKey": "..." }
+    let apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) {
-        return res.status(500).json({ message: 'Gemini API key not configured' })
+        try {
+            const cfgPath = path.join(process.cwd(), 'config', 'gemini.json')
+            if (fs.existsSync(cfgPath)) {
+                const raw = fs.readFileSync(cfgPath, 'utf-8')
+                const parsed = JSON.parse(raw)
+                if (parsed.apiKey && typeof parsed.apiKey === 'string' && parsed.apiKey.trim().length > 0) {
+                    apiKey = parsed.apiKey.trim()
+                }
+            }
+        } catch (e) {
+            // Silent fallback, will error below if still missing
+        }
+    }
+    if (!apiKey) {
+        return res.status(500).json({ message: 'Gemini API key not configured (set GEMINI_API_KEY or config/gemini.json)' })
     }
 
     try {
