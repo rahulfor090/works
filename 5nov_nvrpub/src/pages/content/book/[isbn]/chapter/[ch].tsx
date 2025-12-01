@@ -732,47 +732,84 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
     
     const container = contentRef.current
     
-    // Naive implementation: Find text and wrap it.
-    // Note: This runs every time highlights change or content changes.
-    // We should be careful not to double-wrap.
-    // A simple way is to re-render the content, but we can't easily do that here.
-    // So we'll just try to apply highlights to the existing DOM.
-    // To avoid double wrapping, we can check if it's already wrapped.
+    // Remove any existing highlight spans before re-applying
+    const existingHighlights = container.querySelectorAll('.highlight-span')
+    existingHighlights.forEach(span => {
+      const parent = span.parentNode
+      if (parent) {
+        // Replace span with its text content
+        const textNode = document.createTextNode(span.textContent || '')
+        parent.replaceChild(textNode, span)
+        // Normalize to merge adjacent text nodes
+        parent.normalize()
+      }
+    })
     
+    // Apply highlights using a more robust text search
     highlights.forEach(h => {
-       const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null)
-       let node;
-       while(node = walker.nextNode()) {
-           if (node.nodeValue && node.nodeValue.includes(h.selected_text)) {
-               // Check if parent is already a highlight span
-               if (node.parentElement?.classList.contains('highlight-span')) continue;
-
-               const index = node.nodeValue.indexOf(h.selected_text)
-               if (index !== -1) {
-                   const range = document.createRange()
-                   range.setStart(node, index)
-                   range.setEnd(node, index + h.selected_text.length)
-                   
-                   const span = document.createElement('span')
-                   span.className = 'highlight-span'
-                   span.style.backgroundColor = h.color || 'yellow'
-                   span.style.cursor = 'pointer'
-                   span.style.position = 'relative'
-                   
-                   // Add event listeners for tooltip
-                   span.onclick = (e) => {
-                       e.stopPropagation() // Prevent triggering other clicks
-                       setActiveHighlight({ ...h, anchor: e.currentTarget })
-                   }
-                   
-                   try {
-                       range.surroundContents(span)
-                   } catch (e) {
-                       // Ignore errors
-                   }
-               }
-           }
-       }
+      const searchText = h.selected_text.trim()
+      if (!searchText) return
+      
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null)
+      const textNodes: Text[] = []
+      let node
+      while ((node = walker.nextNode())) {
+        if (node.nodeValue && node.nodeValue.trim()) {
+          textNodes.push(node as Text)
+        }
+      }
+      
+      // Try to find the text in the collected nodes
+      let found = false
+      for (let i = 0; i < textNodes.length && !found; i++) {
+        const textNode = textNodes[i]
+        const nodeValue = textNode.nodeValue || ''
+        
+        // Normalize whitespace for matching
+        const normalizedNode = nodeValue.replace(/\s+/g, ' ')
+        const normalizedSearch = searchText.replace(/\s+/g, ' ')
+        
+        const index = normalizedNode.indexOf(normalizedSearch)
+        if (index !== -1) {
+          try {
+            // Find the actual index in the original text
+            let actualIndex = 0
+            let normalizedCount = 0
+            for (let j = 0; j < nodeValue.length; j++) {
+              if (normalizedCount === index) {
+                actualIndex = j
+                break
+              }
+              if (!/\s/.test(nodeValue[j]) || (j > 0 && !/\s/.test(nodeValue[j-1]))) {
+                normalizedCount++
+              }
+            }
+            
+            const range = document.createRange()
+            range.setStart(textNode, actualIndex)
+            range.setEnd(textNode, Math.min(actualIndex + searchText.length, nodeValue.length))
+            
+            const span = document.createElement('span')
+            span.className = 'highlight-span'
+            span.setAttribute('data-highlight-id', String(h.id))
+            span.style.backgroundColor = h.color || 'yellow'
+            span.style.cursor = 'pointer'
+            span.style.position = 'relative'
+            span.style.padding = '2px 0'
+            span.style.borderRadius = '2px'
+            
+            span.onclick = (e) => {
+              e.stopPropagation()
+              setActiveHighlight({ ...h, anchor: e.currentTarget })
+            }
+            
+            range.surroundContents(span)
+            found = true
+          } catch (e) {
+            console.warn('Could not apply highlight:', e)
+          }
+        }
+      }
     })
     
   }, [highlights, filteredHtml, topTab])
@@ -2279,38 +2316,114 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
               }}
               maxWidth="md"
               fullWidth
+              PaperProps={{
+                sx: {
+                  borderRadius: '1.5rem',
+                  backgroundColor: themeColors.bg,
+                  color: themeColors.text,
+                  boxShadow: themeColors.shadow
+                }
+              }}
             >
-              <DialogTitle>AI Summary</DialogTitle>
-              <DialogContent dividers>
-                <Typography variant="body2" sx={{ mb: 2 }} color="text.secondary">
+              <DialogTitle sx={{ 
+                borderBottom: `1px solid ${themeColors.border}`, 
+                px: 4, 
+                py: 3,
+                color: themeColors.heading,
+                fontWeight: 700
+              }}>AI Summary</DialogTitle>
+              <DialogContent dividers sx={{ 
+                borderColor: themeColors.border,
+                backgroundColor: themeColors.bg,
+                color: themeColors.text 
+              }}>
+                <Typography variant="body2" sx={{ mb: 2, color: themeColors.text, opacity: 0.8 }}>
                   Generates a concise summary of the selected text. If no selection is made it summarizes the entire chapter (truncated).
                 </Typography>
                 {selection && (
-                  <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
-                    <Typography variant="subtitle2" sx={{ mb: 1 }}>Selected Text</Typography>
-                    <Typography variant="body2" sx={{ maxHeight: 160, overflow: 'auto' }}>{selection.text}</Typography>
+                  <Paper variant="outlined" sx={{ 
+                    p: 2, 
+                    mb: 2,
+                    borderColor: themeColors.border,
+                    backgroundColor: themeColors.hoverItemBg,
+                    borderRadius: '0.75rem'
+                  }}>
+                    <Typography variant="subtitle2" sx={{ mb: 1, color: themeColors.heading, fontWeight: 600 }}>Selected Text</Typography>
+                    <Typography variant="body2" sx={{ maxHeight: 160, overflow: 'auto', color: themeColors.text }}>{selection.text}</Typography>
                   </Paper>
                 )}
                 {aiSummaryError && (
-                  <Paper variant="outlined" sx={{ p: 2, mb: 2, borderColor: '#F87171', backgroundColor: '#FEF2F2' }}>
-                    <Typography variant="body2" color="error">{aiSummaryError}</Typography>
+                  <Paper variant="outlined" sx={{ 
+                    p: 2, 
+                    mb: 2, 
+                    borderColor: theme === 'dark' ? '#7F1D1D' : '#F87171', 
+                    backgroundColor: theme === 'dark' ? 'rgba(127, 29, 29, 0.2)' : '#FEF2F2',
+                    borderRadius: '0.75rem'
+                  }}>
+                    <Typography variant="body2" sx={{ color: theme === 'dark' ? '#FCA5A5' : '#DC2626' }}>{aiSummaryError}</Typography>
                   </Paper>
                 )}
                 {aiSummaryLoading && (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <LinearProgress sx={{ flex: 1 }} />
-                    <Typography variant="body2" color="text.secondary">Generating...</Typography>
+                    <LinearProgress sx={{ 
+                      flex: 1,
+                      backgroundColor: themeColors.border,
+                      '& .MuiLinearProgress-bar': {
+                        backgroundColor: themeColors.link
+                      }
+                    }} />
+                    <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.7 }}>Generating...</Typography>
                   </Box>
                 )}
                 {!aiSummaryLoading && aiSummary && (
-                  <Paper variant="outlined" sx={{ p: 3, backgroundColor: '#F8FAFC', borderColor: '#E2E8F0' }}>
-                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{aiSummary}</Typography>
+                  <Paper variant="outlined" sx={{ 
+                    p: 3, 
+                    backgroundColor: themeColors.activeItemBg, 
+                    borderColor: themeColors.border,
+                    borderRadius: '1rem'
+                  }}>
+                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, color: themeColors.text }}>{aiSummary}</Typography>
                   </Paper>
                 )}
               </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setSummaryDialogOpen(false)}>Close</Button>
-                <Button onClick={generateSummary} disabled={aiSummaryLoading} variant="contained" color="primary">
+              <DialogActions sx={{ 
+                px: 4, 
+                pb: 4, 
+                pt: 3,
+                borderTop: `1px solid ${themeColors.border}`,
+                backgroundColor: themeColors.bg
+              }}>
+                <Button 
+                  onClick={() => setSummaryDialogOpen(false)}
+                  sx={{
+                    textTransform: 'none',
+                    color: themeColors.text,
+                    '&:hover': { backgroundColor: themeColors.hoverItemBg }
+                  }}
+                >Close</Button>
+                <Button 
+                  onClick={generateSummary} 
+                  disabled={aiSummaryLoading} 
+                  variant="contained"
+                  sx={{
+                    textTransform: 'none',
+                    borderRadius: '2rem',
+                    background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                    boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
+                    fontWeight: 600,
+                    px: 4,
+                    py: 1,
+                    '&:hover': {
+                      background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                      boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+                    },
+                    '&:disabled': {
+                      background: themeColors.border,
+                      color: themeColors.text,
+                      opacity: 0.5
+                    }
+                  }}
+                >
                   {aiSummaryLoading ? 'Working...' : 'Generate'}
                 </Button>
               </DialogActions>
@@ -2322,27 +2435,79 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
               onClose={() => { setChatOpen(false); setChatError('') }}
               fullWidth
               maxWidth="md"
+              PaperProps={{
+                sx: {
+                  borderRadius: '1.5rem',
+                  backgroundColor: themeColors.bg,
+                  color: themeColors.text,
+                  boxShadow: themeColors.shadow
+                }
+              }}
             >
-              <DialogTitle>AI Chapter Chat</DialogTitle>
-              <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Typography variant="body2" color="text.secondary">
+              <DialogTitle sx={{ 
+                borderBottom: `1px solid ${themeColors.border}`, 
+                px: 4, 
+                py: 3,
+                color: themeColors.heading,
+                fontWeight: 700
+              }}>AI Chapter Chat</DialogTitle>
+              <DialogContent dividers sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: 2,
+                borderColor: themeColors.border,
+                backgroundColor: themeColors.bg
+              }}>
+                <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.8 }}>
                   Ask questions about this chapter. The first question will include a short excerpt automatically.
                 </Typography>
-                <Box sx={{ maxHeight: 400, overflow: 'auto', p: 1, border: '1px solid #E2E8F0', borderRadius: 2, backgroundColor: '#F8FAFC' }}>
+                <Box sx={{ 
+                  maxHeight: 400, 
+                  overflow: 'auto', 
+                  p: 2, 
+                  border: `1px solid ${themeColors.border}`, 
+                  borderRadius: '1rem', 
+                  backgroundColor: themeColors.hoverItemBg,
+                  '&::-webkit-scrollbar': { width: '8px' },
+                  '&::-webkit-scrollbar-track': { background: 'transparent' },
+                  '&::-webkit-scrollbar-thumb': {
+                    background: themeColors.border,
+                    borderRadius: '4px',
+                    '&:hover': { background: themeColors.link }
+                  }
+                }}>
                   {chatMessages.length === 0 && (
-                    <Typography variant="body2" color="text.secondary">No messages yet. Ask something like "Summarize the main idea".</Typography>
+                    <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.6 }}>No messages yet. Ask something like &quot;Summarize the main idea&quot;.</Typography>
                   )}
                   {chatMessages.map((m, i) => (
                     <Box key={i} sx={{ mb: 2 }}>
-                      <Typography variant="caption" sx={{ fontWeight: 600, color: m.role === 'user' ? '#0A2540' : '#1D4ED8' }}>
+                      <Typography variant="caption" sx={{ 
+                        fontWeight: 600, 
+                        color: m.role === 'user' ? themeColors.accent : themeColors.link,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        fontSize: '0.7rem'
+                      }}>
                         {m.role === 'user' ? 'You' : 'Assistant'}
                       </Typography>
-                      <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{m.content}</Typography>
+                      <Typography variant="body2" sx={{ 
+                        whiteSpace: 'pre-wrap', 
+                        color: themeColors.text,
+                        mt: 0.5,
+                        p: 1.5,
+                        borderRadius: '0.5rem',
+                        backgroundColor: m.role === 'user' ? themeColors.activeItemBg : 'transparent'
+                      }}>{m.content}</Typography>
                     </Box>
                   ))}
-                  {chatLoading && <LinearProgress />}
+                  {chatLoading && <LinearProgress sx={{ 
+                    backgroundColor: themeColors.border,
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: themeColors.link
+                    }
+                  }} />}
                 </Box>
-                {chatError && <Typography variant="body2" color="error">{chatError}</Typography>}
+                {chatError && <Typography variant="body2" sx={{ color: theme === 'dark' ? '#FCA5A5' : '#DC2626' }}>{chatError}</Typography>}
                 <TextField
                   label="Your Question"
                   value={chatInput}
@@ -2351,14 +2516,89 @@ const ChapterViewerPage: NextPageWithLayout<Props> = ({ isbn, ch, title, html, c
                   minRows={2}
                   maxRows={5}
                   fullWidth
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      color: themeColors.text,
+                      backgroundColor: themeColors.bg,
+                      borderRadius: '0.75rem',
+                      '& fieldset': {
+                        borderColor: themeColors.border,
+                      },
+                      '&:hover fieldset': {
+                        borderColor: themeColors.link,
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: themeColors.link,
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      color: themeColors.text,
+                      opacity: 0.7
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': {
+                      color: themeColors.link
+                    }
+                  }}
                 />
               </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setChatOpen(false)}>Close</Button>
-                <Button onClick={speakLastAssistant} disabled={chatMessages.filter(m => m.role==='assistant').length===0}>
+              <DialogActions sx={{ 
+                px: 4, 
+                pb: 4, 
+                pt: 3,
+                borderTop: `1px solid ${themeColors.border}`,
+                backgroundColor: themeColors.bg
+              }}>
+                <Button 
+                  onClick={() => setChatOpen(false)}
+                  sx={{
+                    textTransform: 'none',
+                    color: themeColors.text,
+                    '&:hover': { backgroundColor: themeColors.hoverItemBg }
+                  }}
+                >Close</Button>
+                <Button 
+                  onClick={speakLastAssistant} 
+                  disabled={chatMessages.filter(m => m.role==='assistant').length===0}
+                  sx={{
+                    textTransform: 'none',
+                    color: themeColors.text,
+                    borderColor: themeColors.border,
+                    '&:hover': { 
+                      backgroundColor: themeColors.hoverItemBg,
+                      borderColor: themeColors.link 
+                    },
+                    '&:disabled': {
+                      color: themeColors.text,
+                      opacity: 0.3
+                    }
+                  }}
+                  variant="outlined"
+                >
                   Speak Reply
                 </Button>
-                <Button onClick={sendChat} disabled={chatLoading || !chatInput.trim()} variant="contained">
+                <Button 
+                  onClick={sendChat} 
+                  disabled={chatLoading || !chatInput.trim()} 
+                  variant="contained"
+                  sx={{
+                    textTransform: 'none',
+                    borderRadius: '2rem',
+                    background: 'linear-gradient(to right, #FF6B6B, #FF8E53)',
+                    boxShadow: '0 4px 12px rgba(255, 107, 107, 0.25)',
+                    fontWeight: 600,
+                    px: 4,
+                    py: 1,
+                    '&:hover': {
+                      background: 'linear-gradient(to right, #FF5252, #FF7043)',
+                      boxShadow: '0 8px 20px rgba(255, 107, 107, 0.4)',
+                    },
+                    '&:disabled': {
+                      background: themeColors.border,
+                      color: themeColors.text,
+                      opacity: 0.5
+                    }
+                  }}
+                >
                   {chatLoading ? 'Sending...' : 'Send'}
                 </Button>
               </DialogActions>
