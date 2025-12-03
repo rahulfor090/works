@@ -10,7 +10,7 @@ function getPool(): Pool {
   const config: PoolOptions = {
     host: 'localhost',
     user: 'root',
-    password: 'anshpandey@18072006',
+    password: 'root',
     port: 3306,
     database: 'jaypeedigi',
     waitForConnections: true,
